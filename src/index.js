@@ -11,8 +11,8 @@ const App = () => {
             title: 'Menu',
             children: html`
                 <${List}>
-                    <${ListItem} onClick=${() => pushView('world')}>World</${ListItem}>
-                    <${ListItem}>Settings</${ListItem}>
+                    <${ListItem} icon="globe" onClick=${() => pushView('world')}>World</${ListItem}>
+                    <${ListItem} icon="gear">Settings</${ListItem}>
                 </${List}>
             `,
         },
@@ -20,9 +20,9 @@ const App = () => {
             title: 'World',
             children: html`
                 <${List}>
-                    <${ListItem} onClick=${() => pushView('jason')}>Jason</${ListItem}>
-                    <${ListItem}>Sarah</${ListItem}>
-                    <${ListItem}>Gordon</${ListItem}>
+                    <${ListItem} icon="user" onClick=${() => pushView('jason')} value="Dist 2">Jason</${ListItem}>
+                    <${ListItem} icon="user" value="Dist 2">Sarah</${ListItem}>
+                    <${ListItem} icon="user" value="Dist 3">Gordon</${ListItem}>
                 </${List}>
                 <${Button} label="Explore" />
             `,
@@ -71,7 +71,7 @@ const View = ({ title, children, backLabel, onBackClick }) => {
     return html`
         <div class="view">
             <div class="view-header">
-                ${backLabel ? html`<button class="view-back" onClick=${onBackClick}>${'<'} ${backLabel}</button>` : ''}
+                ${backLabel ? html`<button class="view-back" onClick=${onBackClick}><i class="fa-solid fa-chevron-left"></i> ${backLabel}</button>` : ''}
                 <h2 class="view-title">${title}</h2>
             </div>
             <div class="view-content">
@@ -92,11 +92,17 @@ const List = ({ title, children }) => {
     `
 }
 
-const ListItem = ({ children, onClick }) => {
+const ListItem = ({ icon, children, value, onClick }) => {
     return html`
         <button class="list-item" onClick=${onClick}>
-            ${children}
-            <div class="list-item-arrow">${'>'}</div>
+            <div class="list-item-left">
+                ${icon ? html`<${Icon} name=${icon} />` : ''}
+                <div>${children}</div>
+            </div>
+            <div class="list-item-right">
+                ${value ? html`<div class="list-item-value">${value}</div>` : ''}
+                ${onClick ? html`<div class="list-item-arrow"><i class="fa-solid fa-chevron-right"></i></div>` : ''}
+            </div>
         </button>
     `
 }
@@ -104,5 +110,9 @@ const ListItem = ({ children, onClick }) => {
 const Button = ({ label, onClick }) => {
     return html`<button class="button" onClick=${onClick}>${label}</button>`;
 };
+
+const Icon = ({ name, color = 1 }) => {
+    return html`<div class="icon icon-color-${color}"><i class="fa-solid fa-${name}"></i></div>`;
+}
 
 render(h(App), document.body);

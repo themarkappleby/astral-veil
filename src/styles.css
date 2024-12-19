@@ -84,21 +84,37 @@ html, body {
     background: transparent;
     width: 100%;
     padding: 12px;
-    padding-right: 28px;
     text-align: left;
     cursor: pointer;
-    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     &:last-child {
         border-bottom: 0;
     }
 }
 
 .list-item-arrow {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
     opacity: 0.5;
+}
+
+.list-item-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    .icon {
+        margin: -5px 0;
+    }
+}
+
+.list-item-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.list-item-value {
+    opacity: 0.7;
 }
 
 .button {
@@ -108,4 +124,17 @@ html, body {
     border: 0;
     padding: 12px;
     color: white;
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: white;
+    &.icon-color-1 {
+        background: rgb(77, 77, 77);
+    }
 }
