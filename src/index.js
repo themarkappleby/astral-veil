@@ -20,9 +20,9 @@ const App = () => {
             title: 'World',
             children: html`
                 <${List}>
-                    <${ListItem} icon="user" onClick=${() => pushView('jason')} value="Dist 2">Jason</${ListItem}>
-                    <${ListItem} icon="user" value="Dist 2">Sarah</${ListItem}>
-                    <${ListItem} icon="user" value="Dist 3">Gordon</${ListItem}>
+                    <${ListItem} icon="user" color="12" onClick=${() => pushView('jason')} value="Dist 2">Jason</${ListItem}>
+                    <${ListItem} icon="user" color="12" value="Dist 2">Sarah</${ListItem}>
+                    <${ListItem} icon="user" color="12" value="Dist 3">Gordon</${ListItem}>
                 </${List}>
                 <${Button} label="Explore" />
             `,
@@ -92,11 +92,11 @@ const List = ({ title, children }) => {
     `
 }
 
-const ListItem = ({ icon, children, value, onClick }) => {
+const ListItem = ({ icon, color, children, value, onClick }) => {
     return html`
         <button class="list-item" onClick=${onClick}>
             <div class="list-item-left">
-                ${icon ? html`<${Icon} name=${icon} />` : ''}
+                ${icon ? html`<${Icon} name=${icon} color=${color} />` : ''}
                 <div>${children}</div>
             </div>
             <div class="list-item-right">
@@ -111,8 +111,8 @@ const Button = ({ label, onClick }) => {
     return html`<button class="button" onClick=${onClick}>${label}</button>`;
 };
 
-const Icon = ({ name, color = 1 }) => {
-    return html`<div class="icon icon-color-${color}"><i class="fa-solid fa-${name}"></i></div>`;
+const Icon = ({ name, color }) => {
+    return html`<div class="icon ${color && `color-bg-${color}`}"><i class="fa-solid fa-${name}"></i></div>`;
 }
 
 render(h(App), document.body);
