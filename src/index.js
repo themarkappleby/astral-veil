@@ -20,9 +20,9 @@ const App = () => {
             title: 'World',
             children: html`
                 <${List}>
-                    <${ListItem} icon="user" color="12" onClick=${() => pushView('jason')} value="Dist 2">Jason</${ListItem}>
-                    <${ListItem} icon="user" color="12" value="Dist 2">Sarah</${ListItem}>
-                    <${ListItem} icon="user" color="12" value="Dist 3">Gordon</${ListItem}>
+                    <${ListItem} icon="user" color="11" onClick=${() => pushView('jason')} value="Dist 2">Jason - Idle</${ListItem}>
+                    <${ListItem} icon="user" color="11" value="Dist 2">Sarah - Idle</${ListItem}>
+                    <${ListItem} icon="user" color="11" value="Dist 3">Gordon - Idle</${ListItem}>
                 </${List}>
                 <${Button} label="Explore" />
             `,
@@ -31,9 +31,9 @@ const App = () => {
             title: 'Jason',
             children: html`
                 <${List}>
-                    <${ListItem}>Health</${ListItem}>
-                    <${ListItem}>Inventory</${ListItem}>
-                    <${ListItem}>Backstory</${ListItem}>
+                    <${ListItem} icon="heart">Health</${ListItem}>
+                    <${ListItem} icon="box">Inventory</${ListItem}>
+                    <${ListItem} icon="book">Backstory</${ListItem}>
                 </${List}>
             `,
         }
