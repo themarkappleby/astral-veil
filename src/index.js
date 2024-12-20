@@ -131,8 +131,10 @@ const ListItem = ({ icon, color, children, right, onClick, percent }) => {
 
 const Toggle = ({ value, onChange }) => {
     return html`
-        <input type="checkbox" class="toggle" checked=${value} onChange=${onChange} />
-        <div class="toggle-slider"></div>
+        <div class="toggle-container">
+            <input type="checkbox" class="toggle" checked=${value} onChange=${onChange} />
+            <button class="toggle-slider"></button>
+        </div>
     `
 }
 
