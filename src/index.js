@@ -20,11 +20,20 @@ const App = () => {
             title: 'World',
             children: html`
                 <${List}>
+                    <${ListItem}>
+                        <div class="status">
+                            <div>Summer, day 1</div>
+                            <div>9 AM</div>
+                            <div>Sunny, 23 °C</div>
+                        </div>
+                    </${ListItem}>
+                </${List}>
+                <${List}>
                     <${ListItem} icon="user" color="11" onClick=${() => pushView('jason')} value="Dist 2">Jason - Idle</${ListItem}>
                     <${ListItem} icon="user" color="11" value="Dist 2">Sarah - Idle</${ListItem}>
                     <${ListItem} icon="user" color="11" value="Dist 3">Gordon - Idle</${ListItem}>
+                    <${ListItem}>Explore</${ListItem}>
                 </${List}>
-                <${Button} label="Explore" />
             `,
         },
         jason: {
@@ -97,12 +106,14 @@ const ListItem = ({ icon, color, children, value, onClick }) => {
         <button class="list-item" onClick=${onClick}>
             <div class="list-item-left">
                 ${icon ? html`<${Icon} name=${icon} color=${color} />` : ''}
-                <div>${children}</div>
+                ${children}
             </div>
-            <div class="list-item-right">
-                ${value ? html`<div class="list-item-value">${value}</div>` : ''}
-                ${onClick ? html`<div class="list-item-arrow"><i class="fa-solid fa-chevron-right"></i></div>` : ''}
-            </div>
+            ${(value || onClick) ? html`
+                <div class="list-item-right">
+                    ${value ? html`<div class="list-item-value">${value}</div>` : ''}
+                    ${onClick ? html`<div class="list-item-arrow"><i class="fa-solid fa-chevron-right"></i></div>` : ''}
+                </div>
+            ` : ''}
         </button>
     `
 }
