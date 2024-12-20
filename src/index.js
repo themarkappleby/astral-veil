@@ -5,7 +5,7 @@ const html = htm.bind(h);
 const App = () => {
     const [viewStack, setViewStack] = useState(['menu', 'world']);
     const [activeView, setActiveView] = useState('world')
-    const [hour, setHour] = useState(1);
+    const [hour, setHour] = useState(12);
     const [minute, setMinute] = useState(0);
     const [amPm, setAmPm] = useState('AM');
     const [day, setDay] = useState(1);
@@ -25,13 +25,14 @@ const App = () => {
                         if (newMinute === 60) {
                             setHour(prevHour => {
                                 const newHour = prevHour + 1
-                                if (newHour === 13) {
+                                if (newHour === 12) {
                                     setAmPm(prevAmPm => {
                                         if (prevAmPm === 'PM') {
                                             setDay(prevDay => prevDay + 1);
                                         }
                                         return prevAmPm === 'AM' ? 'PM' : 'AM'
                                     });
+                                } else if (newHour === 13) {
                                     return 1;
                                 }
                                 return newHour;
