@@ -19,7 +19,7 @@ const App = () => {
         world: {
             title: 'World',
             children: html`
-                <${List}>
+                <${List} title="Status">
                     <${ListItem}>
                         <div class="status">
                             <div>Summer, day 1</div>
@@ -28,11 +28,21 @@ const App = () => {
                         </div>
                     </${ListItem}>
                 </${List}>
-                <${List}>
-                    <${ListItem} icon="user" color="11" onClick=${() => pushView('jason')} value="Dist 2">Jason - Idle</${ListItem}>
-                    <${ListItem} icon="user" color="11" value="Dist 2">Sarah - Idle</${ListItem}>
-                    <${ListItem} icon="user" color="11" value="Dist 3">Gordon - Idle</${ListItem}>
-                    <${ListItem}>Explore</${ListItem}>
+                <${List} title="Stockpile">
+                    <${ListItem} icon="box" onClick=${() => {}}>Food: 12</${ListItem}>
+                    <${ListItem} icon="box" onClick=${() => {}}>Wood: 28</${ListItem}>
+                    <${ListItem} icon="box" onClick=${() => {}}>Stone: 3</${ListItem}>
+                </${List}>
+                <${List} title="Base">
+                    <${ListItem} icon="building" onClick=${() => {}}>Campfire</${ListItem}>
+                    <${ListItem} icon="user" color="11" onClick=${() => pushView('jason')}>Jason: Idle</${ListItem}>
+                </${List}>
+                <${List} title="Surroundings">
+                    <${ListItem} icon="user" color="11" percent="67" right="Dist 6" onClick=${() => {}}>Sarah: Chopping tree 67%</${ListItem}>
+                    <${ListItem} percent="64" icon="tree" right="Dist 6" onClick=${() => {}}>Birch forest: 14 of 23</${ListItem}>
+                    <${ListItem} percent="100" icon="tree" right="Dist 10" onClick=${() => {}}>Raspberry bush: 42 of 42</${ListItem}>
+                    <${ListItem} icon="user" color="11" percent="12" right="Dist 12" onClick=${() => {}}>Gordon: Exploring 12%</${ListItem}>
+                    <${ListItem} right=${html`<${Toggle} />`}>Explore</${ListItem}>
                 </${List}>
             `,
         },
@@ -101,20 +111,28 @@ const List = ({ title, children }) => {
     `
 }
 
-const ListItem = ({ icon, color, children, value, onClick }) => {
+const ListItem = ({ icon, color, children, right, onClick, percent }) => {
     return html`
         <button class="list-item" onClick=${onClick}>
+            ${percent ? html`<div class="list-item-percent" style="width: ${percent}%" />` : ''}
             <div class="list-item-left">
                 ${icon ? html`<${Icon} name=${icon} color=${color} />` : ''}
                 ${children}
             </div>
-            ${(value || onClick) ? html`
+            ${(right || onClick) ? html`
                 <div class="list-item-right">
-                    ${value ? html`<div class="list-item-value">${value}</div>` : ''}
+                    ${right ? html`<div class="list-item-right">${right}</div>` : ''}
                     ${onClick ? html`<div class="list-item-arrow"><i class="fa-solid fa-chevron-right"></i></div>` : ''}
                 </div>
             ` : ''}
         </button>
+    `
+}
+
+const Toggle = ({ value, onChange }) => {
+    return html`
+        <input type="checkbox" class="toggle" checked=${value} onChange=${onChange} />
+        <div class="toggle-slider"></div>
     `
 }
 
