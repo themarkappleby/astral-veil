@@ -12,7 +12,7 @@ const App = () => {
             children: html`
                 <${List}>
                     <${ListItem} icon="globe" onClick=${() => pushView('world')}>World</${ListItem}>
-                    <${ListItem} icon="gear">Settings</${ListItem}>
+                    <${ListItem} icon="gear" onClick=${() => {}}>Settings</${ListItem}>
                 </${List}>
             `,
         },
@@ -29,19 +29,18 @@ const App = () => {
                     </${ListItem}>
                 </${List}>
                 <${List} title="Stockpile">
-                    <${ListItem} icon="box" onClick=${() => {}}>Food: 12</${ListItem}>
-                    <${ListItem} icon="box" onClick=${() => {}}>Wood: 28</${ListItem}>
-                    <${ListItem} icon="box" onClick=${() => {}}>Stone: 3</${ListItem}>
+                    <${ListItem} icon="box" percent="80" onClick=${() => {}}>Food: 8 of 10</${ListItem}>
+                    <${ListItem} icon="box" percent="10" onClick=${() => {}}>Wood: 1 of 10</${ListItem}>
                 </${List}>
                 <${List} title="Base">
                     <${ListItem} icon="building" onClick=${() => {}}>Campfire</${ListItem}>
-                    <${ListItem} icon="user" color="11" onClick=${() => pushView('jason')}>Jason: Idle</${ListItem}>
+                    <${ListItem} icon="user" color="11" onClick=${() => pushView('jason')}>Jason: Eating bartlett pear</${ListItem}>
                 </${List}>
                 <${List} title="Surroundings">
-                    <${ListItem} icon="user" color="11" percent="67" right="Dist 6" onClick=${() => {}}>Sarah: Chopping tree 67%</${ListItem}>
+                    <${ListItem} icon="user" color="11" percent="67" right="Dist 6" onClick=${() => {}}>Fritz: Chopping birch tree 67%</${ListItem}>
                     <${ListItem} percent="64" icon="tree" right="Dist 6" onClick=${() => {}}>Birch forest: 14 of 23</${ListItem}>
-                    <${ListItem} percent="100" icon="tree" right="Dist 10" onClick=${() => {}}>Raspberry bush: 42 of 42</${ListItem}>
-                    <${ListItem} icon="user" color="11" percent="12" right="Dist 12" onClick=${() => {}}>Gordon: Exploring 12%</${ListItem}>
+                    <${ListItem} percent="100" icon="tree" right="Dist 10" onClick=${() => {}}>Raspberry patch: 4 of 4</${ListItem}>
+                    <${ListItem} icon="user" color="11" percent="12" right="Dist 12" onClick=${() => {}}>Murphy: Exploring 12%</${ListItem}>
                     <${ListItem} right=${html`<${Toggle} />`}>Explore</${ListItem}>
                 </${List}>
             `,
@@ -49,10 +48,14 @@ const App = () => {
         jason: {
             title: 'Jason',
             children: html`
-                <${List}>
-                    <${ListItem} icon="heart">Health</${ListItem}>
-                    <${ListItem} icon="box">Inventory</${ListItem}>
-                    <${ListItem} icon="book">Backstory</${ListItem}>
+                <${List} title="Current job">
+                    <${ListItem}>Eating bartlett pear</${ListItem}>
+                </${List}>
+                <${List} title="Details">
+                    <${ListItem} icon="heart" onClick=${() => {}}>Health</${ListItem}>
+                    <${ListItem} icon="user" onClick=${() => {}}>Jobs</${ListItem}>
+                    <${ListItem} icon="box" onClick=${() => {}}>Inventory</${ListItem}>
+                    <${ListItem} icon="book" onClick=${() => {}}>Backstory</${ListItem}>
                 </${List}>
             `,
         }
@@ -71,17 +74,24 @@ const App = () => {
     }
 
     return html`
-        <div class="app" style="transform: translateX(${viewStack.indexOf(activeView) * -100}vw)">
-            ${viewStack.map((viewId, index) => {
-                const view = views[viewId];
-                const lastViewId = viewStack[index - 1];
-                const lastView = views[lastViewId];
-                return html`
-                    <${View} title=${view.title} backLabel=${lastView?.title} onBackClick=${() => popView()}>
-                        ${view.children}
-                    </${View}>
-                `;
-            })}
+        <div class="container">
+            <div class="app" style="transform: translateX(${viewStack.indexOf(activeView) * -100}%)">
+                ${viewStack.map((viewId, index) => {
+                    const view = views[viewId];
+                    const lastViewId = viewStack[index - 1];
+                    const lastView = views[lastViewId];
+                    return html`
+                        <${View} title=${view.title} backLabel=${lastView?.title} onBackClick=${() => popView()}>
+                            ${view.children}
+                        </${View}>
+                    `;
+                })}
+            </div>
+            <div class="goal">
+                <${List}>
+                    <${ListItem} icon="flag-checkered" percent="10">Collect wood: 1 of 10</${ListItem}>
+                </${List}>
+            </div>
         </div>
     `;
 };
@@ -112,8 +122,9 @@ const List = ({ title, children }) => {
 }
 
 const ListItem = ({ icon, color, children, right, onClick, percent }) => {
+    const container = onClick ? 'button' : 'div';
     return html`
-        <button class="list-item" onClick=${onClick}>
+        <${container} class="list-item" onClick=${onClick}>
             ${percent ? html`<div class="list-item-percent" style="width: ${percent}%" />` : ''}
             <div class="list-item-left">
                 ${icon ? html`<${Icon} name=${icon} color=${color} />` : ''}
@@ -125,7 +136,7 @@ const ListItem = ({ icon, color, children, right, onClick, percent }) => {
                     ${onClick ? html`<div class="list-item-arrow"><i class="fa-solid fa-chevron-right"></i></div>` : ''}
                 </div>
             ` : ''}
-        </button>
+        </${container}>
     `
 }
 
