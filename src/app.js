@@ -66,8 +66,8 @@ const App = ({ state, pushView, popView }) => {
             title: 'Jason',
             children: html`
                 <${List}>
-                    <${ListItem} right="Eating bartlett pear">Currently</${ListItem}>
-                    <${ListItem} right="Chop birch tree (dist 6)">Up next</${ListItem}>
+                    <${ListItem} right="Eating bartlett pear" onClick=${() => {}}>Currently</${ListItem}>
+                    <${ListItem} right="Chop birch tree (dist 6)" onClick=${() => {}}>Up next</${ListItem}>
                 </${List}>
                 <${List} title="Condition">
                     <${ListItem} icon="heart" right="90%" onClick=${() => {}} percent="90">Health</${ListItem}>
