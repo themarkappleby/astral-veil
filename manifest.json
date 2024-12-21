@@ -2,7 +2,7 @@
   "name": "Astral Veil",
   "short_name": "Astral Veil",
   "description": "A space colony management game",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
