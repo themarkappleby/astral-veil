@@ -12,15 +12,6 @@ const App = ({ state, pushView, popView }) => {
         world: {
             title: 'World',
             children: html`
-                <${List} title="Status">
-                    <${ListItem}>
-                        <div class="status">
-                            <div>Summer, day ${state.day}</div>
-                            <div>${state.hour}:${state.minute < 10 ? '0' : ''}${state.minute} ${state.amPm}</div>
-                            <div>Sunny, 23 °C</div>
-                        </div>
-                    </${ListItem}>
-                </${List}>
                 <${List} title="Stockpile">
                     ${state.stockpile.map((category) => {
                         const total = category.items.reduce((acc, item) => acc + item.count, 0);
@@ -102,6 +93,16 @@ const App = ({ state, pushView, popView }) => {
             <div class="goal">
                 <${List}>
                     <${ListItem} icon="flag-checkered" percent="10">Collect wood: 1 of 10</${ListItem}>
+                    <${ListItem}>
+                        <div class="status">
+                            <div>Summer, day ${state.day}</div>
+                            <div>
+                                <${Icon} icon="clock" />
+                                <div>${state.hour}:${state.minute < 10 ? '0' : ''}${state.minute} ${state.amPm}</div>
+                            </div>
+                            <div>Sunny, 23 °C</div>
+                        </div>
+                    </${ListItem}>
                 </${List}>
             </div>
         </div>
