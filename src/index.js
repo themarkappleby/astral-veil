@@ -22,8 +22,13 @@ const App = ({ state, pushView, popView }) => {
                     </${ListItem}>
                 </${List}>
                 <${List} title="Stockpile">
-                    <${ListItem} icon="box" percent="80" onClick=${() => {}}>Food: 8 of 10</${ListItem}>
-                    <${ListItem} icon="box" percent="10" onClick=${() => {}}>Wood: 1 of 10</${ListItem}>
+                    ${state.stockpile.map((category) => {
+                        const total = category.items.reduce((acc, item) => acc + item.count, 0);
+                        const percent = Math.round(total / category.capacity * 100);
+                        return html`
+                            <${ListItem} icon="box" percent=${percent} onClick=${() => {}}>${category.name}: ${total}</${ListItem}>
+                        `;
+                    })}
                 </${List}>
                 <${List} title="Base">
                     <${ListItem} icon="building" onClick=${() => {}}>Campfire</${ListItem}>
@@ -41,10 +46,11 @@ const App = ({ state, pushView, popView }) => {
         jason: {
             title: 'Jason',
             children: html`
-                <${List} title="Current job">
-                    <${ListItem}>Eating bartlett pear</${ListItem}>
+                <${List}>
+                    <${ListItem} right="Eating bartlett pear">Current job</${ListItem}>
+                    <${ListItem} right="Chop birch tree">Next job</${ListItem}>
                 </${List}>
-                <${List} title="Details">
+                <${List}>
                     <${ListItem} icon="heart" onClick=${() => {}}>Health</${ListItem}>
                     <${ListItem} icon="user" onClick=${() => {}}>Jobs</${ListItem}>
                     <${ListItem} icon="box" onClick=${() => {}}>Inventory</${ListItem}>

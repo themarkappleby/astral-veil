@@ -10,6 +10,23 @@ const withState = (WrappedComponent) => {
     const [minute, setMinute] = useState(0);
     const [amPm, setAmPm] = useState('AM');
     const [day, setDay] = useState(1);
+    const [stockpile, setStockpile] = useState([
+        {
+            name: 'Food',
+            capacity: 10,
+            items: [
+                { name: 'Bartlett pear', count: 6 },
+                { name: 'Honeycrisp apple', count: 2 },
+            ]
+        },
+        {
+            name: 'Wood',
+            capacity: 10,
+            items: [
+                { name: 'Birch wood', count: 1 },
+            ]
+        },
+    ]);
 
     useEffect(() => {
         let lastTime = 0;
@@ -77,7 +94,8 @@ const withState = (WrappedComponent) => {
             amPm, setAmPm,
             day, setDay,
             viewStack, setViewStack,
-            activeView, setActiveView
+            activeView, setActiveView,
+            stockpile, setStockpile
         }
     }} />`;
   };
