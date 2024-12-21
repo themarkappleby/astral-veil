@@ -26,7 +26,7 @@ const App = ({ state, pushView, popView }) => {
                         const total = category.items.reduce((acc, item) => acc + item.count, 0);
                         const percent = Math.round(total / category.capacity * 100);
                         return html`
-                            <${ListItem} icon="box" percent=${percent} onClick=${() => {}}>${category.name}: ${total}</${ListItem}>
+                            <${ListItem} icon="box" percent=${percent} right="${total}" onClick=${() => {}}>${category.name}</${ListItem}>
                         `;
                     })}
                 </${List}>
@@ -51,11 +51,11 @@ const App = ({ state, pushView, popView }) => {
                     <${ListItem} right="Chop birch tree (dist 6)">Up next</${ListItem}>
                 </${List}>
                 <${List} title="Condition">
-                    <${ListItem} icon="heart" onClick=${() => {}} percent="90">Health: 90%</${ListItem}>
-                    <${ListItem} icon="face-meh" onClick=${() => {}} percent="63">Mood: 63%</${ListItem}>
-                    <${ListItem} icon="bed" onClick=${() => {}} percent="100">Rest: 100%</${ListItem}>
-                    <${ListItem} icon="utensils" onClick=${() => {}} percent="98">Food: 98%</${ListItem}>
-                    <${ListItem} icon="person-running" onClick=${() => {}} percent="80">Recreation: 80%</${ListItem}>
+                    <${ListItem} icon="heart" right="90%" onClick=${() => {}} percent="90">Health</${ListItem}>
+                    <${ListItem} icon="face-meh" right="63%" onClick=${() => {}} percent="63">Mood</${ListItem}>
+                    <${ListItem} icon="bed" onClick=${() => {}} right="100%" percent="100">Rest</${ListItem}>
+                    <${ListItem} icon="utensils" onClick=${() => {}} right="98%" percent="98">Food</${ListItem}>
+                    <${ListItem} icon="person-running" onClick=${() => {}} right="80%" percent="80">Recreation</${ListItem}>
                 </${List}>
                 <${List} title="Details">
                     <${ListItem} icon="user" onClick=${() => {}}>Jobs</${ListItem}>

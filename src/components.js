@@ -25,9 +25,12 @@ const List = ({ title, children }) => {
 
 const ListItem = ({ icon, color, children, right, onClick, percent }) => {
     const container = onClick ? 'button' : 'div';
+    let percentColor = 'var(--color-11)';
+    if (percent < 66) percentColor = 'var(--color-9)';
+    if (percent < 33) percentColor = 'var(--color-8)'; 
     return html`
         <${container} class="list-item" onClick=${onClick}>
-            ${percent ? html`<div class="list-item-percent" style="width: ${percent}%" />` : ''}
+            ${percent ? html`<div class="list-item-percent" style="width: ${percent}%; background: ${percentColor}" />` : ''}
             <div class="list-item-left">
                 ${icon ? html`<${Icon} name=${icon} color=${color} />` : ''}
                 ${children}
