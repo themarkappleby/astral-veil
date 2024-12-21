@@ -2,7 +2,14 @@ const { h, render } = preact;
 const { useState, useCallback, useEffect } = preactHooks;
 const html = htm.bind(h);
 
-const App = () => {
+const withState = (WrappedComponent) => {
+  return (props) => {
+    const enhancedProps = { ...props, extraProp: "Hello" };
+    return html`<${WrappedComponent} ...${enhancedProps} />`;
+  };
+};
+
+const App = ({ extraProp }) => {
     const [viewStack, setViewStack] = useState(['menu', 'world']);
     const [activeView, setActiveView] = useState('world')
     const [hour, setHour] = useState(12);
@@ -19,9 +26,9 @@ const App = () => {
             const secondsElapsed = (seconds) => Math.floor(timestamp / (seconds * 1000)) > Math.floor(lastTime / (seconds * 1000));
             const deltaTime = timestamp - lastTime;
             if (deltaTime >= frameInterval) {
-                if (secondsElapsed(0.5)) {
+                if (secondsElapsed(1)) {
                     setMinute(prevMinute => {
-                        const newMinute = prevMinute + 1
+                        const newMinute = prevMinute + 15
                         if (newMinute === 60) {
                             setHour(prevHour => {
                                 const newHour = prevHour + 1
@@ -70,7 +77,7 @@ const App = () => {
                 <${List} title="Status">
                     <${ListItem}>
                         <div class="status">
-                            <div>Summer, day ${day}</div>
+                            <div>${extraProp} Summer, day ${day}</div>
                             <div>${hour}:${minute < 10 ? '0' : ''}${minute} ${amPm}</div>
                             <div>Sunny, 23 °C</div>
                         </div>
@@ -197,12 +204,8 @@ const Toggle = ({ value, onChange }) => {
     `
 }
 
-const Button = ({ label, onClick }) => {
-    return html`<button class="button" onClick=${onClick}>${label}</button>`;
-};
-
 const Icon = ({ name, color }) => {
     return html`<div class="icon ${color && `color-bg-${color}`}"><i class="fa-solid fa-${name}"></i></div>`;
 }
 
-render(h(App), document.body);
+render(h(withState(App)), document.body);

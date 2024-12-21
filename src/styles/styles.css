@@ -161,15 +161,6 @@
     position: relative;
 }
 
-.button {
-    border-radius: 8px;
-    appearance: none;
-    background: black;
-    border: 0;
-    padding: 12px;
-    color: white;
-}
-
 .icon {
     width: 24px;
     height: 24px;
