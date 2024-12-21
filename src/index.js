@@ -47,11 +47,17 @@ const App = ({ state, pushView, popView }) => {
             title: 'Jason',
             children: html`
                 <${List}>
-                    <${ListItem} right="Eating bartlett pear">Current job</${ListItem}>
-                    <${ListItem} right="Chop birch tree">Next job</${ListItem}>
+                    <${ListItem} right="Eating bartlett pear">Currently</${ListItem}>
+                    <${ListItem} right="Chop birch tree (dist 6)">Up next</${ListItem}>
                 </${List}>
-                <${List}>
-                    <${ListItem} icon="heart" onClick=${() => {}}>Health</${ListItem}>
+                <${List} title="Condition">
+                    <${ListItem} icon="heart" onClick=${() => {}} percent="90">Health: 90%</${ListItem}>
+                    <${ListItem} icon="face-meh" onClick=${() => {}} percent="63">Mood: 63%</${ListItem}>
+                    <${ListItem} icon="bed" onClick=${() => {}} percent="100">Rest: 100%</${ListItem}>
+                    <${ListItem} icon="utensils" onClick=${() => {}} percent="98">Food: 98%</${ListItem}>
+                    <${ListItem} icon="person-running" onClick=${() => {}} percent="80">Recreation: 80%</${ListItem}>
+                </${List}>
+                <${List} title="Details">
                     <${ListItem} icon="user" onClick=${() => {}}>Jobs</${ListItem}>
                     <${ListItem} icon="box" onClick=${() => {}}>Inventory</${ListItem}>
                     <${ListItem} icon="book" onClick=${() => {}}>Backstory</${ListItem}>
