@@ -54,7 +54,7 @@ const App = ({ state, pushView, popView }) => {
                     <${ListItem} icon="heart" right="90%" onClick=${() => {}} percent="90">Health</${ListItem}>
                     <${ListItem} icon="face-meh" right="63%" onClick=${() => {}} percent="63">Mood</${ListItem}>
                     <${ListItem} icon="bed" onClick=${() => {}} right="100%" percent="100">Rest</${ListItem}>
-                    <${ListItem} icon="utensils" onClick=${() => {}} right="98%" percent="98">Food</${ListItem}>
+                    <${ListItem} icon="utensils" onClick=${() => {}} right="98%" percent="98">Hunger</${ListItem}>
                     <${ListItem} icon="person-running" onClick=${() => {}} right="80%" percent="80">Recreation</${ListItem}>
                 </${List}>
                 <${List} title="Details">
