@@ -4,12 +4,22 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Astral Veil</title>
+        
+        <!-- PWA Meta Tags -->
+        <link rel="manifest" href="./manifest.json">
+        <meta name="theme-color" content="#000000">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-title" content="Astral Veil">
+        <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
+        
         <!-- Libs -->
         <script src="libs/preact.min.js"></script>
         <script src="libs/htm.min.js"></script>
         <script src="libs/hooks.umd.min.js"></script>
         <link href="libs/fontawesome/css/fontawesome.min.css" rel="stylesheet" />
         <link href="libs/fontawesome/css/solid.min.css" rel="stylesheet" />
+        
         <!-- App -->
         <script src="./src/util.js" defer></script>
         <script src="./src/components.js" defer></script>
@@ -18,6 +28,21 @@
         <link rel="stylesheet" href="./src/styles/reset.css">
         <link rel="stylesheet" href="./src/styles/colors.css">
         <link rel="stylesheet" href="./src/styles/styles.css">
+        
+        <!-- Service Worker Registration -->
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then(registration => {
+                            console.log('ServiceWorker registration successful');
+                        })
+                        .catch(err => {
+                            console.log('ServiceWorker registration failed: ', err);
+                        });
+                });
+            }
+        </script>
     </head>
     <body></body>
 </html>

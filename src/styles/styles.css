@@ -64,6 +64,7 @@
 .view-back {
     font-size: 0.8rem;
     appearance: none;
+    color: black;
     border: 0;
     background: transparent;
     cursor: pointer;
@@ -122,6 +123,7 @@
     justify-content: space-between;
     align-items: center;
     position: relative;
+    color: black;
     &:is(button) {
         cursor: pointer;
     }
