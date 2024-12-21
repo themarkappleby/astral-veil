@@ -28,21 +28,6 @@
         <link rel="stylesheet" href="./src/styles/reset.css">
         <link rel="stylesheet" href="./src/styles/colors.css">
         <link rel="stylesheet" href="./src/styles/styles.css">
-        
-        <!-- Service Worker Registration -->
-        <script>
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js')
-                        .then(registration => {
-                            console.log('ServiceWorker registration successful');
-                        })
-                        .catch(err => {
-                            console.log('ServiceWorker registration failed: ', err);
-                        });
-                });
-            }
-        </script>
     </head>
     <body></body>
 </html>
