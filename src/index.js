@@ -31,14 +31,33 @@ const App = ({ state, pushView, popView }) => {
                     })}
                 </${List}>
                 <${List} title="Base">
-                    <${ListItem} icon="building" onClick=${() => {}}>Campfire</${ListItem}>
-                    <${ListItem} icon="user" color="11" onClick=${() => pushView('jason')}>Jason: Eating bartlett pear</${ListItem}>
+                    ${state.entities.filter(e => !e.dist).map(e => html`
+                        <${ListItem}
+                            icon="${getEntityIcon(e.type)}"
+                            color="${e.type === 'colonist' ? '11' : ''}"
+                            onClick=${() => {
+                                if (e.id === 1) {
+                                    // TODO: Make this dynamic
+                                    pushView('jason');
+                                }
+                            }}
+                        >
+                            ${e.name}${e.status ? `: ${e.status}` : ''}
+                        </${ListItem}>
+                    `)}
                 </${List}>
                 <${List} title="Surroundings">
-                    <${ListItem} icon="user" color="11" percent="67" right="Dist 6" onClick=${() => {}}>Fritz: Chopping birch tree 67%</${ListItem}>
-                    <${ListItem} percent="64" icon="tree" right="Dist 6" onClick=${() => {}}>Birch forest: 14 of 23</${ListItem}>
-                    <${ListItem} percent="100" icon="tree" right="Dist 10" onClick=${() => {}}>Raspberry patch: 4 of 4</${ListItem}>
-                    <${ListItem} icon="user" color="11" percent="12" right="Dist 12" onClick=${() => {}}>Murphy: Exploring 12%</${ListItem}>
+                    ${state.entities.filter(e => e.dist).sort((a, b) => a.dist - b.dist).map(e => html`
+                        <${ListItem}
+                            icon="${getEntityIcon(e.type)}"
+                            percent=${e.percent}
+                            color="${e.type === 'colonist' ? '11' : ''}"
+                            onClick=${() => {}}
+                            right="Dist ${e.dist}"
+                        >
+                            ${e.name}${e.status ? `: ${e.status}` : ''}
+                        </${ListItem}>
+                    `)}
                     <${ListItem} right=${html`<${Toggle} />`}>Explore</${ListItem}>
                 </${List}>
             `,

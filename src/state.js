@@ -27,6 +27,53 @@ const withState = (WrappedComponent) => {
             ]
         },
     ]);
+    const [entities, setEntities] = useState([
+        {
+            id: 0,
+            name: 'Campfire',
+            type: 'structure',
+            dist: 0
+        },
+        {
+            id: 1,
+            name: 'Jason',
+            type: 'colonist',
+            status: 'Eating bartlett pear',
+            dist: 0
+        },
+        {
+            id: 2,
+            name: 'Fritz',
+            type: 'colonist',
+            status: 'Chopping birch tree 67%',
+            percent: 67,
+            dist: 6
+        },
+        {
+            id: 5,
+            name: 'Murphy',
+            type: 'colonist',
+            status: 'Exploring 12%',
+            percent: 12,
+            dist: 12
+        },
+        {
+            id: 3,
+            name: 'Birch forest',
+            type: 'resourceNode',
+            status: '14 of 23',
+            percent: 61,
+            dist: 6
+        },
+        {
+            id: 4,
+            name: 'Raspberry patch',
+            type: 'resourceNode',
+            status: '4 of 4',
+            percent: 100,
+            dist: 10
+        },
+    ]);
 
     useEffect(() => {
         let lastTime = 0;
@@ -95,7 +142,8 @@ const withState = (WrappedComponent) => {
             day, setDay,
             viewStack, setViewStack,
             activeView, setActiveView,
-            stockpile, setStockpile
+            stockpile, setStockpile,
+            entities, setEntities
         }
     }} />`;
   };
