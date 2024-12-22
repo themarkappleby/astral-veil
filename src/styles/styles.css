@@ -191,14 +191,14 @@
     &:checked + .toggle-slider {
         background: var(--color-11);
         &::before {
-            left: 14px;
+            left: 21px;
         }
     }
 }
 
 .toggle-slider {
-    width: 36px;
-    height: 23px;
+    width: 51px;
+    height: 31px;
     cursor: pointer;
     appearance: none;
     border: 1px solid #c1c1c1;
@@ -210,8 +210,8 @@
         content: '';
         transition: left 0.1s ease-in-out;
         position: absolute;
-        width: 20px;
-        height: 20px;
+        width: 28px;
+        height: 28px;
         background: white;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
         border-radius: 50%;
