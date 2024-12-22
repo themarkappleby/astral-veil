@@ -2,9 +2,7 @@ const { h, render } = preact;
 const { useState, useCallback, useEffect } = preactHooks;
 const html = htm.bind(h);
 
-console.log(defs);
-
-const withState = (WrappedComponent) => {
+const withController = (WrappedComponent) => {
   return (props) => {
     const [viewStack, setViewStack] = useState(['menu', 'world']);
     const [activeView, setActiveView] = useState('world')

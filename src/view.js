@@ -1,4 +1,4 @@
-const App = ({ state, pushView, popView }) => {
+const View = ({ state, pushView, popView }) => {
     const views = {
         menu: {
             title: 'Menu',
@@ -107,4 +107,4 @@ const App = ({ state, pushView, popView }) => {
     `;
 };
 
-render(h(withState(App)), document.body);
+render(h(withController(View)), document.body);
