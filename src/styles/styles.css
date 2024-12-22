@@ -37,6 +37,7 @@
     display: grid;
     width: 100%;
     grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
     div:nth-child(2) {
         text-align: center;
     }
@@ -218,4 +219,10 @@
         top: 50%;
         transform: translateY(-50%);
     }
+}
+
+.stack {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }

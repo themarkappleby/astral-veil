@@ -1,10 +1,10 @@
 const View = ({ title, children, backLabel, onBackClick }) => {
     return html`
         <div class="view">
-            <div class="view-header">
+            <header class="view-header">
                 ${backLabel ? html`<button class="view-back" onClick=${onBackClick}><i class="fa-solid fa-chevron-left"></i> ${backLabel}</button>` : ''}
                 <h2 class="view-title">${title}</h2>
-            </div>
+            </header>
             <div class="view-content">
                 ${children}
             </div>
@@ -56,4 +56,8 @@ const Toggle = ({ value, onChange }) => {
 
 const Icon = ({ name, color }) => {
     return html`<div class="icon ${color && `color-bg-${color}`}"><i class="fa-solid fa-${name}"></i></div>`;
+}
+
+const Stack = ({ children }) => {
+    return html`<div class="stack">${children}</div>`;
 }

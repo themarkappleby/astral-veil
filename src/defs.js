@@ -74,3 +74,41 @@ defs.resourceNodes = {
         max_yield: 100,
     }
 }
+
+defs.chicken = {
+    name: 'Chicken',
+    description: 'A chicken.',
+    size: 10,
+    ai: 'herbivore',
+    health: 50,
+    spawnRate: 0.1,
+    yield: {
+        resource: defs.cooked_chicken,
+        chance: 1,
+    },
+}
+
+defs.cooked_chicken = {
+    name: 'Cooked chicken',
+    description: 'A cooked chicken.',
+    tags: ['food'],
+    edible: {
+        calories: 100,
+        yields: [
+            {resource: defs.chicken_bone, min: 1, max: 4},
+        ],
+    },
+    size: 1, // isCarriable
+    hostile: false,
+    sentient: false,
+}
+
+defs.shank = {
+    name: 'Shank',
+    description: 'A shank.',
+    size: 3,
+    recipe: [
+        { tag: 'branch', count: 1 },
+        { tag: 'bone', count: 1 },
+    ]
+}

@@ -95,11 +95,13 @@ const App = ({ state, pushView, popView }) => {
                     <${ListItem} icon="flag-checkered" percent="10">Collect wood: 1 of 10</${ListItem}>
                     <${ListItem}>
                         <div class="status">
-                            <div>Summer, day ${state.day}</div>
-                            <div>
-                                <${Icon} icon="clock" />
+                            <${Stack}>
+                                <button>
+                                    <i class="fa-solid fa-pause"></i>
+                                </button>
                                 <div>${state.hour}:${state.minute < 10 ? '0' : ''}${state.minute} ${state.amPm}</div>
-                            </div>
+                            </${Stack}>
+                            <div>Summer, day ${state.day}</div>
                             <div>Sunny, 23 °C</div>
                         </div>
                     </${ListItem}>
