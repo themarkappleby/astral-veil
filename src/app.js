@@ -93,17 +93,13 @@ const App = ({ state, pushView, popView }) => {
             <div class="goal">
                 <${List}>
                     <${ListItem} icon="flag-checkered" percent="10">Collect wood: 1 of 10</${ListItem}>
-                    <${ListItem}>
-                        <div class="status">
-                            <${Stack}>
-                                <button>
-                                    <i class="fa-solid fa-pause"></i>
-                                </button>
-                                <div>${state.hour}:${state.minute < 10 ? '0' : ''}${state.minute} ${state.amPm}</div>
-                            </${Stack}>
-                            <div>Summer, day ${state.day}</div>
-                            <div>Sunny, 23 °C</div>
-                        </div>
+                    <${ListItem} right="Summer, day ${state.day}">
+                        <${Stack}>
+                            <button>
+                                <i class="fa-solid fa-pause"></i>
+                            </button>
+                            <div>${state.hour}:${state.minute < 10 ? '0' : ''}${state.minute} ${state.amPm}</div>
+                        </${Stack}>
                     </${ListItem}>
                 </${List}>
             </div>
