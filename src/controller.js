@@ -87,7 +87,7 @@ const withController = (WrappedComponent) => {
             if (deltaTime >= frameInterval) {
                 if (secondsElapsed(1)) {
                     setMinute(prevMinute => {
-                        const newMinute = prevMinute + 15
+                        const newMinute = prevMinute + 5
                         if (newMinute === 60) {
                             setHour(prevHour => {
                                 const newHour = prevHour + 1

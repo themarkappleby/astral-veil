@@ -2,8 +2,9 @@ const View = ({ title, children, backLabel, onBackClick }) => {
     return html`
         <div class="view">
             <header class="view-header">
-                ${backLabel ? html`<button class="view-back" onClick=${onBackClick}><i class="fa-solid fa-chevron-left"></i> ${backLabel}</button>` : ''}
+                ${backLabel ? html`<button class="view-back" onClick=${onBackClick}><i class="fa-solid fa-chevron-left"></i> ${backLabel}</button>` : html`<div />`}
                 <h2 class="view-title">${title}</h2>
+                <div />
             </header>
             <div class="view-content">
                 ${children}
@@ -23,24 +24,27 @@ const List = ({ title, children }) => {
     `
 }
 
-const ListItem = ({ icon, color, children, right, onClick, percent }) => {
-    const container = onClick ? 'button' : 'div';
-    let percentColor = 'var(--color-11)';
-    if (percent < 66) percentColor = 'var(--color-9)';
-    if (percent < 33) percentColor = 'var(--color-8)'; 
+const ListItem = ({ icon, iconColor, text, detail, secondaryText, isButton, onClick, percent  }) => {
+    let container = onClick ? 'button' : 'div';
+    let percentStatus = 'high';
+    if (percent < 66) percentStatus = 'medium';
+    if (percent < 33) percentStatus = 'low'; 
     return html`
-        <${container} class="list-item" onClick=${onClick}>
-            ${percent ? html`<div class="list-item-percent" style="width: ${percent}%; background: ${percentColor}" />` : ''}
-            <div class="list-item-left">
-                ${icon ? html`<${Icon} name=${icon} color=${color} />` : ''}
-                ${children}
+        <${container} class="listItem ${isButton ? 'listItem--button' : ''}" onClick=${onClick}>
+            <div class="listItem-left">
+                ${icon ? html`<${Icon} className="listItem-icon" name=${icon} color=${iconColor} />` : ''}
+                ${(text || detail) && html`<div class="listItem-textContainer">
+                    ${text ? html`<div class="listItem-text">${text}</div>` : ''}
+                    ${detail ? html`<div class="listItem-detail">${detail}</div>` : ''}
+                </div>`}
             </div>
-            ${(right || onClick) ? html`
-                <div class="list-item-right">
-                    ${right ? html`<div class="list-item-right">${right}</div>` : ''}
-                    ${onClick ? html`<div class="list-item-arrow"><i class="fa-solid fa-chevron-right"></i></div>` : ''}
+            ${(secondaryText || (onClick && !isButton)) && html`
+                <div class="listItem-right">
+                    <div class="listItem-secondaryText">${secondaryText}</div>
+                    ${onClick && !isButton && html`<div class="listItem-disclosure"><i class="fa-solid fa-chevron-right"></i></div>`}
                 </div>
-            ` : ''}
+            `}
+            ${percent && html`<progress value=${percent} max="100" class="listItem-percent listItem-percent--${percentStatus}" />`}
         </${container}>
     `
 }
@@ -54,8 +58,8 @@ const Toggle = ({ value, onChange }) => {
     `
 }
 
-const Icon = ({ name, color }) => {
-    return html`<div class="icon ${color && `color-bg-${color}`}"><i class="fa-solid fa-${name}"></i></div>`;
+const Icon = ({ name, color, className }) => {
+    return html`<div class="icon ${color && `color-bg-${color}`} ${className}"><i class="fa-solid fa-${name}"></i></div>`;
 }
 
 const Stack = ({ children }) => {
