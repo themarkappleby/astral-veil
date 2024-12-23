@@ -21,32 +21,21 @@ const App = ({ state, pushView, popView }) => {
                         `;
                     })}
                 </${List}>
-                <${List} title="Base">
-                    ${state.entities.filter(e => !e.dist).map(e => html`
+                <${List} title="Environment">
+                    ${state.entities.sort((a, b) => a.dist - b.dist).map(e => html`
                         <${ListItem}
                             icon="${getEntityIcon(e.type)}"
                             iconColor="${e.type === 'colonist' ? '11' : ''}"
                             text="${e.name}"
                             detail="${e.status}"
+                            secondaryText="${e.dist ? `Dist ${e.dist}` : 'At base'}"
+                            percent=${e.percent}
                             onClick=${() => {
                                 if (e.id === 1) {
                                     // TODO: Make this dynamic
                                     pushView('jason');
                                 }
                             }}
-                        />
-                    `)}
-                </${List}>
-                <${List} title="Surroundings">
-                    ${state.entities.filter(e => e.dist).sort((a, b) => a.dist - b.dist).map(e => html`
-                        <${ListItem}
-                            icon="${getEntityIcon(e.type)}"
-                            iconColor="${e.type === 'colonist' ? '11' : ''}"
-                            text="${e.name}"
-                            detail="${e.status}"
-                            secondaryText="Dist ${e.dist}"
-                            percent=${e.percent}
-                            onClick=${() => {}}
                         />
                     `)}
                     <${ListItem} text="Explore" secondaryText="${html`<${Toggle} />`}" />

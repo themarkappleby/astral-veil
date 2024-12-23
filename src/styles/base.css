@@ -63,6 +63,7 @@ button {
     appearance: none;
     background: transparent;
     border: 0;
+    color: black;
 }
 
 .view-title {
@@ -79,7 +80,7 @@ button {
     overflow: auto;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 24px;
     padding: 12px 12px 36px 12px;
 }
 
@@ -92,7 +93,7 @@ button {
 .list-items {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
 }
 
 .listItem {
@@ -101,13 +102,21 @@ button {
     align-items: center;
     justify-content: space-between;
     padding: 8px;
-    border: 1px solid #c8c8c8;
+    border: 1px solid black;
     background: white;
     font-size: 17px;
     min-height: 53px;
+    color: black;
     &:is(button) {
-        &:hover {
-            background: #eee;
+        &:hover, &:focus {
+            outline: 1px solid black;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            transform: scale(1.01);
+            .listItem-percent {
+                &::-webkit-progress-value {
+                    border-right-width: 2px;
+                }
+            }
         }
     }
 }
@@ -117,6 +126,8 @@ button {
     align-items: center;
     gap: 8px;
     text-align: left;
+    position: relative;
+    z-index: 1;
 }
 
 .listItem-right {
@@ -124,6 +135,8 @@ button {
     align-items: center;
     gap: 8px;
     text-align: right;
+    position: relative;
+    z-index: 1;
 }
 
 .listItem-detail {
@@ -134,30 +147,16 @@ button {
     position: absolute;
     bottom: 0px;
     left: 0;
-    height: 4px;
+    height: 100%;
     width: 100%;
     transition: background 0.2s ease-in-out;
     appearance: none;
+    &::-webkit-progress-value {
+        background: #C8C8C8;
+        border-right: 1px solid black;
+    }
     &::-webkit-progress-bar {
-        background: #eee;
-    }
-}
-
-.listItem-percent--low {
-    &::-webkit-progress-value {
-        background: red;
-    }
-}
-
-.listItem-percent--medium {
-    &::-webkit-progress-value {
-        background: orange;
-    }
-}
-
-.listItem-percent--high {
-    &::-webkit-progress-value {
-        background: green;
+        background: white;
     }
 }
 
@@ -187,7 +186,7 @@ button {
     &:checked + .toggle-slider {
         background: black;
         &::before {
-            left: 21px;
+            left: 20px;
         }
     }
 }
@@ -197,20 +196,17 @@ button {
     height: 31px;
     cursor: pointer;
     appearance: none;
-    border: 1px solid #c1c1c1;
-    border-radius: 20px;
-    background: #D7D7D7;
+    border: 1px solid black;
+    background: #c8c8c8;
     position: relative;
     transition: background 0.1s ease-in-out;
     &::before {
         content: '';
         transition: left 0.1s ease-in-out;
         position: absolute;
-        width: 28px;
-        height: 28px;
+        width: 29px;
+        height: 29px;
         background: white;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-        border-radius: 50%;
         left: 0;
         top: 50%;
         transform: translateY(-50%);
