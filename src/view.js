@@ -1,4 +1,4 @@
-const App = ({ state, pushView, popView }) => {
+const App = ({ state, pushView, popView, isPaused, setIsPaused }) => {
     const views = {
         menu: {
             title: 'Menu',
@@ -98,8 +98,8 @@ const App = ({ state, pushView, popView }) => {
                     <${ListItem} icon="flag-checkered" text="Current goal" detail="Collect wood" secondaryText="1 of 10" percent="10" />
                     <${ListItem}  text="${html`
                         <${Stack}>
-                            <button>
-                                <i class="fa-solid fa-pause"></i>
+                            <button onClick=${() => state.setIsPaused(!state.isPaused)}>
+                                <i class="fa-solid fa-${state.isPaused ? 'play' : 'pause'}"></i>
                             </button>
                             <div>${state.hour}:${state.minute < 10 ? '0' : ''}${state.minute} ${state.amPm}</div>
                         </${Stack}>

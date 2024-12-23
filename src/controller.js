@@ -1,10 +1,12 @@
 const { h, render } = preact;
-const { useState, useCallback, useEffect } = preactHooks;
+const { useState, useCallback, useEffect, useRef } = preactHooks;
 const html = htm.bind(h);
 
 const withController = (WrappedComponent) => {
   return (props) => {
     const [viewStack, setViewStack] = useState(['menu', 'world']);
+    const [isPaused, setIsPaused] = useState(false);
+    const isPausedRef = useRef(isPaused);
     const [activeView, setActiveView] = useState('world')
     const [hour, setHour] = useState(12);
     const [minute, setMinute] = useState(0);
@@ -77,6 +79,10 @@ const withController = (WrappedComponent) => {
     ]);
 
     useEffect(() => {
+        isPausedRef.current = isPaused;
+    }, [isPaused]);
+
+    useEffect(() => {
         let lastTime = 0;
         const fps = 30;
         const frameInterval = 1000 / fps;
@@ -84,6 +90,13 @@ const withController = (WrappedComponent) => {
         const gameLoop = (timestamp) => {
             const secondsElapsed = (seconds) => Math.floor(timestamp / (seconds * 1000)) > Math.floor(lastTime / (seconds * 1000));
             const deltaTime = timestamp - lastTime;
+
+            if (isPausedRef.current) {
+                lastTime = timestamp;
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+            
             if (deltaTime >= frameInterval) {
                 if (secondsElapsed(1)) {
                     setMinute(prevMinute => {
@@ -106,7 +119,7 @@ const withController = (WrappedComponent) => {
                             return 0;
                         }
                         return newMinute;
-                    })
+                    });
                 }
                 lastTime = timestamp;
             }
@@ -118,7 +131,7 @@ const withController = (WrappedComponent) => {
         return () => {
             cancelAnimationFrame(animationId);
         };
-    }, [])
+    }, []);
 
     const pushView = (viewId) => {
         setViewStack([...viewStack, viewId]);
@@ -144,7 +157,8 @@ const withController = (WrappedComponent) => {
             viewStack, setViewStack,
             activeView, setActiveView,
             stockpile, setStockpile,
-            entities, setEntities
+            entities, setEntities,
+            isPaused, setIsPaused,
         }
     }} />`;
   };
