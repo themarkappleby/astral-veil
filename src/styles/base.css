@@ -64,7 +64,7 @@ button {
     appearance: none;
     background: transparent;
     border: 0;
-    padding: 0;
+    padding: 10px 0;
     color: black;
 }
 
@@ -169,7 +169,10 @@ button {
     align-items: center;
     justify-content: center;
     color: white;
-    background: black;
+    background: grey;
+    &.icon--user {
+        background: #4AD763;
+    }
 }
 
 .toggle-container {

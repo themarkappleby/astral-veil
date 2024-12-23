@@ -1,4 +1,4 @@
-const App = ({ state, pushView, popView, isPaused, setIsPaused }) => {
+const App = ({ state, pushView, popView }) => {
     const views = {
         menu: {
             title: 'Menu',
