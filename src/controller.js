@@ -4,77 +4,36 @@ const html = htm.bind(h);
 
 const withController = (WrappedComponent) => {
   return (props) => {
-    const [viewStack, setViewStack] = useState(['menu', 'world']);
-    const [isPaused, setIsPaused] = useState(false);
-    const isPausedRef = useRef(isPaused);
-    const [activeView, setActiveView] = useState('world')
+    const [viewStack, setViewStack] = useState([{id: 'menu'}, {id: 'world'}]);
+    const [activeView, setActiveView] = useState({id: 'world'});
     const [hour, setHour] = useState(12);
     const [minute, setMinute] = useState(0);
     const [amPm, setAmPm] = useState('AM');
     const [day, setDay] = useState(1);
+    const [isPaused, setIsPaused] = useState(false);
+    const isPausedRef = useRef(isPaused);
+    // const [stockpile, setStockpile] = useState([
+    //     {
+    //         name: 'Food',
+    //         capacity: 10,
+    //         items: [
+    //             { name: 'Bartlett pear', count: 6 },
+    //             { name: 'Honeycrisp apple', count: 2 },
+    //         ]
+    //     },
+    // ]);
+
     const [stockpile, setStockpile] = useState([
-        {
-            name: 'Food',
-            capacity: 10,
-            items: [
-                { name: 'Bartlett pear', count: 6 },
-                { name: 'Honeycrisp apple', count: 2 },
-            ]
-        },
-        {
-            name: 'Wood',
-            capacity: 10,
-            items: [
-                { name: 'Birch wood', count: 1 },
-            ]
-        },
+        { entity: defs.honeycrispApple, count: 10 },
     ]);
 
     const [entities, setEntities] = useState([
         {
-            id: 0,
-            name: 'Campfire',
-            type: 'structure',
-            dist: 0
-        },
-        {
             id: 1,
             name: 'Jason',
             type: 'colonist',
-            status: 'Eating bartlett pear',
+            status: 'Idle',
             dist: 0
-        },
-        {
-            id: 2,
-            name: 'Fritz',
-            type: 'colonist',
-            status: 'Chopping birch tree 67%',
-            percent: 67,
-            dist: 6
-        },
-        {
-            id: 5,
-            name: 'Murphy',
-            type: 'colonist',
-            status: 'Exploring 12%',
-            percent: 12,
-            dist: 12
-        },
-        {
-            id: 3,
-            name: 'Birch forest',
-            type: 'resourceNode',
-            status: '14 of 23',
-            percent: 61,
-            dist: 6
-        },
-        {
-            id: 4,
-            name: 'Raspberry patch',
-            type: 'resourceNode',
-            status: '4 of 4',
-            percent: 100,
-            dist: 10
         },
     ]);
 
@@ -100,7 +59,7 @@ const withController = (WrappedComponent) => {
             if (deltaTime >= frameInterval) {
                 if (secondsElapsed(1)) {
                     setMinute(prevMinute => {
-                        const newMinute = prevMinute + 5
+                        const newMinute = prevMinute + 1
                         if (newMinute === 60) {
                             setHour(prevHour => {
                                 const newHour = prevHour + 1
@@ -133,9 +92,10 @@ const withController = (WrappedComponent) => {
         };
     }, []);
 
-    const pushView = (viewId) => {
-        setViewStack([...viewStack, viewId]);
-        setActiveView(viewId);
+    const pushView = (viewData) => {
+        console.log(viewData);
+        setViewStack([...viewStack, viewData]);
+        setActiveView(viewData);
     }
 
     const popView = () => {
