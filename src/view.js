@@ -14,6 +14,10 @@ const App = ({ state, pushView, popView }) => {
         world: () => {
             return {
                 title: 'World',
+                icon: 'plus',
+                onIconClick: () => {
+                    console.log('Show modal!');
+                },
                 children: html`
                     <${List} title="Stockpile">
                         ${Object.entries(state.stockpile.reduce((acc, item) => {
@@ -88,9 +92,10 @@ const App = ({ state, pushView, popView }) => {
                         <${ListItem} text="Up next" detail="NA" />
                     </${List}>
                     <${List} title="Condition">
-                        <${ListItem} icon="heart" text="Health" detail="Stable" secondaryText="90%" percent="90" onClick=${() => {}} />
-                        <${ListItem} icon="brain" text="Mood" detail="Content" secondaryText="63%" percent="63" onClick=${() => {}} />
-                        <${ListItem} icon="bed" text="Rest" detail="Rested" secondaryText="100%" percent="100" onClick=${() => {}} />
+                        <${ListItem} icon="face-smile" text="Overall" detail="Good" secondaryText="${humanoid.condition.overall}%" percent="${humanoid.condition.overall}" />
+                        <${ListItem} icon="heart" text="Health" detail="Stable" secondaryText="${humanoid.condition.health}%" percent="${humanoid.condition.health}" onClick=${() => {}} />
+                        <${ListItem} icon="brain" text="Mood" detail="Content" secondaryText="${humanoid.condition.mood}%" percent="${humanoid.condition.mood}" onClick=${() => {}} />
+                        <${ListItem} icon="bed" text="Rest" detail="Rested" secondaryText="${humanoid.condition.rest}%" percent="${humanoid.condition.rest}" onClick=${() => {}} />
                         <${ListItem} icon="utensils" text="Hunger" detail="Satisfied" secondaryText="${humanoid.condition.hunger}%" percent="${humanoid.condition.hunger}" onClick=${() => {}} />
                         <${ListItem} icon="person-running" text="Recreation" detail="Satisfied" secondaryText="80%" percent="80" onClick=${() => {}} />
                         <${ListItem} icon="couch" text="Comfort" detail="Comfortable" secondaryText="80%" percent="80" onClick=${() => {}} />
@@ -127,7 +132,7 @@ const App = ({ state, pushView, popView }) => {
                     const lastViewData = state.viewStack[index - 1];
                     const lastView = lastViewData ? views[lastViewData.id](lastViewData) : null;
                     return html`
-                        <${View} title=${view.title} backLabel=${lastView?.title} onBackClick=${() => popView()}>
+                        <${View} title=${view.title} icon=${view.icon} onIconClick=${view.onIconClick} backLabel=${lastView?.title} onBackClick=${() => popView()}>
                             ${view.children}
                         </${View}>
                     `;
@@ -135,7 +140,7 @@ const App = ({ state, pushView, popView }) => {
             </div>
             <div class="goal">
                 <${List}>
-                    <${ListItem} icon="flag-checkered" text="Current goal" detail="Collect wood" secondaryText="1 of 10" percent="10" />
+                    <${ListItem} icon="flag-checkered" text="Current goal" detail="Plant a rice field" />
                     <${ListItem}  text="${html`
                         <${Stack}>
                             <button onClick=${() => state.setIsPaused(!state.isPaused)}>

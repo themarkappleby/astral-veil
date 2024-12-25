@@ -4,9 +4,11 @@ const html = htm.bind(h);
 
 const withController = (WrappedComponent) => {
   return (props) => {
+    const [gameSpeed, setGameSpeed] = useState(1);
+    const [tickCount, setTickCount] = useState(0);
     const [viewStack, setViewStack] = useState([{id: 'menu'}, {id: 'world'}]);
     const [activeView, setActiveView] = useState({id: 'world'});
-    const [hour, setHour] = useState(12);
+    const [hour, setHour] = useState(7);
     const [minute, setMinute] = useState(0);
     const [amPm, setAmPm] = useState('AM');
     const [day, setDay] = useState(1);
@@ -35,7 +37,11 @@ const withController = (WrappedComponent) => {
             status: 'Idle',
             dist: 0,
             condition: {
+                overall: 80,
                 hunger: 87,
+                mood: 63,
+                rest: 100,
+                health: 100,
             }
         },
     ]);
@@ -49,6 +55,47 @@ const withController = (WrappedComponent) => {
         const fps = 30;
         const frameInterval = 1000 / fps;
 
+        const tick = () => {
+            setTickCount(prevTickCount => {
+                let newTickCount = prevTickCount + 1;
+                if (newTickCount > 100) {
+                    newTickCount = 1;
+                }
+                setEntities(prevEntities => {
+                    return prevEntities.map(entity => {
+                        if (entity?.condition) {
+                            const newCondition = {...entity.condition};
+                            // Every 5 minutes
+                            if (newTickCount % 5 === 0) {
+                                if (newCondition.hunger) {
+                                    newCondition.hunger = Math.max(0, newCondition.hunger - 1);
+                                }
+                            }
+                            // Every 10 minutes
+                            if (newTickCount % 10 === 0) {
+                                if (newCondition.rest) {
+                                    newCondition.rest = Math.max(0, newCondition.rest - 1);
+                                }
+                            }
+                            // Every hour
+                            if (newTickCount % 60 === 0) {
+                                if (newCondition.health && newCondition.hunger === 0) {
+                                    newCondition.health = Math.max(0, newCondition.health - 1);
+                                }
+                            }
+                            newCondition.overall = Math.round((newCondition.health + newCondition.hunger + newCondition.mood + newCondition.rest) / 4);
+                            return {
+                                ...entity,
+                                condition: newCondition
+                            };
+                        }
+                        return entity;
+                    });
+                });
+                return newTickCount;
+            });
+        }
+
         const gameLoop = (timestamp) => {
             const secondsElapsed = (seconds) => Math.floor(timestamp / (seconds * 1000)) > Math.floor(lastTime / (seconds * 1000));
             const deltaTime = timestamp - lastTime;
@@ -60,17 +107,10 @@ const withController = (WrappedComponent) => {
             }
             
             if (deltaTime >= frameInterval) {
-                if (secondsElapsed(1)) {
+                if (secondsElapsed(gameSpeed)) {
                     setMinute(prevMinute => {
                         const newMinute = prevMinute + 1
-                        setEntities(prevEntities => {
-                            return prevEntities.map(entity => {
-                                if (entity.type === 'humanoid') {
-                                    return { ...entity, condition: { ...entity.condition, hunger: Math.max(0, entity.condition.hunger - 1) } };
-                                }
-                                return entity;
-                            });
-                        });
+                        tick();
                         if (newMinute === 60) {
                             setHour(prevHour => {
                                 const newHour = prevHour + 1

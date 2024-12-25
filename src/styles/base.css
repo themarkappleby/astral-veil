@@ -66,6 +66,9 @@ button {
     border: 0;
     padding: 10px 0;
     color: black;
+    &:active {
+        opacity: 0.5;
+    }
 }
 
 .view-title {
@@ -75,6 +78,18 @@ button {
     top: 50%;
     transform: translate(-50%, -50%);
     font-size: 17px;
+}
+
+.view-icon {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: black;
+    font-size: 18px;
+    padding: 10px 0;
+    &:active {
+        opacity: 0.5;
+    }
 }
 
 .view-content {
