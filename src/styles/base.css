@@ -113,12 +113,6 @@ button {
         &:hover, &:focus {
             outline: 1px solid black;
             box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-            transform: scale(1.01);
-            .listItem-percent {
-                &::-webkit-progress-value {
-                    border-right-width: 2px;
-                }
-            }
         }
     }
 }
@@ -169,10 +163,7 @@ button {
     align-items: center;
     justify-content: center;
     color: white;
-    background: grey;
-    &.icon--user {
-        background: #4AD763;
-    }
+    background: black;
 }
 
 .toggle-container {

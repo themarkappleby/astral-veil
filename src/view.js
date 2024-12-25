@@ -68,8 +68,9 @@ const App = ({ state, pushView, popView }) => {
                 title: entity.singularName || 'Entity',
                 children: html`
                     <${List}>
+                        ${entity.description && html`<${ListItem} text="${entity.description}" />`}
                         ${Object.entries(entity).map(([key, value]) => {
-                            if (key === 'singularName' || key === 'pluralName') return;
+                            if (key === 'singularName' || key === 'pluralName' || key === 'description') return;
                             return html`
                                 <${ListItem} text="${toTitleCase(key)}" secondaryText="${toTitleCase(value)}" />
                             `;
@@ -87,11 +88,12 @@ const App = ({ state, pushView, popView }) => {
                         <${ListItem} text="Up next" detail="NA" />
                     </${List}>
                     <${List} title="Condition">
-                        <${ListItem} icon="heart" text="Health" secondaryText="90%" percent="90" onClick=${() => {}} />
-                        <${ListItem} icon="face-meh" text="Mood" secondaryText="63%" percent="63" onClick=${() => {}} />
-                        <${ListItem} icon="bed" text="Rest" secondaryText="100%" percent="100" onClick=${() => {}} />
-                        <${ListItem} icon="utensils" text="Hunger" secondaryText="98%" percent="98" onClick=${() => {}} />
-                        <${ListItem} icon="person-running" text="Recreation" secondaryText="80%" percent="80" onClick=${() => {}} k/>
+                        <${ListItem} icon="heart" text="Health" detail="Stable" secondaryText="90%" percent="90" onClick=${() => {}} />
+                        <${ListItem} icon="brain" text="Mood" detail="Content" secondaryText="63%" percent="63" onClick=${() => {}} />
+                        <${ListItem} icon="bed" text="Rest" detail="Rested" secondaryText="100%" percent="100" onClick=${() => {}} />
+                        <${ListItem} icon="utensils" text="Hunger" detail="Satisfied" secondaryText="98%" percent="98" onClick=${() => {}} />
+                        <${ListItem} icon="person-running" text="Recreation" detail="Satisfied" secondaryText="80%" percent="80" onClick=${() => {}} />
+                        <${ListItem} icon="couch" text="Comfort" detail="Comfortable" secondaryText="80%" percent="80" onClick=${() => {}} />
                     </${List}>
                     <${List} title="Configuration">
                         <${ListItem} icon="user-gear" text="Jobs" onClick=${() => {}} />
@@ -109,8 +111,8 @@ const App = ({ state, pushView, popView }) => {
                         <${ListItem} text="Nudist" onClick=${() => {}} />
                     </${List}>
                     <${List} title="Relations">
-                        <${ListItem} text="Fritz" secondaryText="Friend" percent="78" onClick=${() => {}} />
-                        <${ListItem} text="Murphy" secondaryText="Detests" percent="12" onClick=${() => {}} />
+                        <${ListItem} icon="face-smile" text="Fritz" secondaryText="Friend" percent="78" onClick=${() => {}} />
+                        <${ListItem} icon="face-frown" text="Murphy" secondaryText="Detests" percent="12" onClick=${() => {}} />
                     </${List}>
                 `,
             }

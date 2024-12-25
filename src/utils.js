@@ -2,7 +2,7 @@ const getEntityIcon = (entityType) => {
     switch (entityType) {
         case 'structure': return 'building';
         case 'resourceNode': return 'tree';
-        case 'colonist': return 'user';
+        case 'colonist': return 'face-smile';
         default: return 'question';
     }
 }
