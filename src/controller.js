@@ -33,7 +33,10 @@ const withController = (WrappedComponent) => {
             name: 'Jason',
             type: 'humanoid',
             status: 'Idle',
-            dist: 0
+            dist: 0,
+            condition: {
+                hunger: 87,
+            }
         },
     ]);
 
@@ -60,6 +63,14 @@ const withController = (WrappedComponent) => {
                 if (secondsElapsed(1)) {
                     setMinute(prevMinute => {
                         const newMinute = prevMinute + 1
+                        setEntities(prevEntities => {
+                            return prevEntities.map(entity => {
+                                if (entity.type === 'humanoid') {
+                                    return { ...entity, condition: { ...entity.condition, hunger: Math.max(0, entity.condition.hunger - 1) } };
+                                }
+                                return entity;
+                            });
+                        });
                         if (newMinute === 60) {
                             setHour(prevHour => {
                                 const newHour = prevHour + 1
@@ -93,7 +104,6 @@ const withController = (WrappedComponent) => {
     }, []);
 
     const pushView = (viewData) => {
-        console.log(viewData);
         setViewStack([...viewStack, viewData]);
         setActiveView(viewData);
     }

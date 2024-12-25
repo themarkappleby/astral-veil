@@ -39,7 +39,7 @@ const App = ({ state, pushView, popView }) => {
                                 percent=${e.percent}
                                 onClick=${() => {
                                     if (e.type === 'humanoid') {
-                                        pushView({id: 'humanoid', humanoid: e});
+                                        pushView({id: 'humanoid', entityId: e.id});
                                     }
                                 }}
                             />
@@ -78,7 +78,8 @@ const App = ({ state, pushView, popView }) => {
                 `,
             }
         },
-        humanoid: ({ humanoid }) => {
+        humanoid: ({ entityId }) => {
+            const humanoid = state.entities.find(e => e.id === entityId);
             return {
                 title: humanoid.name || 'Humanoid',
                 children: html`
@@ -90,7 +91,7 @@ const App = ({ state, pushView, popView }) => {
                         <${ListItem} icon="heart" text="Health" detail="Stable" secondaryText="90%" percent="90" onClick=${() => {}} />
                         <${ListItem} icon="brain" text="Mood" detail="Content" secondaryText="63%" percent="63" onClick=${() => {}} />
                         <${ListItem} icon="bed" text="Rest" detail="Rested" secondaryText="100%" percent="100" onClick=${() => {}} />
-                        <${ListItem} icon="utensils" text="Hunger" detail="Satisfied" secondaryText="98%" percent="98" onClick=${() => {}} />
+                        <${ListItem} icon="utensils" text="Hunger" detail="Satisfied" secondaryText="${humanoid.condition.hunger}%" percent="${humanoid.condition.hunger}" onClick=${() => {}} />
                         <${ListItem} icon="person-running" text="Recreation" detail="Satisfied" secondaryText="80%" percent="80" onClick=${() => {}} />
                         <${ListItem} icon="couch" text="Comfort" detail="Comfortable" secondaryText="80%" percent="80" onClick=${() => {}} />
                     </${List}>
