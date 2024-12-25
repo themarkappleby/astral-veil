@@ -31,7 +31,7 @@ const withController = (WrappedComponent) => {
         {
             id: 1,
             name: 'Jason',
-            type: 'colonist',
+            type: 'humanoid',
             status: 'Idle',
             dist: 0
         },

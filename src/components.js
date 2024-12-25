@@ -24,7 +24,7 @@ const List = ({ title, children }) => {
     `
 }
 
-const ListItem = ({ icon, iconColor, text, detail, secondaryText, isButton, onClick, percent  }) => {
+const ListItem = ({ icon, text, detail, secondaryText, isButton, onClick, percent  }) => {
     let container = onClick ? 'button' : 'div';
     let percentStatus = 'high';
     if (percent < 66) percentStatus = 'medium';
@@ -32,7 +32,7 @@ const ListItem = ({ icon, iconColor, text, detail, secondaryText, isButton, onCl
     return html`
         <${container} class="listItem ${isButton ? 'listItem--button' : ''}" onClick=${onClick}>
             <div class="listItem-left">
-                ${icon ? html`<${Icon} className="listItem-icon" name=${icon} color=${iconColor} />` : ''}
+                ${icon ? html`<${Icon} className="listItem-icon" name=${icon} />` : ''}
                 ${(text || detail) && html`<div class="listItem-textContainer">
                     ${text ? html`<div class="listItem-text">${text}</div>` : ''}
                     ${detail ? html`<div class="listItem-detail">${detail}</div>` : ''}
