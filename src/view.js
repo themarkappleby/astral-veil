@@ -38,7 +38,7 @@ const App = ({ state, pushView, popView }) => {
                             <${ListItem}
                                 icon="${getEntityIcon(e.type)}"
                                 text="${e.name}"
-                                detail="${e.status}"
+                                detail="${e.queue.length ? toTitleCase(e.queue[0]) : 'Idle'}"
                                 secondaryText="${e.dist ? `Dist ${e.dist}` : 'At base'}"
                                 percent=${e.percent}
                                 onClick=${() => {
@@ -100,8 +100,8 @@ const App = ({ state, pushView, popView }) => {
                 title: humanoid.name || 'Humanoid',
                 children: html`
                     <${List} title="Queue">
-                        <${ListItem} text="Currently" detail="Idle" />
-                        <${ListItem} text="Up next" detail="NA" />
+                        <${ListItem} text="Currently" detail="${humanoid.queue.length ? toTitleCase(humanoid.queue[0]) : 'Idle'}" />
+                        <${ListItem} text="Up next" detail="${humanoid.queue.length > 1 ? toTitleCase(humanoid.queue[1]) : 'NA'}" />
                     </${List}>
                     <${List} title="Condition">
                         <${ListItem} icon="face-smile" text="Overall" detail="Good" secondaryText="${humanoid.condition.overall}%" percent="${humanoid.condition.overall}" />

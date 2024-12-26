@@ -4,7 +4,7 @@ const html = htm.bind(h);
 
 const withController = (WrappedComponent) => {
   return (props) => {
-    const [gameSpeed, setGameSpeed] = useState(1);
+    const [gameSpeed, setGameSpeed] = useState(0.1);
     const [tickCount, setTickCount] = useState(0);
     const [viewStack, setViewStack] = useState([{id: 'menu'}, {id: 'world'}]);
     const [activeView, setActiveView] = useState({id: 'world'});
@@ -35,8 +35,8 @@ const withController = (WrappedComponent) => {
             id: 1,
             name: 'Jason',
             type: 'humanoid',
-            status: 'Idle',
             dist: 0,
+            queue: [],
             condition: {
                 overall: 80,
                 hunger: 87,
@@ -63,32 +63,44 @@ const withController = (WrappedComponent) => {
                     newTickCount = 1;
                 }
                 setEntities(prevEntities => {
-                    return prevEntities.map(entity => {
+                    return prevEntities.map(e => {
+                        const entity = {
+                            ...e,
+                            queue: [...e.queue],
+                            condition: {...e.condition},
+                        };
+
                         if (entity?.condition) {
-                            const newCondition = {...entity.condition};
                             // Every 5 minutes
                             if (newTickCount % 5 === 0) {
-                                if (newCondition.hunger) {
-                                    newCondition.hunger = Math.max(0, newCondition.hunger - 1);
+                                if (entity.condition.hunger) {
+                                    entity.condition.hunger = Math.max(0, entity.condition.hunger - 1);
+                                    if (entity.condition.hunger < 33) {
+                                        entity.queue.push('eat');
+                                    }
                                 }
                             }
                             // Every 10 minutes
                             if (newTickCount % 10 === 0) {
-                                if (newCondition.rest) {
-                                    newCondition.rest = Math.max(0, newCondition.rest - 1);
+                                if (entity.condition.rest) {
+                                    entity.condition.rest = Math.max(0, entity.condition.rest - 1);
                                 }
                             }
                             // Every hour
                             if (newTickCount % 60 === 0) {
-                                if (newCondition.health && newCondition.hunger === 0) {
-                                    newCondition.health = Math.max(0, newCondition.health - 1);
+                                if (entity.condition.health && entity.condition.hunger === 0) {
+                                    entity.condition.health = Math.max(0, entity.condition.health - 1);
                                 }
                             }
-                            newCondition.overall = Math.round((newCondition.health + newCondition.hunger + newCondition.mood + newCondition.rest) / 4);
-                            return {
-                                ...entity,
-                                condition: newCondition
-                            };
+                            entity.condition.overall = Math.round((entity.condition.health + entity.condition.hunger + entity.condition.mood + entity.condition.rest) / 4);
+                        }
+                        const action = entity.queue[0];
+                        if (action) {
+                            if (action === 'eat') {
+                                // locate closest food
+                                console.log('eat');
+                            }
+                            entity.queue.shift();
                         }
                         return entity;
                     });
