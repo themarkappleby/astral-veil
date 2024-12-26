@@ -21,19 +21,19 @@ const App = ({ state, pushView, popView }) => {
                 children: html`
                     <${List}>
                         ${state.entities.sort((a, b) => a.dist - b.dist).map(e => {
-                            const text = e.name || (e.count === 1 ? `1 ${e.def.singularName}` : `${e.count} ${e.def.pluralName}`);
+                            const text = e.name || (e.count === 1 ? `1 ${e.name}` : `${e.count} ${e.pluralName}`);
                             const detail = e.queue ? (e.queue.length ? toTitleCase(e.queue[0]) : 'Idle') : '';
                             return html`
                                 <${ListItem}
-                                    icon="${getEntityIcon(e.def.type)}"
+                                    icon="${getEntityIcon(e.type)}"
                                     text="${text}"
                                     detail="${detail}"
                                     secondaryText="${e?.dist ? `Dist ${e.dist}` : 'At base'}"
                                     percent=${e?.percent}
                                     onClick=${() => {
-                                        if (e.def.type === 'humanoid') {
+                                        if (e.type === 'humanoid') {
                                             pushView({id: 'humanoid', entityId: e.id});
-                                        } else if (e.def.type === 'food') {
+                                        } else if (e.type === 'food') {
                                             pushView({id: 'entity', entityId: e.id});
                                         }
                                     }}
@@ -60,12 +60,13 @@ const App = ({ state, pushView, popView }) => {
         entity: ({ entityId }) => {
             const entity = state.entities.find(e => e.id === entityId);
             return {
-                title: entity.def.singularName || 'Entity',
+                title: entity.name || 'Entity',
                 children: html`
                     <${List}>
-                        ${entity.def.description && html`<${ListItem} text="${entity.def.description}" />`}
-                        ${Object.entries(entity.def).map(([key, value]) => {
-                            if (key === 'singularName' || key === 'pluralName' || key === 'description') return;
+                        ${entity.description && html`<${ListItem} text="${entity.description}" />`}
+                        ${Object.entries(entity).map(([key, value]) => {
+                            const ignore = ['name', 'pluralName', 'description', 'id', 'queue', 'count', 'dist'];
+                            if (ignore.includes(key)) return;
                             return html`
                                 <${ListItem} text="${toTitleCase(key)}" secondaryText="${toTitleCase(value)}" />
                             `;
@@ -84,11 +85,11 @@ const App = ({ state, pushView, popView }) => {
                         <${ListItem} text="Up next" detail="${humanoid.queue.length > 1 ? toTitleCase(humanoid.queue[1]) : 'NA'}" />
                     </${List}>
                     <${List} title="Condition">
-                        <${ListItem} icon="face-smile" text="Overall" detail="Good" secondaryText="${humanoid.condition.overall}%" percent="${humanoid.condition.overall}" />
-                        <${ListItem} icon="heart" text="Health" detail="Stable" secondaryText="${humanoid.condition.health}%" percent="${humanoid.condition.health}" onClick=${() => {}} />
-                        <${ListItem} icon="brain" text="Mood" detail="Content" secondaryText="${humanoid.condition.mood}%" percent="${humanoid.condition.mood}" onClick=${() => {}} />
-                        <${ListItem} icon="bed" text="Rest" detail="Rested" secondaryText="${humanoid.condition.rest}%" percent="${humanoid.condition.rest}" onClick=${() => {}} />
-                        <${ListItem} icon="utensils" text="Hunger" detail="Satisfied" secondaryText="${humanoid.condition.hunger}%" percent="${humanoid.condition.hunger}" onClick=${() => {}} />
+                        <${ListItem} icon="face-smile" text="Overall" detail="Good" secondaryText="${humanoid.overall}%" percent="${humanoid.overall}" />
+                        <${ListItem} icon="heart" text="Health" detail="Stable" secondaryText="${humanoid.health}%" percent="${humanoid.health}" onClick=${() => {}} />
+                        <${ListItem} icon="brain" text="Mood" detail="Content" secondaryText="${humanoid.mood}%" percent="${humanoid.mood}" onClick=${() => {}} />
+                        <${ListItem} icon="bed" text="Rest" detail="Rested" secondaryText="${humanoid.rest}%" percent="${humanoid.rest}" onClick=${() => {}} />
+                        <${ListItem} icon="utensils" text="Hunger" detail="Satisfied" secondaryText="${humanoid.hunger}%" percent="${humanoid.hunger}" onClick=${() => {}} />
                         <${ListItem} icon="person-running" text="Recreation" detail="Satisfied" secondaryText="80%" percent="80" onClick=${() => {}} />
                         <${ListItem} icon="couch" text="Comfort" detail="Comfortable" secondaryText="80%" percent="80" onClick=${() => {}} />
                     </${List}>

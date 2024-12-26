@@ -17,24 +17,22 @@ const withController = (WrappedComponent) => {
     const isPausedRef = useRef(isPaused);
     const [entities, setEntities] = useState([
         {
+            ...defs.honeycrispApple,
             id: 1,
-            def: defs.honeycrispApple,
             dist: 0,
             count: 10,
         },
         {
+            ...defs.human,
             id: 2,
-            def: defs.humanoid,
             dist: 0,
             name: 'Jason',
             queue: [],
-            condition: {
-                overall: 80,
-                hunger: 87,
-                mood: 63,
-                rest: 100,
-                health: 100,
-            }
+            overall: 80,
+            hunger: 87,
+            mood: 63,
+            rest: 100,
+            health: 100,
         },
     ]);
 
@@ -55,36 +53,41 @@ const withController = (WrappedComponent) => {
                 }
                 setEntities(prevEntities => {
                     return prevEntities.map(e => {
-                        const entity = {
-                            ...e,
-                            queue: e.queue ? [...e.queue] : null,
-                            condition: {...e.condition},
-                        };
+                        const entity = { ...e };
 
-                        if (entity?.condition) {
-                            // Every 5 minutes
-                            if (newTickCount % 5 === 0) {
-                                if (entity.condition.hunger) {
-                                    entity.condition.hunger = Math.max(0, entity.condition.hunger - 1);
-                                    if (entity.condition.hunger < 33) {
-                                        entity.queue.push('eat');
-                                    }
-                                }
-                            }
-                            // Every 10 minutes
-                            if (newTickCount % 10 === 0) {
-                                if (entity.condition.rest) {
-                                    entity.condition.rest = Math.max(0, entity.condition.rest - 1);
-                                }
-                            }
-                            // Every hour
-                            if (newTickCount % 60 === 0) {
-                                if (entity.condition.health && entity.condition.hunger === 0) {
-                                    entity.condition.health = Math.max(0, entity.condition.health - 1);
-                                }
-                            }
-                            entity.condition.overall = Math.round((entity.condition.health + entity.condition.hunger + entity.condition.mood + entity.condition.rest) / 4);
+                        if (e.queue) {
+                            entity.queue = [...e.queue];
                         }
+
+                        if (e.condition) {
+                            entity.condition = {...e.condition};
+                        }
+
+                        // Every 5 minutes
+                        if (newTickCount % 5 === 0) {
+                            if (entity.hunger) {
+                                entity.hunger = Math.max(0, entity.hunger - 1);
+                                if (entity.hunger < 33) {
+                                    entity.queue.push('eat');
+                                }
+                            }
+                        }
+                        // Every 10 minutes
+                        if (newTickCount % 10 === 0) {
+                            if (entity.rest) {
+                                entity.rest = Math.max(0, entity.rest - 1);
+                            }
+                        }
+                        // Every hour
+                        if (newTickCount % 60 === 0) {
+                            if (entity.health && entity.hunger === 0) {
+                                entity.health = Math.max(0, entity.health - 1);
+                            }
+                        }
+                        if (entity.overall) {
+                            entity.overall = Math.round((entity.health + entity.hunger + entity.mood + entity.rest) / 4);
+                        }
+
                         const action = entity?.queue?.[0];
                         if (action) {
                             if (action === 'eat') {
@@ -95,7 +98,7 @@ const withController = (WrappedComponent) => {
                                     entities,
                                 });
                                 if (closestFood) {
-                                    entity.condition.hunger = Math.min(100, entity.condition.hunger + closestFood.def.calories);
+                                    entity.hunger = Math.min(100, entity.hunger + closestFood.calories);
                                     entity.queue.shift();
                                     // TODO: reduce count of closest food
                                     // closestFood.count = Math.max(0, closestFood.count - 1);

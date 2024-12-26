@@ -1,7 +1,7 @@
 const defs = {};
 
 defs.bartlettPear = {
-    singularName: 'Bartlett pear',
+    name: 'Bartlett pear',
     pluralName: 'Bartlett pears',
     type: 'food',
     description: 'A sweet, juicy pear with a firm texture.',
@@ -10,7 +10,7 @@ defs.bartlettPear = {
 }
 
 defs.honeycrispApple = {
-    singularName: 'Honeycrisp apple',
+    name: 'Honeycrisp apple',
     pluralName: 'Honeycrisp apples',
     type: 'food',
     description: 'A sweet, juicy apple with a firm texture.',
@@ -19,17 +19,17 @@ defs.honeycrispApple = {
 }
 
 defs.birchWood = {
-    singularName: 'Birch wood',
+    name: 'Birch wood',
     pluralName: 'Birch wood',
     type: 'wood',
     description: 'A piece of birch wood.',
     size: 8,
 }
 
-defs.humanoid = {
-    singularName: 'Humanoid',
-    pluralName: 'Humanoids',
+defs.human = {
+    name: 'Human',
+    pluralName: 'Humans',
     type: 'humanoid',
-    description: 'A humanoid entity.',
+    description: 'A bipedal humanoid being.',
     size: 2000,
 }
