@@ -52,19 +52,8 @@ const withController = (WrappedComponent) => {
                     min = 1;
                 }
                 setEntities(prevEntities => {
-                    const entities = Object.assign({}, prevEntities);
-
-                    return prevEntities.map(e => {
-                        const entity = { ...e };
-
-                        if (e.queue) {
-                            entity.queue = [...e.queue];
-                        }
-
-                        if (e.condition) {
-                            entity.condition = {...e.condition};
-                        }
-
+                    const entities = Object.assign([], prevEntities);
+                    entities.forEach(entity => {
                         // Every 5 minutes
                         if (min % 5 === 0) {
                             if (entity.hunger) {
@@ -93,7 +82,6 @@ const withController = (WrappedComponent) => {
                         const action = entity?.queue?.[0];
                         if (action) {
                             if (action === 'eat') {
-                                // locate closest food
                                 const closestFood = locateClosestEntity({
                                     fromDist: entity.dist,
                                     type: 'food',
@@ -102,13 +90,12 @@ const withController = (WrappedComponent) => {
                                 if (closestFood) {
                                     entity.hunger = Math.min(100, entity.hunger + closestFood.calories);
                                     entity.queue.shift();
-                                    // TODO: reduce count of closest food
-                                    // closestFood.count = Math.max(0, closestFood.count - 1);
+                                    closestFood.count = Math.max(0, closestFood.count - 1);
                                 }
                             }
                         }
-                        return entity;
                     });
+                    return entities;
                 });
                 return min;
             });

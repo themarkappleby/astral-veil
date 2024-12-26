@@ -19,5 +19,5 @@ const locateClosestEntity = ({
     entities,
 }) => {
     const sortedEntities = entities.sort((a, b) => a.dist - b.dist);
-    return sortedEntities.find(e => e.def.type === type && e.dist <= fromDist);
+    return sortedEntities.find(e => e.type === type && e.dist <= fromDist);
 }
