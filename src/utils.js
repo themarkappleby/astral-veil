@@ -1,6 +1,7 @@
 const getEntityIcon = (entityType) => {
     switch (entityType) {
         case 'structure': return 'building';
+        case 'food': return 'utensils';
         case 'resourceNode': return 'tree';
         case 'humanoid': return 'face-smile';
         default: return 'question';
@@ -16,9 +17,7 @@ const locateClosestEntity = ({
     fromDist,
     type,
     entities,
-    stockpile,
 }) => {
-    const allEntities = [...entities, ...stockpile.map(s => ({ ...s.entity, dist: 0 }))];
-    const sortedEntities = allEntities.sort((a, b) => a.dist - b.dist);
-    return sortedEntities.find(e => e.type === type && e.dist <= fromDist);
+    const sortedEntities = entities.sort((a, b) => a.dist - b.dist);
+    return sortedEntities.find(e => e.def.type === type && e.dist <= fromDist);
 }

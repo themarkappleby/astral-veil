@@ -19,35 +19,27 @@ const App = ({ state, pushView, popView }) => {
                     state.setModalView({id: 'construct'})
                 },
                 children: html`
-                    <${List} title="Stockpile">
-                        ${Object.entries(state.stockpile.reduce((acc, item) => {
-                            const type = item.entity.type;
-                            if (!acc[type]) acc[type] = [];
-                            acc[type].push(item);
-                            return acc;
-                        }, {})).map(([type, items]) => {
-                            const title = toTitleCase(type);
-                            const total = items.reduce((acc, item) => acc + item.count, 0);
+                    <${List}>
+                        ${state.entities.sort((a, b) => a.dist - b.dist).map(e => {
+                            const text = e.name || (e.count === 1 ? `1 ${e.def.singularName}` : `${e.count} ${e.def.pluralName}`);
+                            const detail = e.queue ? (e.queue.length ? toTitleCase(e.queue[0]) : 'Idle') : '';
                             return html`
-                                <${ListItem} onClick=${() => pushView({id: 'stockpile', title, type})} icon="box" text="${title}" secondaryText="${total}" />
-                            `;
+                                <${ListItem}
+                                    icon="${getEntityIcon(e.def.type)}"
+                                    text="${text}"
+                                    detail="${detail}"
+                                    secondaryText="${e?.dist ? `Dist ${e.dist}` : 'At base'}"
+                                    percent=${e?.percent}
+                                    onClick=${() => {
+                                        if (e.def.type === 'humanoid') {
+                                            pushView({id: 'humanoid', entityId: e.id});
+                                        } else if (e.def.type === 'food') {
+                                            pushView({id: 'entity', entityId: e.id});
+                                        }
+                                    }}
+                                />
+                            `
                         })}
-                    </${List}>
-                    <${List} title="Environment">
-                        ${state.entities.sort((a, b) => a.dist - b.dist).map(e => html`
-                            <${ListItem}
-                                icon="${getEntityIcon(e.type)}"
-                                text="${e.name}"
-                                detail="${e.queue.length ? toTitleCase(e.queue[0]) : 'Idle'}"
-                                secondaryText="${e.dist ? `Dist ${e.dist}` : 'At base'}"
-                                percent=${e.percent}
-                                onClick=${() => {
-                                    if (e.type === 'humanoid') {
-                                        pushView({id: 'humanoid', entityId: e.id});
-                                    }
-                                }}
-                            />
-                        `)}
                         <${ListItem} text="Explore" secondaryText="${html`<${Toggle} />`}" />
                     </${List}>
                 `,
@@ -65,26 +57,14 @@ const App = ({ state, pushView, popView }) => {
                 `,
             }
         },
-        stockpile: ({ title, type }) => {
-            const items = state.stockpile.filter(item => item.entity.type === type);
+        entity: ({ entityId }) => {
+            const entity = state.entities.find(e => e.id === entityId);
             return {
-                title: title || 'Stockpile',
+                title: entity.def.singularName || 'Entity',
                 children: html`
                     <${List}>
-                        ${items.map(item => html`
-                            <${ListItem} icon="box" text="${item.count === 1 ? item.entity.singularName : item.entity.pluralName}" secondaryText="${item.count}" onClick=${() => pushView({id: 'entity', entity: item.entity})} />
-                        `)}
-                    </${List}>
-                `
-            }
-        },
-        entity: ({ entity }) => {
-            return {
-                title: entity.singularName || 'Entity',
-                children: html`
-                    <${List}>
-                        ${entity.description && html`<${ListItem} text="${entity.description}" />`}
-                        ${Object.entries(entity).map(([key, value]) => {
+                        ${entity.def.description && html`<${ListItem} text="${entity.def.description}" />`}
+                        ${Object.entries(entity.def).map(([key, value]) => {
                             if (key === 'singularName' || key === 'pluralName' || key === 'description') return;
                             return html`
                                 <${ListItem} text="${toTitleCase(key)}" secondaryText="${toTitleCase(value)}" />

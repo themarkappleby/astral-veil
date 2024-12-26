@@ -4,7 +4,7 @@ const html = htm.bind(h);
 
 const withController = (WrappedComponent) => {
   return (props) => {
-    const [gameSpeed, setGameSpeed] = useState(0.1);
+    const [gameSpeed, setGameSpeed] = useState(1);
     const [tickCount, setTickCount] = useState(0);
     const [viewStack, setViewStack] = useState([{id: 'menu'}, {id: 'world'}]);
     const [activeView, setActiveView] = useState({id: 'world'});
@@ -15,27 +15,18 @@ const withController = (WrappedComponent) => {
     const [day, setDay] = useState(1);
     const [isPaused, setIsPaused] = useState(false);
     const isPausedRef = useRef(isPaused);
-    // const [stockpile, setStockpile] = useState([
-    //     {
-    //         name: 'Food',
-    //         capacity: 10,
-    //         items: [
-    //             { name: 'Bartlett pear', count: 6 },
-    //             { name: 'Honeycrisp apple', count: 2 },
-    //         ]
-    //     },
-    // ]);
-
-    const [stockpile, setStockpile] = useState([
-        { id: 3, entity: defs.honeycrispApple, count: 10 },
-    ]);
-
     const [entities, setEntities] = useState([
         {
             id: 1,
-            name: 'Jason',
-            type: 'humanoid',
+            def: defs.honeycrispApple,
             dist: 0,
+            count: 10,
+        },
+        {
+            id: 2,
+            def: defs.humanoid,
+            dist: 0,
+            name: 'Jason',
             queue: [],
             condition: {
                 overall: 80,
@@ -66,7 +57,7 @@ const withController = (WrappedComponent) => {
                     return prevEntities.map(e => {
                         const entity = {
                             ...e,
-                            queue: [...e.queue],
+                            queue: e.queue ? [...e.queue] : null,
                             condition: {...e.condition},
                         };
 
@@ -94,19 +85,22 @@ const withController = (WrappedComponent) => {
                             }
                             entity.condition.overall = Math.round((entity.condition.health + entity.condition.hunger + entity.condition.mood + entity.condition.rest) / 4);
                         }
-                        const action = entity.queue[0];
+                        const action = entity?.queue?.[0];
                         if (action) {
                             if (action === 'eat') {
                                 // locate closest food
-                                const food = locateClosestEntity({
+                                const closestFood = locateClosestEntity({
                                     fromDist: entity.dist,
                                     type: 'food',
                                     entities,
-                                    stockpile,
                                 });
-                                console.log('eat', food);
+                                if (closestFood) {
+                                    entity.condition.hunger = Math.min(100, entity.condition.hunger + closestFood.def.calories);
+                                    entity.queue.shift();
+                                    // TODO: reduce count of closest food
+                                    // closestFood.count = Math.max(0, closestFood.count - 1);
+                                }
                             }
-                            entity.queue.shift();
                         }
                         return entity;
                     });
@@ -118,13 +112,11 @@ const withController = (WrappedComponent) => {
         const gameLoop = (timestamp) => {
             const secondsElapsed = (seconds) => Math.floor(timestamp / (seconds * 1000)) > Math.floor(lastTime / (seconds * 1000));
             const deltaTime = timestamp - lastTime;
-
             if (isPausedRef.current) {
                 lastTime = timestamp;
                 requestAnimationFrame(gameLoop);
                 return;
             }
-            
             if (deltaTime >= frameInterval) {
                 if (secondsElapsed(gameSpeed)) {
                     setMinute(prevMinute => {
@@ -154,9 +146,7 @@ const withController = (WrappedComponent) => {
             }
             requestAnimationFrame(gameLoop);
         };
-
         const animationId = requestAnimationFrame(gameLoop);
-
         return () => {
             cancelAnimationFrame(animationId);
         };
@@ -186,7 +176,6 @@ const withController = (WrappedComponent) => {
             viewStack, setViewStack,
             activeView, setActiveView,
             modalView, setModalView,
-            stockpile, setStockpile,
             entities, setEntities,
             isPaused, setIsPaused,
         }
