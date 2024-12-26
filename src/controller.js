@@ -4,77 +4,35 @@ const html = htm.bind(h);
 
 const withController = (WrappedComponent) => {
   return (props) => {
-    const [viewStack, setViewStack] = useState(['menu', 'world']);
-    const [isPaused, setIsPaused] = useState(false);
-    const isPausedRef = useRef(isPaused);
-    const [activeView, setActiveView] = useState('world')
-    const [hour, setHour] = useState(12);
+    const [gameSpeed, setGameSpeed] = useState(1);
+    const [tickCount, setTickCount] = useState(0);
+    const [viewStack, setViewStack] = useState([{id: 'menu'}, {id: 'world'}]);
+    const [activeView, setActiveView] = useState({id: 'world'});
+    const [modalView, setModalView] = useState(null)
+    const [hour, setHour] = useState(7);
     const [minute, setMinute] = useState(0);
     const [amPm, setAmPm] = useState('AM');
     const [day, setDay] = useState(1);
-    const [stockpile, setStockpile] = useState([
+    const [isPaused, setIsPaused] = useState(false);
+    const isPausedRef = useRef(isPaused);
+    const [ent, setEntities] = useState([
         {
-            name: 'Food',
-            capacity: 10,
-            items: [
-                { name: 'Bartlett pear', count: 6 },
-                { name: 'Honeycrisp apple', count: 2 },
-            ]
-        },
-        {
-            name: 'Wood',
-            capacity: 10,
-            items: [
-                { name: 'Birch wood', count: 1 },
-            ]
-        },
-    ]);
-
-    const [entities, setEntities] = useState([
-        {
-            id: 0,
-            name: 'Campfire',
-            type: 'structure',
-            dist: 0
-        },
-        {
+            ...defs.honeycrispApple,
             id: 1,
-            name: 'Jason',
-            type: 'colonist',
-            status: 'Eating bartlett pear',
-            dist: 0
+            dist: 0,
+            count: 10,
         },
         {
+            ...defs.human,
             id: 2,
-            name: 'Fritz',
-            type: 'colonist',
-            status: 'Chopping birch tree 67%',
-            percent: 67,
-            dist: 6
-        },
-        {
-            id: 5,
-            name: 'Murphy',
-            type: 'colonist',
-            status: 'Exploring 12%',
-            percent: 12,
-            dist: 12
-        },
-        {
-            id: 3,
-            name: 'Birch forest',
-            type: 'resourceNode',
-            status: '14 of 23',
-            percent: 61,
-            dist: 6
-        },
-        {
-            id: 4,
-            name: 'Raspberry patch',
-            type: 'resourceNode',
-            status: '4 of 4',
-            percent: 100,
-            dist: 10
+            dist: 0,
+            name: 'Jason',
+            queue: [],
+            overall: 80,
+            hunger: 87,
+            mood: 63,
+            rest: 100,
+            health: 100,
         },
     ]);
 
@@ -87,20 +45,75 @@ const withController = (WrappedComponent) => {
         const fps = 30;
         const frameInterval = 1000 / fps;
 
+        const tick = () => {
+            setTickCount(prevTickCount => {
+                let min = prevTickCount + 1;
+                if (min > 60) {
+                    min = 1;
+                }
+                setEntities(prevEntities => {
+                    const entities = Object.assign([], prevEntities);
+                    entities.forEach(entity => {
+                        // Every 5 minutes
+                        if (min % 5 === 0) {
+                            if (entity.hunger) {
+                                entity.hunger = Math.max(0, entity.hunger - 1);
+                                if (entity.hunger < 33) {
+                                    entity.queue.push('eat');
+                                }
+                            }
+                        }
+                        // Every 10 minutes
+                        if (min % 10 === 0) {
+                            if (entity.rest) {
+                                entity.rest = Math.max(0, entity.rest - 1);
+                            }
+                        }
+                        // Every hour
+                        if (min % 60 === 0) {
+                            if (entity.health && entity.hunger === 0) {
+                                entity.health = Math.max(0, entity.health - 1);
+                            }
+                        }
+                        if (entity.overall) {
+                            entity.overall = Math.round((entity.health + entity.hunger + entity.mood + entity.rest) / 4);
+                        }
+
+                        const action = entity?.queue?.[0];
+                        if (action) {
+                            if (action === 'eat') {
+                                const closestFood = locateClosestEntity({
+                                    fromDist: entity.dist,
+                                    type: 'food',
+                                    entities,
+                                });
+                                if (closestFood) {
+                                    entity.hunger = Math.min(100, entity.hunger + closestFood.calories);
+                                    entity.queue.shift();
+                                    closestFood.count = Math.max(0, closestFood.count - 1);
+                                }
+                            }
+                        }
+                    });
+                    return entities;
+                });
+                return min;
+            });
+        }
+
         const gameLoop = (timestamp) => {
             const secondsElapsed = (seconds) => Math.floor(timestamp / (seconds * 1000)) > Math.floor(lastTime / (seconds * 1000));
             const deltaTime = timestamp - lastTime;
-
             if (isPausedRef.current) {
                 lastTime = timestamp;
                 requestAnimationFrame(gameLoop);
                 return;
             }
-            
             if (deltaTime >= frameInterval) {
-                if (secondsElapsed(1)) {
+                if (secondsElapsed(gameSpeed)) {
                     setMinute(prevMinute => {
-                        const newMinute = prevMinute + 5
+                        const newMinute = prevMinute + 1
+                        tick();
                         if (newMinute === 60) {
                             setHour(prevHour => {
                                 const newHour = prevHour + 1
@@ -125,17 +138,15 @@ const withController = (WrappedComponent) => {
             }
             requestAnimationFrame(gameLoop);
         };
-
         const animationId = requestAnimationFrame(gameLoop);
-
         return () => {
             cancelAnimationFrame(animationId);
         };
     }, []);
 
-    const pushView = (viewId) => {
-        setViewStack([...viewStack, viewId]);
-        setActiveView(viewId);
+    const pushView = (viewData) => {
+        setViewStack([...viewStack, viewData]);
+        setActiveView(viewData);
     }
 
     const popView = () => {
@@ -156,8 +167,8 @@ const withController = (WrappedComponent) => {
             day, setDay,
             viewStack, setViewStack,
             activeView, setActiveView,
-            stockpile, setStockpile,
-            entities, setEntities,
+            modalView, setModalView,
+            entities: ent, setEntities,
             isPaused, setIsPaused,
         }
     }} />`;

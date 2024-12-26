@@ -1,10 +1,10 @@
-const View = ({ title, children, backLabel, onBackClick }) => {
+const View = ({ title, children, backLabel, onBackClick, icon, onIconClick }) => {
     return html`
         <div class="view">
             <header class="view-header">
                 ${backLabel ? html`<button class="view-back" onClick=${onBackClick}><i class="fa-solid fa-chevron-left"></i> ${backLabel}</button>` : html`<div />`}
                 <h2 class="view-title">${title}</h2>
-                <div />
+                ${icon ? html`<button class="view-icon" onClick=${onIconClick}><i class="fa-solid fa-${icon}"></i></button>` : html`<div />`}
             </header>
             <div class="view-content">
                 ${children}
@@ -24,7 +24,7 @@ const List = ({ title, children }) => {
     `
 }
 
-const ListItem = ({ icon, iconColor, text, detail, secondaryText, isButton, onClick, percent  }) => {
+const ListItem = ({ icon, text, detail, secondaryText, isButton, onClick, percent  }) => {
     let container = onClick ? 'button' : 'div';
     let percentStatus = 'high';
     if (percent < 66) percentStatus = 'medium';
@@ -32,19 +32,19 @@ const ListItem = ({ icon, iconColor, text, detail, secondaryText, isButton, onCl
     return html`
         <${container} class="listItem ${isButton ? 'listItem--button' : ''}" onClick=${onClick}>
             <div class="listItem-left">
-                ${icon ? html`<${Icon} className="listItem-icon" name=${icon} color=${iconColor} />` : ''}
+                ${icon ? html`<${Icon} className="listItem-icon" name=${icon} />` : ''}
                 ${(text || detail) && html`<div class="listItem-textContainer">
                     ${text ? html`<div class="listItem-text">${text}</div>` : ''}
                     ${detail ? html`<div class="listItem-detail">${detail}</div>` : ''}
                 </div>`}
             </div>
-            ${(secondaryText || (onClick && !isButton)) && html`
+            ${(secondaryText !== undefined || (onClick && !isButton)) && html`
                 <div class="listItem-right">
                     <div class="listItem-secondaryText">${secondaryText}</div>
                     ${onClick && !isButton && html`<div class="listItem-disclosure"><i class="fa-solid fa-chevron-right"></i></div>`}
                 </div>
             `}
-            ${percent && html`<progress value=${percent} max="100" class="listItem-percent listItem-percent--${percentStatus}" />`}
+            ${percent !== undefined && html`<progress value=${percent} max="100" class="listItem-percent listItem-percent--${percentStatus}" />`}
         </${container}>
     `
 }

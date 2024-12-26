@@ -1,3 +1,10 @@
+const model = {};
+
+model.bartlettPear = {
+    count: 12,
+}
+
+
 const defs = {}
 
 defs.resources = {

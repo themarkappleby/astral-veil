@@ -1,93 +1,138 @@
 const App = ({ state, pushView, popView }) => {
     const views = {
-        menu: {
-            title: 'Menu',
-            children: html`
-                <${List}>
-                    <${ListItem} icon="globe" text="World" onClick=${() => pushView('world')} />
-                    <${ListItem} icon="gear" text="Settings" onClick=${() => {}} />
-                </${List}>
-            `,
+        menu: () => {
+            return {
+                title: 'Menu',
+                children: html`
+                    <${List}>
+                        <${ListItem} icon="globe" text="World" onClick=${() => pushView({id: 'world'})} />
+                        <${ListItem} icon="gear" text="Settings" onClick=${() => {}} />
+                    </${List}>
+                `,
+            }
         },
-        world: {
-            title: 'World',
-            children: html`
-                <${List} title="Stockpile">
-                    ${state.stockpile.map((category) => {
-                        const total = category.items.reduce((acc, item) => acc + item.count, 0);
-                        const percent = Math.round(total / category.capacity * 100);
-                        return html`
-                            <${ListItem} icon="box" text="${category.name}" percent=${percent} secondaryText="${total}" onClick=${() => {}} />
-                        `;
-                    })}
-                </${List}>
-                <${List} title="Environment">
-                    ${state.entities.sort((a, b) => a.dist - b.dist).map(e => html`
-                        <${ListItem}
-                            icon="${getEntityIcon(e.type)}"
-                            iconColor="${e.type === 'colonist' ? '11' : ''}"
-                            text="${e.name}"
-                            detail="${e.status}"
-                            secondaryText="${e.dist ? `Dist ${e.dist}` : 'At base'}"
-                            percent=${e.percent}
-                            onClick=${() => {
-                                if (e.id === 1) {
-                                    // TODO: Make this dynamic
-                                    pushView('jason');
-                                }
-                            }}
-                        />
-                    `)}
-                    <${ListItem} text="Explore" secondaryText="${html`<${Toggle} />`}" />
-                </${List}>
-            `,
+        world: () => {
+            return {
+                title: 'World',
+                icon: 'plus',
+                onIconClick: () => {
+                    state.setModalView({id: 'construct'})
+                },
+                children: html`
+                    <${List}>
+                        ${state.entities.sort((a, b) => a.dist - b.dist).map(e => {
+                            const text = e.count ? (e.count === 1 ? `1 ${e.name}` : `${e.count} ${e.pluralName}`) : e.name;
+                            const detail = e.queue ? (e.queue.length ? toTitleCase(e.queue[0]) : 'Idle') : '';
+                            return html`
+                                <${ListItem}
+                                    icon="${getEntityIcon(e.type)}"
+                                    text="${text}"
+                                    detail="${detail}"
+                                    secondaryText="${e?.dist ? `Dist ${e.dist}` : 'At base'}"
+                                    percent=${e?.percent}
+                                    onClick=${() => {
+                                        if (e.type === 'humanoid') {
+                                            pushView({id: 'humanoid', entityId: e.id});
+                                        } else if (e.type === 'food') {
+                                            pushView({id: 'entity', entityId: e.id});
+                                        }
+                                    }}
+                                />
+                            `
+                        })}
+                        <${ListItem} text="Explore" secondaryText="${html`<${Toggle} />`}" />
+                    </${List}>
+                `,
+            }
         },
-        jason: {
-            title: 'Jason',
-            children: html`
-                <${List} title="Queue">
-                    <${ListItem} text="Currently" detail="Eating bartlett pear" onClick=${() => {}} />
-                    <${ListItem} text="Up next" detail="Chop birch tree" secondaryText="Dist 6" onClick=${() => {}} />
-                </${List}>
-                <${List} title="Condition">
-                    <${ListItem} icon="heart" text="Health" secondaryText="90%" percent="90" onClick=${() => {}} />
-                    <${ListItem} icon="face-meh" text="Mood" secondaryText="63%" percent="63" onClick=${() => {}} />
-                    <${ListItem} icon="bed" text="Rest" secondaryText="100%" percent="100" onClick=${() => {}} />
-                    <${ListItem} icon="utensils" text="Hunger" secondaryText="98%" percent="98" onClick=${() => {}} />
-                    <${ListItem} icon="person-running" text="Recreation" secondaryText="80%" percent="80" onClick=${() => {}} k/>
-                </${List}>
-                <${List} title="Configuration">
-                    <${ListItem} icon="user-gear" text="Jobs" onClick=${() => {}} />
-                    <${ListItem} icon="box" text="Inventory" onClick=${() => {}} />
-                </${List}>
-                <${List} title="Details">
-                    <${ListItem} text="Name" secondaryText="Jason 'Southpaw' Douglas" />
-                    <${ListItem} text="Age" secondaryText="24" />
-                    <${ListItem} text="Gender" secondaryText="Male" />
-                    <${ListItem} text="Childhood" secondaryText="Mute" onClick=${() => {}} />
-                    <${ListItem} text="Adulthood" secondaryText="Civil servant" onClick=${() => {}} />
-                </${List}>
-                <${List} title="Traits">
-                    <${ListItem} text="Lazy" onClick=${() => {}} />
-                    <${ListItem} text="Nudist" onClick=${() => {}} />
-                </${List}>
-                <${List} title="Relations">
-                    <${ListItem} text="Fritz" secondaryText="Friend" percent="78" onClick=${() => {}} />
-                    <${ListItem} text="Murphy" secondaryText="Detests" percent="12" onClick=${() => {}} />
-                </${List}>
-            `,
+        construct: () => {
+            return {
+                title: 'Construct',
+                children: html`
+                    <${List}>
+                        <${ListItem} icon="building" text="Rice field" onClick=${() => {}} isButton secondaryText="${html`<i class="fa-solid fa-plus" />`}" />
+                        <${ListItem} icon="building" text="Corn field" onClick=${() => {}} isButton secondaryText="${html`<i class="fa-solid fa-plus" />`}" />
+                        <${ListItem} icon="building" text="Potato field" onClick=${() => {}} isButton secondaryText="${html`<i class="fa-solid fa-plus" />`}" />
+                    </${List}>
+                `,
+            }
+        },
+        entity: ({ entityId }) => {
+            const entity = state.entities.find(e => e.id === entityId);
+            return {
+                title: entity.name || 'Entity',
+                children: html`
+                    <${List}>
+                        ${entity.description && html`<${ListItem} text="${entity.description}" />`}
+                        ${Object.entries(entity).map(([key, value]) => {
+                            const ignore = ['name', 'pluralName', 'description', 'id', 'queue', 'count', 'dist'];
+                            if (ignore.includes(key)) return;
+                            return html`
+                                <${ListItem} text="${toTitleCase(key)}" secondaryText="${toTitleCase(value)}" />
+                            `;
+                        })}
+                    </${List}>
+                `,
+            }
+        },
+        humanoid: ({ entityId }) => {
+            const humanoid = state.entities.find(e => e.id === entityId);
+            const overallStatus = humanoid.overall > 80 ? 'Good' : humanoid.overall > 50 ? 'Average' : 'Poor';
+            const hungerStatus = humanoid.hunger > 80 ? 'Full' : humanoid.hunger > 50 ? 'Satisfied' : 'Hungry';
+            const moodStatus = humanoid.mood > 60 ? 'Content' : humanoid.mood > 40 ? 'Unhappy' : 'Depressed';
+            const restStatus = humanoid.rest > 80 ? 'Rested' : humanoid.rest > 50 ? 'Tired' : 'Exhausted';
+            const healthStatus = humanoid.health > 50 ? 'Healthy' : humanoid.health > 20 ? 'Unwell' : 'Dying';
+            return {
+                title: humanoid.name || 'Humanoid',
+                children: html`
+                    <${List} title="Queue">
+                        <${ListItem} text="Currently" detail="${humanoid.queue.length ? toTitleCase(humanoid.queue[0]) : 'Idle'}" />
+                        <${ListItem} text="Up next" detail="${humanoid.queue.length > 1 ? toTitleCase(humanoid.queue[1]) : 'NA'}" />
+                    </${List}>
+                    <${List} title="Condition">
+                        <${ListItem} icon="face-smile" text="Overall" detail="${overallStatus}" secondaryText="${humanoid.overall}%" percent="${humanoid.overall}" />
+                        <${ListItem} icon="heart" text="Health" detail="${healthStatus}" secondaryText="${humanoid.health}%" percent="${humanoid.health}" onClick=${() => {}} />
+                        <${ListItem} icon="brain" text="Mood" detail="${moodStatus}" secondaryText="${humanoid.mood}%" percent="${humanoid.mood}" onClick=${() => {}} />
+                        <${ListItem} icon="bed" text="Rest" detail="${restStatus}" secondaryText="${humanoid.rest}%" percent="${humanoid.rest}" onClick=${() => {}} />
+                        <${ListItem} icon="utensils" text="Hunger" detail="${hungerStatus}" secondaryText="${humanoid.hunger}%" percent="${humanoid.hunger}" onClick=${() => {}} />
+                        <${ListItem} icon="person-running" text="Recreation" detail="Satisfied" secondaryText="80%" percent="80" onClick=${() => {}} />
+                        <${ListItem} icon="couch" text="Comfort" detail="Comfortable" secondaryText="80%" percent="80" onClick=${() => {}} />
+                    </${List}>
+                    <${List} title="Configuration">
+                        <${ListItem} icon="user-gear" text="Jobs" onClick=${() => {}} />
+                        <${ListItem} icon="box" text="Inventory" onClick=${() => {}} />
+                    </${List}>
+                    <${List} title="Details">
+                        <${ListItem} text="Name" secondaryText="Jason 'Southpaw' Douglas" />
+                        <${ListItem} text="Age" secondaryText="24" />
+                        <${ListItem} text="Gender" secondaryText="Male" />
+                        <${ListItem} text="Childhood" secondaryText="Mute" onClick=${() => {}} />
+                        <${ListItem} text="Adulthood" secondaryText="Civil servant" onClick=${() => {}} />
+                    </${List}>
+                    <${List} title="Traits">
+                        <${ListItem} text="Lazy" onClick=${() => {}} />
+                        <${ListItem} text="Nudist" onClick=${() => {}} />
+                    </${List}>
+                    <${List} title="Relations">
+                        <${ListItem} icon="face-smile" text="Fritz" secondaryText="Friend" percent="78" onClick=${() => {}} />
+                        <${ListItem} icon="face-frown" text="Murphy" secondaryText="Detests" percent="12" onClick=${() => {}} />
+                    </${List}>
+                `,
+            }
         }
     }
 
+    const bakedModalView = views?.[state?.modalView?.id]?.()
+
     return html`
         <div class="container">
-            <div class="app" style="transform: translateX(${state.viewStack.indexOf(state.activeView) * -100}%)">
-                ${state.viewStack.map((viewId, index) => {
-                    const view = views[viewId];
-                    const lastViewId = state.viewStack[index - 1];
-                    const lastView = views[lastViewId];
+            <div class="app" style="transform: translateX(${state.viewStack.findIndex(v => v.id === state.activeView.id) * -100}%)">
+                ${state.viewStack.map((viewData, index) => {
+                    const view = views[viewData.id](viewData);
+                    const lastViewData = state.viewStack[index - 1];
+                    const lastView = lastViewData ? views[lastViewData.id](lastViewData) : null;
                     return html`
-                        <${View} title=${view.title} backLabel=${lastView?.title} onBackClick=${() => popView()}>
+                        <${View} title=${view.title} icon=${view.icon} onIconClick=${view.onIconClick} backLabel=${lastView?.title} onBackClick=${() => popView()}>
                             ${view.children}
                         </${View}>
                     `;
@@ -95,7 +140,7 @@ const App = ({ state, pushView, popView }) => {
             </div>
             <div class="goal">
                 <${List}>
-                    <${ListItem} icon="flag-checkered" text="Current goal" detail="Collect wood" secondaryText="1 of 10" percent="10" />
+                    <${ListItem} icon="flag-checkered" text="Current goal" detail="Plant a rice field" />
                     <${ListItem}  text="${html`
                         <${Stack}>
                             <button onClick=${() => state.setIsPaused(!state.isPaused)}>
@@ -106,6 +151,18 @@ const App = ({ state, pushView, popView }) => {
                     `}" secondaryText="Summer, day ${state.day}" />
                 </${List}>
             </div>
+            ${bakedModalView ? html`
+                <div class="modal">
+                    <div class="modal-overlay" onClick=${() => state.setModalView(null)} />
+                    <div class="modal-content">
+                        <header class="modal-header">
+                            <button class="modal-cancel" onClick=${() => state.setModalView(null)}>Cancel</button>
+                            <h3 class="modal-title">${bakedModalView.title}</h3>
+                        </header>
+                        ${bakedModalView.children}
+                    </div>
+                </div>
+            ` : ''}
         </div>
     `;
 };
