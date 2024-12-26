@@ -8,6 +8,7 @@ const withController = (WrappedComponent) => {
     const [tickCount, setTickCount] = useState(0);
     const [viewStack, setViewStack] = useState([{id: 'menu'}, {id: 'world'}]);
     const [activeView, setActiveView] = useState({id: 'world'});
+    const [modalView, setModalView] = useState(null)
     const [hour, setHour] = useState(7);
     const [minute, setMinute] = useState(0);
     const [amPm, setAmPm] = useState('AM');
@@ -166,6 +167,7 @@ const withController = (WrappedComponent) => {
             day, setDay,
             viewStack, setViewStack,
             activeView, setActiveView,
+            modalView, setModalView,
             stockpile, setStockpile,
             entities, setEntities,
             isPaused, setIsPaused,

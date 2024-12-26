@@ -16,7 +16,7 @@ const App = ({ state, pushView, popView }) => {
                 title: 'World',
                 icon: 'plus',
                 onIconClick: () => {
-                    console.log('Show modal!');
+                    state.setModalView({id: 'construct'})
                 },
                 children: html`
                     <${List} title="Stockpile">
@@ -49,6 +49,18 @@ const App = ({ state, pushView, popView }) => {
                             />
                         `)}
                         <${ListItem} text="Explore" secondaryText="${html`<${Toggle} />`}" />
+                    </${List}>
+                `,
+            }
+        },
+        construct: () => {
+            return {
+                title: 'Construct',
+                children: html`
+                    <${List}>
+                        <${ListItem} icon="building" text="Rice field" onClick=${() => {}} isButton secondaryText="${html`<i class="fa-solid fa-plus" />`}" />
+                        <${ListItem} icon="building" text="Corn field" onClick=${() => {}} isButton secondaryText="${html`<i class="fa-solid fa-plus" />`}" />
+                        <${ListItem} icon="building" text="Potato field" onClick=${() => {}} isButton secondaryText="${html`<i class="fa-solid fa-plus" />`}" />
                     </${List}>
                 `,
             }
@@ -124,6 +136,8 @@ const App = ({ state, pushView, popView }) => {
         }
     }
 
+    const bakedModalView = views?.[state?.modalView?.id]?.()
+
     return html`
         <div class="container">
             <div class="app" style="transform: translateX(${state.viewStack.findIndex(v => v.id === state.activeView.id) * -100}%)">
@@ -151,6 +165,18 @@ const App = ({ state, pushView, popView }) => {
                     `}" secondaryText="Summer, day ${state.day}" />
                 </${List}>
             </div>
+            ${bakedModalView ? html`
+                <div class="modal">
+                    <div class="modal-overlay" onClick=${() => state.setModalView(null)} />
+                    <div class="modal-content">
+                        <header class="modal-header">
+                            <button class="modal-cancel" onClick=${() => state.setModalView(null)}>Cancel</button>
+                            <h3 class="modal-title">${bakedModalView.title}</h3>
+                        </header>
+                        ${bakedModalView.children}
+                    </div>
+                </div>
+            ` : ''}
         </div>
     `;
 };
