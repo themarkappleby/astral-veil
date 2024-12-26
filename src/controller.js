@@ -27,7 +27,7 @@ const withController = (WrappedComponent) => {
     // ]);
 
     const [stockpile, setStockpile] = useState([
-        { entity: defs.honeycrispApple, count: 10 },
+        { id: 3, entity: defs.honeycrispApple, count: 10 },
     ]);
 
     const [entities, setEntities] = useState([
@@ -98,7 +98,13 @@ const withController = (WrappedComponent) => {
                         if (action) {
                             if (action === 'eat') {
                                 // locate closest food
-                                console.log('eat');
+                                const food = locateClosestEntity({
+                                    fromDist: entity.dist,
+                                    type: 'food',
+                                    entities,
+                                    stockpile,
+                                });
+                                console.log('eat', food);
                             }
                             entity.queue.shift();
                         }
