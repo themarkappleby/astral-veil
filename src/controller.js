@@ -15,7 +15,7 @@ const withController = (WrappedComponent) => {
     const [day, setDay] = useState(1);
     const [isPaused, setIsPaused] = useState(false);
     const isPausedRef = useRef(isPaused);
-    const [entities, setEntities] = useState([
+    const [ent, setEntities] = useState([
         {
             ...defs.honeycrispApple,
             id: 1,
@@ -47,11 +47,13 @@ const withController = (WrappedComponent) => {
 
         const tick = () => {
             setTickCount(prevTickCount => {
-                let newTickCount = prevTickCount + 1;
-                if (newTickCount > 100) {
-                    newTickCount = 1;
+                let min = prevTickCount + 1;
+                if (min > 60) {
+                    min = 1;
                 }
                 setEntities(prevEntities => {
+                    const entities = Object.assign({}, prevEntities);
+
                     return prevEntities.map(e => {
                         const entity = { ...e };
 
@@ -64,7 +66,7 @@ const withController = (WrappedComponent) => {
                         }
 
                         // Every 5 minutes
-                        if (newTickCount % 5 === 0) {
+                        if (min % 5 === 0) {
                             if (entity.hunger) {
                                 entity.hunger = Math.max(0, entity.hunger - 1);
                                 if (entity.hunger < 33) {
@@ -73,13 +75,13 @@ const withController = (WrappedComponent) => {
                             }
                         }
                         // Every 10 minutes
-                        if (newTickCount % 10 === 0) {
+                        if (min % 10 === 0) {
                             if (entity.rest) {
                                 entity.rest = Math.max(0, entity.rest - 1);
                             }
                         }
                         // Every hour
-                        if (newTickCount % 60 === 0) {
+                        if (min % 60 === 0) {
                             if (entity.health && entity.hunger === 0) {
                                 entity.health = Math.max(0, entity.health - 1);
                             }
@@ -108,7 +110,7 @@ const withController = (WrappedComponent) => {
                         return entity;
                     });
                 });
-                return newTickCount;
+                return min;
             });
         }
 
@@ -179,7 +181,7 @@ const withController = (WrappedComponent) => {
             viewStack, setViewStack,
             activeView, setActiveView,
             modalView, setModalView,
-            entities, setEntities,
+            entities: ent, setEntities,
             isPaused, setIsPaused,
         }
     }} />`;
