@@ -4,7 +4,7 @@ const html = htm.bind(h);
 
 const withController = (WrappedComponent) => {
   return (props) => {
-    const [gameSpeed, setGameSpeed] = useState(1);
+    const [gameSpeed, setGameSpeed] = useState(0.2);
     const [tickCount, setTickCount] = useState(0);
     const [viewStack, setViewStack] = useState([{id: 'menu'}, {id: 'world'}]);
     const [activeView, setActiveView] = useState({id: 'world'});
@@ -20,7 +20,7 @@ const withController = (WrappedComponent) => {
             ...defs.simpleMeal,
             id: 1,
             dist: 0,
-            count: 10,
+            count: 3,
         },
         {
             ...defs.human,
@@ -37,7 +37,7 @@ const withController = (WrappedComponent) => {
             ...defs.simpleMeal,
             id: 3,
             dist: 10,
-            count: 10,
+            count: 1,
         },
     ]);
 
@@ -57,32 +57,31 @@ const withController = (WrappedComponent) => {
                     min = 1;
                 }
                 setEntities(prevEntities => {
-                    const entities = Object.assign([], prevEntities);
+                    let entities = Object.assign([], prevEntities);
                     entities.forEach(entity => {
                         // Every 5 minutes
                         if (min % 5 === 0) {
-                            if (entity.hunger && entity?.action?.type !== 'eat') {
-                                entity.hunger = Math.max(0, entity.hunger - 1);
-                                if (entity.hunger === 33) {
+                            // Reduce hunger
+                            if (entity.hunger) {
+                                if (entity?.action?.type !== 'eat') {
+                                    entity.hunger = Math.max(0, entity.hunger - 10);
+                                }
+                                if (entity.hunger <= 33 && !entity?.action) {
                                     const closestFood = locateClosestEntity({
                                         fromDist: entity.dist,
                                         type: 'food',
                                         entities,
                                     });
-                                    console.log('hungry')
                                     if (closestFood) {
-                                        console.log('closestFood', closestFood);
                                         if (closestFood.dist === entity.dist) {
                                             entity.action = {
                                                 type: 'eat',
-                                                target: closestFood.id,
-                                                progress: 0,
+                                                targetId: closestFood.id,
                                             };
                                         } else {
                                             entity.action = {
                                                 type: 'walk',
-                                                target: closestFood.id,
-                                                progress: 0,
+                                                targetId: closestFood.id,
                                             };
                                         }
                                     }
@@ -91,12 +90,14 @@ const withController = (WrappedComponent) => {
                         }
                         // Every 10 minutes
                         if (min % 10 === 0) {
+                            // Reduce rest
                             if (entity.rest) {
                                 entity.rest = Math.max(0, entity.rest - 1);
                             }
                         }
                         // Every hour
                         if (min % 60 === 0) {
+                            // Reduce health if starving
                             if (entity.health && entity.hunger === 0) {
                                 entity.health = Math.max(0, entity.health - 1);
                             }
@@ -105,71 +106,58 @@ const withController = (WrappedComponent) => {
                             entity.overall = Math.round((entity.health + entity.hunger + entity.mood + entity.rest) / 4);
                         }
 
-                        if (entity.action?.type === 'walk') {
-                            const target = entities.find(e => e.id === entity.action.target);
-                            if (!entity.action.start) {
-                                entity.action.start = entity.dist;
-                            }
-                            if (!entity.action.rate) {
-                                const MINUTES_TO_WALK_ONE_UNIT = 5;
-                                const distance = Math.abs(target.dist - entity.dist);
-                                entity.action.rate = (target.dist - entity.dist) / (MINUTES_TO_WALK_ONE_UNIT * distance);
-                            }
-                            entity.dist = Math.min(target.dist, Math.max(0, entity.dist + entity.action.rate));
-                            entity.action.progress = (entity.dist - entity.action.start) / (target.dist - entity.action.start) * 100;
-                            if (entity.dist === target.dist) {
-                                if (target.type === 'food') {
+                        if (entity?.action) {
+                            if (!entity.action.initilized) {
+                                entity.action.initilized = true;
+                                const target = Object.assign({}, entities.find(e => e.id === entity.action.targetId));
+                                if (entity.action.type === 'walk') {
+                                    // Handle walking
+                                    const MINUTES_TO_WALK_ONE_UNIT = 5;
                                     entity.action = {
-                                        type: 'eat',
-                                        target: target.id,
+                                        ...entity.action,
+                                        attr: 'dist',
+                                        from: entity.dist,
+                                        to: target.dist,
+                                        rate: (target.dist - entity.dist) / (MINUTES_TO_WALK_ONE_UNIT * Math.abs(target.dist - entity.dist)),
                                         progress: 0,
-                                    };
+                                        target,
+                                    }
+                                } else if (entity.action.type === 'eat') {
+                                    // Handle eating
+                                    const MINUTES_TO_EAT = 15;
+                                    const caloriesPerMin = target?.calories / MINUTES_TO_EAT;
+                                    const hungerPerMin = (caloriesPerMin / entity.dailyCalories) * 100;
+                                    target.count = Math.max(0, target?.count - 1);
+                                    if (target.count === 0) {
+                                        entities = entities.filter(e => e.id !== target?.id);
+                                    }
+                                    entity.action = {
+                                        ...entity.action,
+                                        attr: 'hunger',
+                                        from: entity.hunger,
+                                        to: 100,
+                                        rate: hungerPerMin,
+                                        progress: 0,
+                                        target,
+                                    }
+                                }
+                            }
+                            const current = entity[entity.action.attr];
+                            entity[entity.action.attr] = Math.min(entity.action.to, Math.max(0, current + entity.action.rate));
+                            entity.action.progress = Math.min(100, ((current - entity.action.from) / (entity.action.to - entity.action.from)) * 100);
+                            if (entity.action.progress >= 100) {
+                                if (entity.action.type === 'walk') {
+                                    if (entity.action.target.type === 'food') {
+                                        entity.action = {
+                                            type: 'eat',
+                                            targetId: entity.action.target.id,
+                                        };
+                                    } else {
+                                        entity.action = null;
+                                    }
                                 } else {
                                     entity.action = null;
                                 }
-                            }
-                            /*
-                            const target = entities.find(e => e.id === entity.action.target);
-                            const MINUTES_TO_WALK_ONE_UNIT = 5;
-                            if (!entity.action.distRemaining) {
-                                entity.action.distRemaining = Math.abs(target.dist - entity.dist);
-                            }
-                            if (entity.action.distRemaining > 0) {
-                                if (target.dist > entity.dist) {
-                                    entity.dist = Math.max(0, entity.dist + (entity.action.distRemaining / MINUTES_TO_WALK_ONE_UNIT));
-                                } else {
-                                    entity.dist = Math.max(0, entity.dist - (entity.action.distRemaining / MINUTES_TO_WALK_ONE_UNIT));
-                                }
-                                entity.action.distRemaining = Math.max(0, entity.action.distRemaining - MINUTES_TO_WALK_ONE_UNIT);
-                            }
-                            */
-                        }
-
-                        if (entity.action?.type === 'eat') {    
-                            const food = entities.find(e => e.id === entity.action.target);
-                            
-                            // Initialize calories remaining if first time eating and reduce food count
-                            if (!entity.action.caloriesRemaining) {
-                                entity.action.caloriesRemaining = food.calories;
-                                food.count = Math.max(0, food.count - 1);
-                            }
-
-                            // Calculate calories and hunger changes per minute
-                            const MINUTES_TO_EAT = 30;
-                            const caloriesPerMin = food.calories / MINUTES_TO_EAT;
-                            const hungerPerMin = (caloriesPerMin / entity.dailyCalories) * 100;
-
-                            // Update calories remaining and hunger
-                            entity.action.caloriesRemaining -= caloriesPerMin;
-                            entity.hunger = Math.min(100, entity.hunger + hungerPerMin);
-
-                            // Update eating progress
-                            const caloriesConsumed = food.calories - entity.action.caloriesRemaining;
-                            entity.action.progress = (caloriesConsumed / food.calories) * 100;
-
-                            // Check if finished eating
-                            if (entity.action.progress >= 100 || entity.hunger >= 100) {
-                                entity.action = null;
                             }
                         }
                     });

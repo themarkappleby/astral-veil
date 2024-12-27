@@ -28,7 +28,7 @@ const App = ({ state, pushView, popView }) => {
                                     icon="${getEntityIcon(e.type)}"
                                     text="${text}"
                                     detail="${actionText}"
-                                    secondaryText="${e?.dist ? `Dist ${e.dist}` : 'At base'}"
+                                    secondaryText="${e?.dist ? `Dist ${Math.floor(e.dist)}` : 'At base'}"
                                     percent=${e?.action?.progress}
                                     onClick=${() => {
                                         if (e.type === 'humanoid') {
@@ -65,7 +65,13 @@ const App = ({ state, pushView, popView }) => {
                     <${List}>
                         ${entity.description && html`<${ListItem} text="${entity.description}" />`}
                         ${Object.entries(entity).map(([key, value]) => {
-                            const ignore = ['name', 'pluralName', 'description', 'id', 'queue', 'count', 'dist'];
+                            const ignore = [
+                                'name',
+                                'pluralName',
+                                'description',
+                                'id',
+                                'queue',
+                            ];
                             if (ignore.includes(key)) return;
                             return html`
                                 <${ListItem} text="${toTitleCase(key)}" secondaryText="${toTitleCase(value)}" />
@@ -78,14 +84,15 @@ const App = ({ state, pushView, popView }) => {
         humanoid: ({ entityId }) => {
             const humanoid = state.entities.find(e => e.id === entityId);
             const actionText = getActionText(humanoid?.action, state);
+            const dist = humanoid?.dist ? `Dist ${Math.floor(humanoid.dist)}` : 'At base';
             return {
                 title: humanoid.name || 'Humanoid',
                 children: html`
                     <${List} title="Currently">
                         ${humanoid?.action ? html`
-                            <${ListItem} text="${actionText}" percent="${humanoid.action?.progress || 0}" />
+                            <${ListItem} icon="face-smile" text="Currently" detail="${actionText}" percent="${humanoid.action?.progress || 0}" secondaryText="${dist}" />
                         ` : html`
-                            <${ListItem} text="Idle" />
+                            <${ListItem} icon="face-smile" text="Currently" detail="Idle" secondaryText="${dist}" />
                         `}
                     </${List}>
                     <${List} title="Condition">
