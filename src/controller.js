@@ -62,7 +62,7 @@ const withController = (WrappedComponent) => {
                         // Every 5 minutes
                         if (min % 5 === 0) {
                             // Reduce hunger
-                            if (entity.hunger) {
+                            if (entity.hunger !== undefined) {
                                 if (entity?.action?.type !== 'eat') {
                                     entity.hunger = Math.max(0, entity.hunger - 1);
                                 }
@@ -132,7 +132,6 @@ const withController = (WrappedComponent) => {
                                     const MINUTES_TO_EAT = 15;
                                     const caloriesPerMin = target?.calories / MINUTES_TO_EAT;
                                     const hungerPerMin = (caloriesPerMin / entity.dailyCalories) * 100;
-                                    // Not working for food at base
                                     const t = entities.find(e => e.id === entity.action.targetId);
                                     t.count = Math.max(0, t?.count - 1);
                                     if (t.count === 0) {
