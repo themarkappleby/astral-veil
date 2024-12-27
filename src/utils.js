@@ -63,6 +63,6 @@ const locateClosestEntity = ({
     type,
     entities,
 }) => {
-    const sortedEntities = entities.map(e => ({ ...e, dist: Math.abs(e.dist - fromDist) })).sort((a, b) => a.dist - b.dist);
-    return sortedEntities.find(e => e.type === type && e.dist <= fromDist);
+    const sortedEntities = entities.map(e => ({ ...e, diff: Math.abs(e.dist - fromDist) })).sort((a, b) => a.diff - b.diff);
+    return sortedEntities.find(e => e.type === type && e.diff <= fromDist);
 }

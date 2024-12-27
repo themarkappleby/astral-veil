@@ -4,7 +4,7 @@ const html = htm.bind(h);
 
 const withController = (WrappedComponent) => {
   return (props) => {
-    const [gameSpeed, setGameSpeed] = useState(0.2);
+    const [gameSpeed, setGameSpeed] = useState(1);
     const [tickCount, setTickCount] = useState(0);
     const [viewStack, setViewStack] = useState([{id: 'menu'}, {id: 'world'}]);
     const [activeView, setActiveView] = useState({id: 'world'});
@@ -25,7 +25,7 @@ const withController = (WrappedComponent) => {
         {
             ...defs.human,
             id: 2,
-            dist: 8,
+            dist: 2,
             name: 'Jason',
             overall: 80,
             hunger: 34,
@@ -33,12 +33,12 @@ const withController = (WrappedComponent) => {
             rest: 100,
             health: 100,
         },
-        {
-            ...defs.simpleMeal,
-            id: 3,
-            dist: 10,
-            count: 1,
-        },
+        // {
+        //     ...defs.simpleMeal,
+        //     id: 3,
+        //     dist: 3,
+        //     count: 1,
+        // },
     ]);
 
     useEffect(() => {
@@ -64,7 +64,7 @@ const withController = (WrappedComponent) => {
                             // Reduce hunger
                             if (entity.hunger) {
                                 if (entity?.action?.type !== 'eat') {
-                                    entity.hunger = Math.max(0, entity.hunger - 10);
+                                    entity.hunger = Math.max(0, entity.hunger - 1);
                                 }
                                 if (entity.hunger <= 33 && !entity?.action) {
                                     const closestFood = locateClosestEntity({
@@ -127,6 +127,7 @@ const withController = (WrappedComponent) => {
                                     const MINUTES_TO_EAT = 15;
                                     const caloriesPerMin = target?.calories / MINUTES_TO_EAT;
                                     const hungerPerMin = (caloriesPerMin / entity.dailyCalories) * 100;
+                                    // Not working for food at base
                                     target.count = Math.max(0, target?.count - 1);
                                     if (target.count === 0) {
                                         entities = entities.filter(e => e.id !== target?.id);
@@ -143,10 +144,15 @@ const withController = (WrappedComponent) => {
                                 }
                             }
                             const current = entity[entity.action.attr];
-                            entity[entity.action.attr] = Math.min(entity.action.to, Math.max(0, current + entity.action.rate));
+                            if (entity.action.to > entity.action.from) {
+                                entity[entity.action.attr] = Math.min(entity.action.to, Math.max(0, current + entity.action.rate));
+                            } else {
+                                entity[entity.action.attr] = Math.max(entity.action.to, current + entity.action.rate);
+                            }
                             entity.action.progress = Math.min(100, ((current - entity.action.from) / (entity.action.to - entity.action.from)) * 100);
                             if (entity.action.progress >= 100) {
                                 if (entity.action.type === 'walk') {
+                                    console.log('walked')
                                     if (entity.action.target.type === 'food') {
                                         entity.action = {
                                             type: 'eat',
