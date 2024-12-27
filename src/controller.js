@@ -17,7 +17,7 @@ const withController = (WrappedComponent) => {
     const isPausedRef = useRef(isPaused);
     const [ent, setEntities] = useState([
         {
-            ...defs.honeycrispApple,
+            ...defs.simpleMeal,
             id: 1,
             dist: 0,
             count: 10,
@@ -27,9 +27,8 @@ const withController = (WrappedComponent) => {
             id: 2,
             dist: 0,
             name: 'Jason',
-            queue: [],
             overall: 80,
-            hunger: 87,
+            hunger: 35,
             mood: 63,
             rest: 100,
             health: 100,
@@ -56,10 +55,25 @@ const withController = (WrappedComponent) => {
                     entities.forEach(entity => {
                         // Every 5 minutes
                         if (min % 5 === 0) {
-                            if (entity.hunger) {
+                            if (entity.hunger && entity?.action?.type !== 'eat') {
                                 entity.hunger = Math.max(0, entity.hunger - 1);
-                                if (entity.hunger < 33) {
-                                    entity.queue.push('eat');
+                                if (entity.hunger === 33) {
+                                    const closestFood = locateClosestEntity({
+                                        fromDist: entity.dist,
+                                        type: 'food',
+                                        entities,
+                                    });
+                                    if (closestFood) {
+                                        if (closestFood.dist === entity.dist) {
+                                            entity.action = {
+                                                target: closestFood.id,
+                                                type: 'eat',
+                                                progress: 0,
+                                            };
+                                        } else {
+                                            // TODO: walk to food
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -79,19 +93,20 @@ const withController = (WrappedComponent) => {
                             entity.overall = Math.round((entity.health + entity.hunger + entity.mood + entity.rest) / 4);
                         }
 
-                        const action = entity?.queue?.[0];
-                        if (action) {
-                            if (action === 'eat') {
-                                const closestFood = locateClosestEntity({
-                                    fromDist: entity.dist,
-                                    type: 'food',
-                                    entities,
-                                });
-                                if (closestFood) {
-                                    entity.hunger = Math.min(100, entity.hunger + closestFood.calories);
-                                    entity.queue.shift();
-                                    closestFood.count = Math.max(0, closestFood.count - 1);
-                                }
+                        if (entity.action?.type === 'eat') {    
+                            // TODO: simplify this code
+                            const food = entities.find(e => e.id === entity.action.target);
+                            if (!entity.action.calories) {
+                                entity.action.calories = food.calories;
+                            }
+                            const caloriesPerMin = food.calories / 30;
+                            entity.action.calories -= caloriesPerMin;
+                            const hungerPerMin = caloriesPerMin / entity.dailyCalories * 100;
+                            entity.hunger += hungerPerMin;
+                            entity.action.progress += (food.calories - entity.action.calories) / food.calories * 100;
+                            if (entity.action.progress >= 100 || entity.hunger >= 100) {
+                                food.count = Math.max(0, food.count - 1);
+                                entity.action = null;
                             }
                         }
                     });

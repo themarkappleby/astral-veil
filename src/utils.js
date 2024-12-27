@@ -8,6 +8,41 @@ const getEntityIcon = (entityType) => {
     }
 }
 
+const getStatusDesc = (type, value) => {
+    const statuses = {
+        overall: [
+            { name: 'Great', min: 90 },
+            { name: 'Good', min: 80 },
+            { name: 'Average', min: 50 },
+            { name: 'Poor', min: 20 },
+            { name: 'Terrible', min: 0 },
+        ],
+        hunger: [
+            { name: 'Full', min: 80 },
+            { name: 'Satisfied', min: 50 },
+            { name: 'Hungry', min: 20 },
+            { name: 'Starving', min: 0 },
+        ],
+        mood: [
+            { name: 'Happy', min: 80 },
+            { name: 'Content', min: 50 },
+            { name: 'Unhappy', min: 30 },
+            { name: 'Depressed', min: 0 },
+        ],
+        rest: [
+            { name: 'Rested', min: 80 },
+            { name: 'Tired', min: 50 },
+            { name: 'Exhausted', min: 0 },
+        ],
+        health: [
+            { name: 'Healthy', min: 50 },
+            { name: 'Unwell', min: 20 },
+            { name: 'Dying', min: 0 },
+        ],
+    }
+    return statuses[type].find(s => value >= s.min)?.name;
+}
+
 const toTitleCase = (str) => {
     if (typeof str !== 'string') return str;
     return str[0].toUpperCase() + str.slice(1);

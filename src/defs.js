@@ -15,7 +15,16 @@ defs.honeycrispApple = {
     type: 'food',
     description: 'A sweet, juicy apple with a firm texture.',
     size: 8,
-    calories: 30,
+    calories: 90,
+}
+
+defs.simpleMeal = {
+    name: 'Simple meal',
+    pluralName: 'Simple meals',
+    type: 'food',
+    description: 'A simple meal consisting primarily of one main ingredient.',
+    size: 16,
+    calories: 1450,
 }
 
 defs.birchWood = {
@@ -32,4 +41,5 @@ defs.human = {
     type: 'humanoid',
     description: 'A bipedal humanoid being.',
     size: 2000,
+    dailyCalories: 2200,
 }

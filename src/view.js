@@ -77,26 +77,74 @@ const App = ({ state, pushView, popView }) => {
         },
         humanoid: ({ entityId }) => {
             const humanoid = state.entities.find(e => e.id === entityId);
-            const overallStatus = humanoid.overall > 80 ? 'Good' : humanoid.overall > 50 ? 'Average' : 'Poor';
-            const hungerStatus = humanoid.hunger > 80 ? 'Full' : humanoid.hunger > 50 ? 'Satisfied' : 'Hungry';
-            const moodStatus = humanoid.mood > 60 ? 'Content' : humanoid.mood > 40 ? 'Unhappy' : 'Depressed';
-            const restStatus = humanoid.rest > 80 ? 'Rested' : humanoid.rest > 50 ? 'Tired' : 'Exhausted';
-            const healthStatus = humanoid.health > 50 ? 'Healthy' : humanoid.health > 20 ? 'Unwell' : 'Dying';
+            const actionTarget = humanoid?.action?.target ? state.entities.find(e => e.id === humanoid.action.target) : null;
+            const actionText = `${toTitleCase(humanoid?.action?.type)} ${actionTarget?.name?.toLowerCase() || ''} ${humanoid?.action?.progress ? `${Math.round(humanoid.action.progress)}%` : ''}`;
             return {
                 title: humanoid.name || 'Humanoid',
                 children: html`
-                    <${List} title="Queue">
-                        <${ListItem} text="Currently" detail="${humanoid.queue.length ? toTitleCase(humanoid.queue[0]) : 'Idle'}" />
-                        <${ListItem} text="Up next" detail="${humanoid.queue.length > 1 ? toTitleCase(humanoid.queue[1]) : 'NA'}" />
+                    <${List} title="Currently">
+                        ${humanoid?.action ? html`
+                            <${ListItem} text="${actionText}" percent="${humanoid.action?.progress || 0}" />
+                        ` : html`
+                            <${ListItem} text="Idle" />
+                        `}
                     </${List}>
                     <${List} title="Condition">
-                        <${ListItem} icon="face-smile" text="Overall" detail="${overallStatus}" secondaryText="${humanoid.overall}%" percent="${humanoid.overall}" />
-                        <${ListItem} icon="heart" text="Health" detail="${healthStatus}" secondaryText="${humanoid.health}%" percent="${humanoid.health}" onClick=${() => {}} />
-                        <${ListItem} icon="brain" text="Mood" detail="${moodStatus}" secondaryText="${humanoid.mood}%" percent="${humanoid.mood}" onClick=${() => {}} />
-                        <${ListItem} icon="bed" text="Rest" detail="${restStatus}" secondaryText="${humanoid.rest}%" percent="${humanoid.rest}" onClick=${() => {}} />
-                        <${ListItem} icon="utensils" text="Hunger" detail="${hungerStatus}" secondaryText="${humanoid.hunger}%" percent="${humanoid.hunger}" onClick=${() => {}} />
-                        <${ListItem} icon="person-running" text="Recreation" detail="Satisfied" secondaryText="80%" percent="80" onClick=${() => {}} />
-                        <${ListItem} icon="couch" text="Comfort" detail="Comfortable" secondaryText="80%" percent="80" onClick=${() => {}} />
+                        <${ListItem}
+                            text="Overall"
+                            icon="face-smile"
+                            detail="${getStatusDesc('overall', humanoid.overall)}"
+                            secondaryText="${Math.round(humanoid.overall)}%"
+                            percent="${humanoid.overall}"
+                        />
+                        <${ListItem}
+                            text="Health"
+                            icon="heart"
+                            detail="${getStatusDesc('health', humanoid.health)}"
+                            secondaryText="${Math.round(humanoid.health)}%"
+                            percent="${humanoid.health}"
+                            onClick=${() => {}}
+                        />
+                        <${ListItem}
+                            text="Mood"
+                            icon="brain"
+                            detail="${getStatusDesc('mood', humanoid.mood)}"
+                            secondaryText="${Math.round(humanoid.mood)}%"
+                            percent="${humanoid.mood}"
+                            onClick=${() => {}}
+                        />
+                        <${ListItem}
+                            text="Rest"
+                            icon="bed"
+                            detail="${getStatusDesc('rest', humanoid.rest)}"
+                            secondaryText="${Math.round(humanoid.rest)}%"
+                            percent="${humanoid.rest}"
+                            onClick=${() => {}}
+                        />
+                        <${ListItem}
+                            text="Hunger"
+                            icon="utensils"
+                            detail="${getStatusDesc('hunger', humanoid.hunger)}"
+                            secondaryText="${Math.round(humanoid.hunger)}%"
+                            percent="${humanoid.hunger}"
+                            onClick=${() => {}}
+                        />
+                        <${ListItem}
+                            text="Recreation"
+                            icon="person-running"
+                            detail="Satisfied"
+                            secondaryText="80%"
+                            percent="80"
+                            onClick=${() => {}}
+                        />
+                        <${ListItem}
+                            text="Comfort"
+                            icon="couch"
+                            detail="Comfortable"
+                            secondaryText="80%"
+                            percent="80"
+                            onClick=${() => {}}
+                        />
                     </${List}>
                     <${List} title="Configuration">
                         <${ListItem} icon="user-gear" text="Jobs" onClick=${() => {}} />
