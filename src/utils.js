@@ -10,8 +10,12 @@ const getEntityIcon = (entityType) => {
 
 const getActionText = (action, state) => {
     if (!action) return 'Idle';
+    const verbMap = {
+        walk: 'Walking to',
+        eat: 'Eating',
+    }
     const actionTarget = state?.entities?.find(e => e.id === action?.target);
-    return `${toTitleCase(action?.type)} ${actionTarget?.name?.toLowerCase() || ''} ${action?.progress ? `${Math.round(action?.progress)}%` : ''}`;
+    return `${verbMap[action?.type]} ${actionTarget?.name?.toLowerCase() || ''} (ID ${actionTarget?.id}) ${action?.progress ? `${Math.round(action?.progress)}%` : ''}`;
 }
 
 const getStatusDesc = (type, value) => {
@@ -59,6 +63,6 @@ const locateClosestEntity = ({
     type,
     entities,
 }) => {
-    const sortedEntities = entities.sort((a, b) => a.dist - b.dist);
+    const sortedEntities = entities.map(e => ({ ...e, dist: Math.abs(e.dist - fromDist) })).sort((a, b) => a.dist - b.dist);
     return sortedEntities.find(e => e.type === type && e.dist <= fromDist);
 }
