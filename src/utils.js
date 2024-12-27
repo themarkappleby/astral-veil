@@ -17,6 +17,7 @@ const getActionText = (action, state) => {
     const verbMap = {
         walk: 'Walking to',
         eat: 'Eating',
+        sleep: 'Sleeping',
     }
     const actionTarget = action.target;
     return `${verbMap[action?.type]} ${actionTarget?.name?.toLowerCase() || ''} ${action?.progress ? `${Math.round(action?.progress)}%` : ''}`;

@@ -59,12 +59,13 @@ const App = ({ state, pushView, popView }) => {
             }
         },
         entity: ({ entityId }) => {
+            // TODO: fix bug when viewing entity while it is removed
             const entity = state.entities.find(e => e.id === entityId);
             return {
-                title: entity.name || 'Entity',
+                title: entity?.name || 'Entity',
                 children: html`
                     <${List}>
-                        ${entity.description && html`<${ListItem} text="${entity.description}" />`}
+                        ${entity?.description && html`<${ListItem} text="${entity.description}" />`}
                         ${Object.entries(entity).map(([key, value]) => {
                             const ignore = [
                                 'name',
@@ -202,6 +203,11 @@ const App = ({ state, pushView, popView }) => {
                                 <i class="fa-solid fa-${state.isPaused ? 'play' : 'pause'}"></i>
                             </button>
                             <div>${state.hour}:${state.minute < 10 ? '0' : ''}${state.minute} ${state.amPm}</div>
+                            <button onClick=${() => {
+                                state.setGameSpeed(state.gameSpeed === 1 ? 0.01 : 1);
+                            }}>
+                                <i class="fa-solid fa-${state.gameSpeed === 1 ? 'forward' : 'forward-fast'}"></i>
+                            </button>
                         </${Stack}>
                     `}" secondaryText="Summer, day ${state.day}" />
                 </${List}>

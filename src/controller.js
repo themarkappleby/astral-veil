@@ -30,7 +30,7 @@ const withController = (WrappedComponent) => {
             overall: 80,
             hunger: 34,
             mood: 63,
-            rest: 100,
+            rest: 11,
             health: 100,
         },
         {
@@ -91,8 +91,13 @@ const withController = (WrappedComponent) => {
                         // Every 10 minutes
                         if (min % 10 === 0) {
                             // Reduce rest
-                            if (entity.rest) {
+                            if (entity.rest && entity?.action?.type !== 'sleep') {
                                 entity.rest = Math.max(0, entity.rest - 1);
+                            }
+                            if (entity.rest <= 10) {
+                                entity.action = {
+                                    type: 'sleep',
+                                }
                             }
                         }
                         // Every hour
@@ -142,6 +147,15 @@ const withController = (WrappedComponent) => {
                                         progress: 0,
                                         target,
                                     }
+                                } else if (entity.action.type === 'sleep') {
+                                    entity.action = {
+                                        ...entity.action,
+                                        attr: 'rest',
+                                        from: entity.rest,
+                                        to: 100,
+                                        rate: 0.2,
+                                        progress: 0,
+                                    }
                                 }
                             }
                             const current = entity[entity.action.attr];
@@ -182,30 +196,33 @@ const withController = (WrappedComponent) => {
                 return;
             }
             if (deltaTime >= frameInterval) {
-                if (secondsElapsed(gameSpeed)) {
-                    setMinute(prevMinute => {
-                        const newMinute = prevMinute + 1
-                        tick();
-                        if (newMinute === 60) {
-                            setHour(prevHour => {
-                                const newHour = prevHour + 1
-                                if (newHour === 12) {
-                                    setAmPm(prevAmPm => {
-                                        if (prevAmPm === 'PM') {
-                                            setDay(prevDay => prevDay + 1);
-                                        }
-                                        return prevAmPm === 'AM' ? 'PM' : 'AM'
-                                    });
-                                } else if (newHour === 13) {
-                                    return 1;
-                                }
-                                return newHour;
-                            });
-                            return 0;
-                        }
-                        return newMinute;
-                    });
-                }
+                setGameSpeed(speed => {
+                    if (secondsElapsed(speed)) {
+                        setMinute(prevMinute => {
+                            const newMinute = prevMinute + 1
+                            tick();
+                            if (newMinute === 60) {
+                                setHour(prevHour => {
+                                    const newHour = prevHour + 1
+                                    if (newHour === 12) {
+                                        setAmPm(prevAmPm => {
+                                            if (prevAmPm === 'PM') {
+                                                setDay(prevDay => prevDay + 1);
+                                            }
+                                            return prevAmPm === 'AM' ? 'PM' : 'AM'
+                                        });
+                                    } else if (newHour === 13) {
+                                        return 1;
+                                    }
+                                    return newHour;
+                                });
+                                return 0;
+                            }
+                            return newMinute;
+                        });
+                    }
+                    return speed;
+                })
                 lastTime = timestamp;
             }
             requestAnimationFrame(gameLoop);
@@ -242,6 +259,7 @@ const withController = (WrappedComponent) => {
             modalView, setModalView,
             entities: ent, setEntities,
             isPaused, setIsPaused,
+            gameSpeed, setGameSpeed,
         }
     }} />`;
   };
