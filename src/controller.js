@@ -33,12 +33,12 @@ const withController = (WrappedComponent) => {
             rest: 100,
             health: 100,
         },
-        // {
-        //     ...defs.simpleMeal,
-        //     id: 3,
-        //     dist: 3,
-        //     count: 1,
-        // },
+        {
+            ...defs.simpleMeal,
+            id: 3,
+            dist: 3,
+            count: 1,
+        },
     ]);
 
     useEffect(() => {
@@ -128,9 +128,10 @@ const withController = (WrappedComponent) => {
                                     const caloriesPerMin = target?.calories / MINUTES_TO_EAT;
                                     const hungerPerMin = (caloriesPerMin / entity.dailyCalories) * 100;
                                     // Not working for food at base
-                                    target.count = Math.max(0, target?.count - 1);
-                                    if (target.count === 0) {
-                                        entities = entities.filter(e => e.id !== target?.id);
+                                    const t = entities.find(e => e.id === entity.action.targetId);
+                                    t.count = Math.max(0, t?.count - 1);
+                                    if (t.count === 0) {
+                                        entities = entities.filter(e => e.id !== t?.id);
                                     }
                                     entity.action = {
                                         ...entity.action,
@@ -152,7 +153,6 @@ const withController = (WrappedComponent) => {
                             entity.action.progress = Math.min(100, ((current - entity.action.from) / (entity.action.to - entity.action.from)) * 100);
                             if (entity.action.progress >= 100) {
                                 if (entity.action.type === 'walk') {
-                                    console.log('walked')
                                     if (entity.action.target.type === 'food') {
                                         entity.action = {
                                             type: 'eat',

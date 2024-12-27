@@ -8,6 +8,10 @@ const getEntityIcon = (entityType) => {
     }
 }
 
+const getDistText = (dist) => {
+    return dist === 0 ? 'At base' : `Dist ${Math.max(1, Math.floor(dist))}`;
+}
+
 const getActionText = (action, state) => {
     if (!action) return 'Idle';
     const verbMap = {

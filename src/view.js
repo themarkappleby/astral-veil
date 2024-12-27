@@ -23,12 +23,13 @@ const App = ({ state, pushView, popView }) => {
                         ${state.entities.sort((a, b) => a.dist - b.dist).map(e => {
                             const text = e.count ? (e.count === 1 ? `1 ${e.name.toLowerCase()}` : `${e.count} ${e.pluralName.toLowerCase()}`) : e.name;
                             const actionText = e.type === 'humanoid' ? getActionText(e.action, state) : '';
+                            const distText = getDistText(e?.dist);
                             return html`
                                 <${ListItem}
                                     icon="${getEntityIcon(e.type)}"
                                     text="${text}"
                                     detail="${actionText}"
-                                    secondaryText="${e?.dist ? `Dist ${Math.floor(e.dist)}` : 'At base'}"
+                                    secondaryText="${distText}"
                                     percent=${e?.action?.progress}
                                     onClick=${() => {
                                         if (e.type === 'humanoid') {
@@ -84,15 +85,15 @@ const App = ({ state, pushView, popView }) => {
         humanoid: ({ entityId }) => {
             const humanoid = state.entities.find(e => e.id === entityId);
             const actionText = getActionText(humanoid?.action, state);
-            const dist = humanoid?.dist ? `Dist ${Math.floor(humanoid.dist)}` : 'At base';
+            const distText = getDistText(humanoid?.dist);
             return {
                 title: humanoid.name || 'Humanoid',
                 children: html`
                     <${List} title="Currently">
                         ${humanoid?.action ? html`
-                            <${ListItem} icon="face-smile" text="Currently" detail="${actionText}" percent="${humanoid.action?.progress || 0}" secondaryText="${dist}" />
+                            <${ListItem} icon="face-smile" text="Currently" detail="${actionText}" percent="${humanoid.action?.progress || 0}" secondaryText="${distText}" />
                         ` : html`
-                            <${ListItem} icon="face-smile" text="Currently" detail="Idle" secondaryText="${dist}" />
+                            <${ListItem} icon="face-smile" text="Currently" detail="Idle" secondaryText="${distText}" />
                         `}
                     </${List}>
                     <${List} title="Condition">
