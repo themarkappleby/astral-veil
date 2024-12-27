@@ -44,8 +44,8 @@ const STATUSES = {
         { name: 'Depressed', min: 0 },
     ],
     rest: [
-        { name: 'Rested', min: 80 },
-        { name: 'Tired', min: 50 },
+        { name: 'Rested', min: 50 },
+        { name: 'Tired', min: 30 },
         { name: 'Exhausted', min: 0 },
     ],
     health: [
