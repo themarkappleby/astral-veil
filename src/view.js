@@ -21,15 +21,15 @@ const App = ({ state, pushView, popView }) => {
                 children: html`
                     <${List}>
                         ${state.entities.sort((a, b) => a.dist - b.dist).map(e => {
-                            const text = e.count ? (e.count === 1 ? `1 ${e.name}` : `${e.count} ${e.pluralName}`) : e.name;
-                            const detail = e.queue ? (e.queue.length ? toTitleCase(e.queue[0]) : 'Idle') : '';
+                            const text = e.count ? (e.count === 1 ? `1 ${e.name.toLowerCase()}` : `${e.count} ${e.pluralName.toLowerCase()}`) : e.name;
+                            const actionText = e.type === 'humanoid' ? getActionText(e.action, state) : '';
                             return html`
                                 <${ListItem}
                                     icon="${getEntityIcon(e.type)}"
                                     text="${text}"
-                                    detail="${detail}"
+                                    detail="${actionText}"
                                     secondaryText="${e?.dist ? `Dist ${e.dist}` : 'At base'}"
-                                    percent=${e?.percent}
+                                    percent=${e?.action?.progress}
                                     onClick=${() => {
                                         if (e.type === 'humanoid') {
                                             pushView({id: 'humanoid', entityId: e.id});
@@ -77,8 +77,7 @@ const App = ({ state, pushView, popView }) => {
         },
         humanoid: ({ entityId }) => {
             const humanoid = state.entities.find(e => e.id === entityId);
-            const actionTarget = humanoid?.action?.target ? state.entities.find(e => e.id === humanoid.action.target) : null;
-            const actionText = `${toTitleCase(humanoid?.action?.type)} ${actionTarget?.name?.toLowerCase() || ''} ${humanoid?.action?.progress ? `${Math.round(humanoid.action.progress)}%` : ''}`;
+            const actionText = getActionText(humanoid?.action, state);
             return {
                 title: humanoid.name || 'Humanoid',
                 children: html`

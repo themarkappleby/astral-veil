@@ -8,6 +8,12 @@ const getEntityIcon = (entityType) => {
     }
 }
 
+const getActionText = (action, state) => {
+    if (!action) return 'Idle';
+    const actionTarget = state?.entities?.find(e => e.id === action?.target);
+    return `${toTitleCase(action?.type)} ${actionTarget?.name?.toLowerCase() || ''} ${action?.progress ? `${Math.round(action?.progress)}%` : ''}`;
+}
+
 const getStatusDesc = (type, value) => {
     const statuses = {
         overall: [

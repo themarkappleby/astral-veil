@@ -67,7 +67,7 @@ const withController = (WrappedComponent) => {
                                         if (closestFood.dist === entity.dist) {
                                             entity.action = {
                                                 target: closestFood.id,
-                                                type: 'eat',
+                                                type: 'eating',
                                                 progress: 0,
                                             };
                                         } else {
@@ -93,19 +93,30 @@ const withController = (WrappedComponent) => {
                             entity.overall = Math.round((entity.health + entity.hunger + entity.mood + entity.rest) / 4);
                         }
 
-                        if (entity.action?.type === 'eat') {    
-                            // TODO: simplify this code
+                        if (entity.action?.type === 'eating') {    
                             const food = entities.find(e => e.id === entity.action.target);
+                            
+                            // Initialize calories remaining if first time eating and reduce food count
                             if (!entity.action.calories) {
                                 entity.action.calories = food.calories;
-                            }
-                            const caloriesPerMin = food.calories / 30;
-                            entity.action.calories -= caloriesPerMin;
-                            const hungerPerMin = caloriesPerMin / entity.dailyCalories * 100;
-                            entity.hunger += hungerPerMin;
-                            entity.action.progress += (food.calories - entity.action.calories) / food.calories * 100;
-                            if (entity.action.progress >= 100 || entity.hunger >= 100) {
                                 food.count = Math.max(0, food.count - 1);
+                            }
+
+                            // Calculate calories and hunger changes per minute
+                            const MINUTES_TO_EAT = 30;
+                            const caloriesPerMin = food.calories / MINUTES_TO_EAT;
+                            const hungerPerMin = (caloriesPerMin / entity.dailyCalories) * 100;
+
+                            // Update calories remaining and hunger
+                            entity.action.calories -= caloriesPerMin;
+                            entity.hunger = Math.min(100, entity.hunger + hungerPerMin);
+
+                            // Update eating progress
+                            const caloriesConsumed = food.calories - entity.action.calories;
+                            entity.action.progress = (caloriesConsumed / food.calories) * 100;
+
+                            // Check if finished eating
+                            if (entity.action.progress >= 100 || entity.hunger >= 100) {
                                 entity.action = null;
                             }
                         }
