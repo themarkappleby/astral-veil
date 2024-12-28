@@ -16,7 +16,7 @@ const App = ({ state, pushView, popView }) => {
                 title: 'World',
                 icon: 'plus',
                 onIconClick: () => {
-                    state.setModalView({id: 'construct'})
+                    state.setModalView({id: 'constructMenu'})
                 },
                 children: html`
                     <${List}>
@@ -47,14 +47,14 @@ const App = ({ state, pushView, popView }) => {
                 `,
             }
         },
-        construct: () => {
+        constructMenu: () => {
             return {
                 title: 'Construct',
                 children: html`
                     <${List}>
-                        <${ListItem} icon="building" text="Rice field" onClick=${() => {}} isButton secondaryText="${html`<i class="fa-solid fa-plus" />`}" />
-                        <${ListItem} icon="building" text="Corn field" onClick=${() => {}} isButton secondaryText="${html`<i class="fa-solid fa-plus" />`}" />
-                        <${ListItem} icon="building" text="Potato field" onClick=${() => {}} isButton secondaryText="${html`<i class="fa-solid fa-plus" />`}" />
+                        ${state.availableConstruction.map(c => html`
+                            <${ListItem} icon="${getEntityIcon(c.type)}" text="${c.name}" onClick=${() => {}} />
+                        `)}
                     </${List}>
                 `,
             }
@@ -198,7 +198,7 @@ const App = ({ state, pushView, popView }) => {
             </div>
             <div class="goal">
                 <${List}>
-                    <${ListItem} icon="flag-checkered" text="Current goal" detail="Plant a rice field" />
+                    <${ListItem} icon="flag-checkered" text="Current goal" detail="Plant a cucumber patch" />
                     <${ListItem}  text="${html`
                         <${Stack}>
                             <button onClick=${() => state.setIsPaused(!state.isPaused)}>

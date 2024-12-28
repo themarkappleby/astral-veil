@@ -1,6 +1,7 @@
 const getEntityIcon = (entityType) => {
     switch (entityType) {
         case 'structure': return 'building';
+        case 'construction': return 'hammer';
         case 'food': return 'utensils';
         case 'resourceNode': return 'tree';
         case 'humanoid': return 'face-smile';

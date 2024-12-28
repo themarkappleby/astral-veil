@@ -2,6 +2,14 @@ const { h, render } = preact;
 const { useState, useCallback, useEffect, useRef } = preactHooks;
 const html = htm.bind(h);
 
+/*
+TODOs:
+- Rename modal to sheet
+- Animate sheet intro/outro
+- Setup sheet stack and ability to push and pop sheets similar to the view stack
+- Add details view to construction menu (similar to entity view)
+*/
+
 const withController = (WrappedComponent) => {
   return (props) => {
     const [gameSpeed, setGameSpeed] = useState(1);
@@ -15,6 +23,11 @@ const withController = (WrappedComponent) => {
     const [day, setDay] = useState(1);
     const [isPaused, setIsPaused] = useState(false);
     const isPausedRef = useRef(isPaused);
+    const [availableConstruction, setAvailableConstruction] = useState([
+        {...defs.cucumberPatch, id: 14},
+        {...defs.riceField, id: 12},
+        {...defs.cornField, id: 13},
+    ]);
     const [ent, setEntities] = useState([
         {
             ...defs.simpleMeal,
@@ -249,6 +262,7 @@ const withController = (WrappedComponent) => {
             entities: ent, setEntities,
             isPaused, setIsPaused,
             gameSpeed, setGameSpeed,
+            availableConstruction, setAvailableConstruction,
         }
     }} />`;
   };

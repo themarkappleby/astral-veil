@@ -43,3 +43,27 @@ defs.human = {
     size: 2000,
     dailyCalories: 2200,
 }
+
+defs.cucumberPatch = {
+    name: 'Cucumber patch',
+    pluralName: 'Cucumber patches',
+    type: 'construction',
+    description: 'A patch of cucumbers.',
+    size: 100,
+}
+
+defs.riceField = {
+    name: 'Rice field',
+    pluralName: 'Rice fields',
+    type: 'construction',
+    description: 'A field of rice.',
+    size: 100,
+}
+
+defs.cornField = {
+    name: 'Corn field',
+    pluralName: 'Corn fields',
+    type: 'construction',
+    description: 'A field of corn.',
+    size: 100,
+}
