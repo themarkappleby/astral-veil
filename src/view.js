@@ -30,7 +30,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                             if (e.type === 'humanoid') {
                                 actionText = getActionText(e.action, state);
                             } else if (e.type === 'construction') {
-                                actionText = getActionText(e.action, state).replace('Building', 'Progress');
+                                actionText = Math.round(e.progress) + '% complete';
                             }
                             const distText = getDistText(e?.dist);
                             return html`
@@ -39,7 +39,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                                     text="${text}"
                                     detail="${actionText}"
                                     secondaryText="${distText}"
-                                    percent=${e?.action?.progress}
+                                    percent=${e?.action?.progress || e?.progress}
                                     onClick=${() => {
                                         if (e.type === 'humanoid') {
                                             pushView({id: 'humanoid', entityId: e.id});

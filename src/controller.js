@@ -165,16 +165,16 @@ const withController = (WrappedComponent) => {
                                         attrTarget: target,
                                         from: progress,
                                         to: 100,
-                                        rate: 0.2,
+                                        rate: 0.4,
                                         progress,
                                     }
                                 }
                             }
-                            const current = entity[entity.action.attr];
+                            const current = entity.action.attrTarget[entity.action.attr];
                             if (entity.action.to > entity.action.from) {
-                                entity[entity.action.attr] = Math.min(entity.action.to, Math.max(0, current + entity.action.rate));
+                                entity.action.attrTarget[entity.action.attr] = Math.min(entity.action.to, Math.max(0, current + entity.action.rate));
                             } else {
-                                entity[entity.action.attr] = Math.max(entity.action.to, current + entity.action.rate);
+                                entity.action.attrTarget[entity.action.attr] = Math.max(entity.action.to, current + entity.action.rate);
                             }
                             entity.action.progress = Math.min(100, ((current - entity.action.from) / (entity.action.to - entity.action.from)) * 100);
                             if (entity.action.progress >= 100) {
@@ -192,6 +192,12 @@ const withController = (WrappedComponent) => {
                                     } else {
                                         entity.action = null;
                                     }
+                                } else if (entity.action.type === 'build') {
+                                    // update state of construction entity such that its type changes from 'constructure' to 'building'
+                                    const target = entities.find(e => e.id === entity.action.targetId);
+                                    target.type = 'structure';
+                                    delete target.progress;
+                                    entity.action = null;
                                 } else {
                                     entity.action = null;
                                 }
