@@ -1,5 +1,6 @@
 const getEntityIcon = (entityType) => {
     switch (entityType) {
+        case 'location': return 'location-dot';
         case 'structure': return 'building';
         case 'construction': return 'hammer';
         case 'food': return 'utensils';
@@ -7,6 +8,28 @@ const getEntityIcon = (entityType) => {
         case 'humanoid': return 'face-smile';
         default: return 'question';
     }
+}
+
+const newId = () => {
+    return crypto.randomUUID();
+}
+
+const getRandom = (from, to) => {
+    return Math.floor(Math.random() * (to - from + 1)) + from;
+}
+
+const getRandomGender = () => {
+    return Math.random() < 0.5 ? 'male' : 'female';
+}
+
+const getRandomName = (gender) => {
+    const maleNames = ['John', 'Jerry', 'Steve', 'Bob', 'Jason', 'Michael', 'David', 'William', 'Richard', 'Joseph', 'James', 'Robert', 'Michael', 'Charles', 'Joseph', 'Thomas', 'Christopher', 'Daniel', 'Paul', 'Mark', 'Donald', 'George', 'Kenneth', 'Steven', 'Edward', 'Brian', 'Ronald', 'Anthony', 'Kevin', 'Jason', 'Matthew', 'Gary', 'Timothy', 'Jose', 'Larry', 'Jeffrey', 'Frank', 'Scott', 'Eric', 'Stephen', 'Andrew', 'Raymond', 'Gregory', 'Joshua', 'Jerry', 'Dennis', 'Walter', 'Patrick', 'Peter', 'Harold', 'Douglas', 'Henry', 'Carl', 'Arthur', 'Ryan', 'Roger'];
+    const femaleNames = ['Jane', 'Sarah', 'Emily', 'Alice', 'Jessica', 'Mary', 'Patricia', 'Jennifer', 'Linda', 'Elizabeth', 'Barbara', 'Susan', 'Jessica', 'Sarah', 'Karen', 'Nancy', 'Betty', 'Margaret', 'Sandra', 'Ashley', 'Kimberly', 'Emily', 'Donna', 'Michelle', 'Carol', 'Amanda', 'Dorothy', 'Melissa', 'Deborah', 'Stephanie', 'Rebecca', 'Sharon', 'Laura', 'Cynthia', 'Kathleen', 'Amy', 'Shirley', 'Angela', 'Helen', 'Brenda', 'Pamela', 'Nicole', 'Helen', 'Samantha', 'Katherine', 'Christine', 'Emma', 'Catherine', 'Virginia', 'Rachel', 'Janet', 'Maria', 'Heather', 'Diane', 'Julie'];
+    return gender === 'male' ? maleNames[Math.floor(Math.random() * maleNames.length)] : femaleNames[Math.floor(Math.random() * femaleNames.length)];
+}
+
+const getRandomSurname = () => {
+    return surnames[Math.floor(Math.random() * surnames.length)];
 }
 
 const getDistText = (dist, withPrefix = true) => {
@@ -20,9 +43,10 @@ const getActionText = (action, state) => {
         walk: 'Walking to',
         eat: 'Eating',
         sleep: 'Sleeping',
+        build: 'Building',
     }
     const actionTarget = state.entities.find(e => e.id === action.targetId);
-    return `${verbMap[action?.type]} ${actionTarget?.name?.toLowerCase() || ''} ${action?.progress ? `${Math.round(action?.progress)}%` : ''}`;
+    return `${verbMap[action?.type]} ${actionTarget?.name?.toLowerCase() || ''} ${action?.progress !== undefined ? `${Math.round(action?.progress)}%` : ''}`;
 }
 
 const STATUSES = {

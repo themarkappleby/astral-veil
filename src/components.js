@@ -2,7 +2,7 @@ const View = ({ title, children, backLabel, onBackClick, icon, onIconClick }) =>
     return html`
         <div class="view">
             <header class="view-header">
-                ${backLabel ? html`<button class="view-back" onClick=${onBackClick}><i class="fa-solid fa-chevron-left"></i> ${backLabel}</button>` : html`<div />`}
+                ${backLabel ? html`<button class="view-back" onClick=${onBackClick}>${backLabel === 'Close' ? '' : html`<i class="fa-solid fa-chevron-left"></i> `}${backLabel}</button>` : html`<div />`}
                 <h2 class="view-title">${title}</h2>
                 ${icon ? html`<button class="view-icon" onClick=${onIconClick}><i class="fa-solid fa-${icon}"></i></button>` : html`<div />`}
             </header>

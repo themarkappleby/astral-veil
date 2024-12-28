@@ -18,34 +18,24 @@ const withController = (WrappedComponent) => {
     const [isPaused, setIsPaused] = useState(false);
     const isPausedRef = useRef(isPaused);
     const [availableConstruction, setAvailableConstruction] = useState([
-        {...defs.cucumberPatch, id: 14},
-        {...defs.riceField, id: 12},
-        {...defs.cornField, id: 13},
+        {...defs.cucumberPatch()},
+        {...defs.riceField()},
+        {...defs.cornField()},
     ]);
     const [ent, setEntities] = useState([
         {
-            ...defs.simpleMeal,
-            id: 1,
+            ...defs.simpleMeal(),
             dist: 0,
-            count: 3,
+            count: 5,
         },
         {
-            ...defs.human,
-            id: 2,
-            dist: 2,
-            name: 'Jason',
-            overall: null,
-            hunger: 34,
-            mood: 63,
-            rest: 100,
-            health: 100,
+            ...defs.human(),
+            dist: 0,
         },
         {
-            ...defs.simpleMeal,
-            id: 3,
-            dist: 3,
-            count: 1,
-        },
+            ...defs.surroundings(),
+            dist: 1,
+        }
     ]);
 
     useEffect(() => {
@@ -69,7 +59,7 @@ const withController = (WrappedComponent) => {
                         // Reduce hunger
                         if (entity.hunger !== undefined) {
                             if (entity?.action?.type !== 'eat') {
-                                entity.hunger = Math.max(0, entity.hunger - (0.1 * gameSpeed));
+                                entity.hunger = Math.max(0, entity.hunger - (0.15 * gameSpeed));
                             }
                             if (entity.hunger <= 33 && !entity?.action) {
                                 const closestFood = locateClosestEntity({
@@ -175,6 +165,9 @@ const withController = (WrappedComponent) => {
                                     entity.action = null;
                                 }
                             }
+                        } else {
+                            // look for soemthing to do if not already doing something
+
                         }
                     });
                     return entities;
@@ -241,6 +234,14 @@ const withController = (WrappedComponent) => {
         }, 200);
     }
 
+    const closeModal = () => {
+        setModalVisible(false);
+        setTimeout(() => {
+            setActiveModalView(null);
+            setModalViewStack([]);
+        }, 200);
+    }
+
     const pushModalView = (viewData) => {
         setModalVisible(true);
         setModalViewStack([...modalViewStack, viewData]);
@@ -258,6 +259,7 @@ const withController = (WrappedComponent) => {
         ...props,
         pushView,
         popView,
+        closeModal,
         pushModalView,
         popModalView,
         state: {

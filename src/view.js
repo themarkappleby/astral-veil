@@ -1,4 +1,4 @@
-const App = ({ state, pushView, popView, pushModalView, popModalView }) => {
+const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView }) => {
     const views = {
         menu: () => {
             return {
@@ -22,8 +22,16 @@ const App = ({ state, pushView, popView, pushModalView, popModalView }) => {
                     <${List}>
                         ${state.entities.sort((a, b) => a.dist - b.dist).map(e => {
                             if (e.dist === -1) return;
-                            const text = e.count ? (e.count === 1 ? `1 ${e.name.toLowerCase()}` : `${e.count} ${e.pluralName.toLowerCase()}`) : e.name;
-                            const actionText = e.type === 'humanoid' ? getActionText(e.action, state) : '';
+                            let text = e.count ? (e.count === 1 ? `1 ${e.name.toLowerCase()}` : `${e.count} ${e.pluralName.toLowerCase()}`) : e.name;
+                            if (e.surname) {
+                                text = `${e.name} ${e.surname}`;
+                            }
+                            let actionText = null
+                            if (e.type === 'humanoid') {
+                                actionText = getActionText(e.action, state);
+                            } else if (e.type === 'construction') {
+                                actionText = getActionText(e.action, state).replace('Building', 'Progress');
+                            }
                             const distText = getDistText(e?.dist);
                             return html`
                                 <${ListItem}
@@ -35,14 +43,58 @@ const App = ({ state, pushView, popView, pushModalView, popModalView }) => {
                                     onClick=${() => {
                                         if (e.type === 'humanoid') {
                                             pushView({id: 'humanoid', entityId: e.id});
-                                        } else if (e.type === 'food') {
+                                        } else {
                                             pushView({id: 'entity', entityId: e.id});
                                         }
                                     }}
                                 />
                             `
                         })}
-                        <${ListItem} text="Explore" secondaryText="${html`<${Toggle} />`}" />
+                    </${List}>
+                `,
+            }
+        },
+        entity: ({ entityId }) => {
+            const entity = state.entities.find(e => e.id === entityId);
+            return {
+                title: entity?.name || 'Entity',
+                children: html`
+                    <${List}>
+                        ${entity?.description && html`<${ListItem} text="${entity.description}" />`}
+                        <${ListItem} text="Dist" secondaryText="${getDistText(entity?.dist, false)}" />
+                        ${Object.entries(entity).map(([key, value]) => {
+                            const ignore = [
+                                'name',
+                                'dist',
+                                'pluralName',
+                                'description',
+                                'id',
+                                'action',
+                                'queue',
+                                'exploring',
+                                'building',
+                            ];
+                            if (ignore.includes(key) || !key || !value) return;
+                            return html`
+                                <${ListItem} text="${toTitleCase(key)}" secondaryText="${toTitleCase(value)}" />
+                            `;
+                        })}
+                        ${entity.type === 'location' ? html`
+                            <${ListItem} text="Explore" secondaryText="${html`<${Toggle} value=${entity.exploring} onChange=${() => {
+                                state.setEntities(state.entities.map(e => e.id === entity.id ? {...e, exploring: !e.exploring} : e));
+                            }} />`}" />
+                        ` : ''}
+                        ${entity.type === 'construction' ? html`
+                            <${ListItem} text="Build" secondaryText="${html`<${Toggle} value=${entity.building} onChange=${() => {
+                                state.setEntities(state.entities.map(e => e.id === entity.id ? {...e, building: !e.building} : e));
+                            }} />`}" />
+                            <${ListItem} text="Cancel" isButton onClick=${() => {
+                                if (confirm('Are you sure you want to cancel this construction?')) {
+                                    state.setEntities(state.entities.map(e => e.id === entity.id ? {...e, dist: -1} : e));
+                                    popView();
+                                }
+                            }} />
+                        ` : ''}
                     </${List}>
                 `,
             }
@@ -65,38 +117,32 @@ const App = ({ state, pushView, popView, pushModalView, popModalView }) => {
                 title: construction.name,
                 children: html`
                     <${List}>
+                        ${construction.description && html`<${ListItem} text="${construction.description}" />`}
                         ${Object.entries(construction).map(([key, value]) => {
-                            return html`
-                                <${ListItem} text="${toTitleCase(key)}" secondaryText="${toTitleCase(value)}" />
-                            `;
-                        })}
-                        <${ListItem} text="Build" isButton onClick=${() => {}} />
-                    </${List}>
-                `,
-            }
-        },
-        entity: ({ entityId }) => {
-            const entity = state.entities.find(e => e.id === entityId);
-            return {
-                title: entity?.name || 'Entity',
-                children: html`
-                    <${List}>
-                        ${entity?.description && html`<${ListItem} text="${entity.description}" />`}
-                        <${ListItem} text="Dist" secondaryText="${getDistText(entity?.dist, false)}" />
-                        ${Object.entries(entity).map(([key, value]) => {
                             const ignore = [
                                 'name',
-                                'dist',
-                                'pluralName',
                                 'description',
+                                'pluralName',
                                 'id',
-                                'queue',
                             ];
                             if (ignore.includes(key)) return;
                             return html`
                                 <${ListItem} text="${toTitleCase(key)}" secondaryText="${toTitleCase(value)}" />
                             `;
                         })}
+                        <${ListItem} text="Build" isButton onClick=${() => {
+                            state.setEntities([...state.entities, {
+                                ...construction,
+                                dist: 0,
+                                action: {
+                                    type: 'build',
+                                    progress: 0,
+                                },
+                                building: true,
+                                id: newId(),
+                            }])
+                            closeModal();
+                        }} />
                     </${List}>
                 `,
             }
@@ -106,7 +152,7 @@ const App = ({ state, pushView, popView, pushModalView, popModalView }) => {
             const actionText = getActionText(humanoid?.action, state);
             const distText = getDistText(humanoid?.dist);
             return {
-                title: humanoid.name || 'Humanoid',
+                title: `${humanoid.name} ${humanoid.surname}` || 'Humanoid',
                 children: html`
                     <${List} title="Currently">
                         ${humanoid?.action ? html`
@@ -177,9 +223,8 @@ const App = ({ state, pushView, popView, pushModalView, popModalView }) => {
                         <${ListItem} icon="box" text="Inventory" onClick=${() => {}} />
                     </${List}>
                     <${List} title="Details">
-                        <${ListItem} text="Name" secondaryText="Jason 'Southpaw' Douglas" />
-                        <${ListItem} text="Age" secondaryText="24" />
-                        <${ListItem} text="Gender" secondaryText="Male" />
+                        <${ListItem} text="Age" secondaryText="${humanoid.age}" />
+                        <${ListItem} text="Gender" secondaryText="${toTitleCase(humanoid.gender)}" />
                         <${ListItem} text="Childhood" secondaryText="Mute" onClick=${() => {}} />
                         <${ListItem} text="Adulthood" secondaryText="Civil servant" onClick=${() => {}} />
                     </${List}>
@@ -229,13 +274,7 @@ const App = ({ state, pushView, popView, pushModalView, popModalView }) => {
                 </${List}>
             </div>
             <div class="modal ${state.modalVisible ? 'modal--active' : 'modal--inactive'}">
-                <div class="modal-overlay" onClick=${() => {
-                    state.setModalVisible(false);
-                    setTimeout(() => {
-                        state.setActiveModalView(null);
-                        state.setModalViewStack([]);
-                    }, 200);
-                }} />
+                <div class="modal-overlay" onClick=${closeModal} />
                 <div class="modal-container">
                     <div class="modal-inner" style="transform: translateX(${Math.min(0, state.modalViewStack.findIndex(v => v.id === state.activeModalView?.id) * -100)}%)">
                         ${state.modalViewStack.map((viewData, index) => {
@@ -243,7 +282,13 @@ const App = ({ state, pushView, popView, pushModalView, popModalView }) => {
                             const lastViewData = state.modalViewStack[index - 1];
                             const lastView = lastViewData ? views[lastViewData.id](lastViewData) : null;
                             return html`
-                                <${View} title=${view.title} icon=${view.icon} onIconClick=${view.onIconClick} backLabel=${lastView?.title} onBackClick=${() => popModalView()}>
+                                <${View} title=${view.title} icon=${view.icon} onIconClick=${view.onIconClick} backLabel=${lastView?.title || 'Close'} onBackClick=${() => {
+                                    if (lastView) {
+                                        popModalView()
+                                    } else {
+                                        closeModal();
+                                    }
+                                }}>
                                     ${view.children}
                                 </${View}>
                             `;
