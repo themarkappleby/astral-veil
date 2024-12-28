@@ -59,55 +59,46 @@ const withController = (WrappedComponent) => {
                 setEntities(prevEntities => {
                     let entities = Object.assign([], prevEntities);
                     entities.forEach(entity => {
-                        // Every 5 minutes
-                        if (min % 5 === 0) {
-                            // Reduce hunger
-                            if (entity.hunger !== undefined) {
-                                if (entity?.action?.type !== 'eat') {
-                                    entity.hunger = Math.max(0, entity.hunger - 1);
-                                }
-                                if (entity.hunger <= 33 && !entity?.action) {
-                                    const closestFood = locateClosestEntity({
-                                        fromDist: entity.dist,
-                                        type: 'food',
-                                        entities,
-                                    });
-                                    if (closestFood) {
-                                        if (closestFood.dist === entity.dist) {
-                                            entity.action = {
-                                                type: 'eat',
-                                                targetId: closestFood.id,
-                                            };
-                                        } else {
-                                            entity.action = {
-                                                type: 'walk',
-                                                targetId: closestFood.id,
-                                            };
-                                        }
+                        // Reduce hunger
+                        if (entity.hunger !== undefined) {
+                            if (entity?.action?.type !== 'eat') {
+                                entity.hunger = Math.max(0, entity.hunger - (0.1 * gameSpeed));
+                            }
+                            if (entity.hunger <= 33 && !entity?.action) {
+                                const closestFood = locateClosestEntity({
+                                    fromDist: entity.dist,
+                                    type: 'food',
+                                    entities,
+                                });
+                                if (closestFood) {
+                                    if (closestFood.dist === entity.dist) {
+                                        entity.action = {
+                                            type: 'eat',
+                                            targetId: closestFood.id,
+                                        };
+                                    } else {
+                                        entity.action = {
+                                            type: 'walk',
+                                            targetId: closestFood.id,
+                                        };
                                     }
                                 }
                             }
                         }
-                        // Every 10 minutes
-                        if (min % 10 === 0) {
-                            // Reduce rest
-                            if (entity.rest && entity?.action?.type !== 'sleep') {
-                                entity.rest = Math.max(0, entity.rest - 1);
-                            }
-                            if (entity.rest <= 10) {
-                                entity.action = {
-                                    type: 'sleep',
-                                }
+                        // Reduce rest
+                        if (entity.rest !== undefined && entity?.action?.type !== 'sleep') {
+                            entity.rest = Math.max(0, entity.rest - (0.1 * gameSpeed));
+                        }
+                        if (entity.rest <= 10) {
+                            entity.action = {
+                                type: 'sleep',
                             }
                         }
-                        // Every hour
-                        if (min % 60 === 0) {
-                            // Reduce health if starving
-                            if (entity.health && entity.hunger === 0) {
-                                entity.health = Math.max(0, entity.health - 1);
-                            }
+                        // Reduce health if starving
+                        if (entity.health !== undefined && entity.hunger === 0) {
+                            entity.health = Math.max(0, entity.health - (0.017 * gameSpeed));
                         }
-                        if (entity.overall) {
+                        if (entity.overall !== undefined) {
                             entity.overall = Math.round((entity.health + entity.hunger + entity.mood + entity.rest) / 4);
                         }
 

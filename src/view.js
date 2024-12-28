@@ -102,14 +102,14 @@ const App = ({ state, pushView, popView }) => {
                             text="Overall"
                             icon="face-smile"
                             detail="${getStatusDesc('overall', humanoid.overall)}"
-                            secondaryText="${Math.round(humanoid.overall)}%"
+                            secondaryText="${humanoid.overall.toFixed(2)}%"
                             percent="${humanoid.overall}"
                         />
                         <${ListItem}
                             text="Health"
                             icon="heart"
                             detail="${getStatusDesc('health', humanoid.health)}"
-                            secondaryText="${Math.round(humanoid.health)}%"
+                            secondaryText="${humanoid.health.toFixed(2)}%"
                             percent="${humanoid.health}"
                             onClick=${() => {}}
                         />
@@ -117,7 +117,7 @@ const App = ({ state, pushView, popView }) => {
                             text="Mood"
                             icon="brain"
                             detail="${getStatusDesc('mood', humanoid.mood)}"
-                            secondaryText="${Math.round(humanoid.mood)}%"
+                            secondaryText="${humanoid.mood.toFixed(2)}%"
                             percent="${humanoid.mood}"
                             onClick=${() => {}}
                         />
@@ -125,7 +125,7 @@ const App = ({ state, pushView, popView }) => {
                             text="Rest"
                             icon="bed"
                             detail="${getStatusDesc('rest', humanoid.rest)}"
-                            secondaryText="${Math.round(humanoid.rest)}%"
+                            secondaryText="${humanoid.rest.toFixed(2)}%"
                             percent="${humanoid.rest}"
                             onClick=${() => {}}
                         />
@@ -133,7 +133,7 @@ const App = ({ state, pushView, popView }) => {
                             text="Hunger"
                             icon="utensils"
                             detail="${getStatusDesc('hunger', humanoid.hunger)}"
-                            secondaryText="${Math.round(humanoid.hunger)}%"
+                            secondaryText="${humanoid.hunger.toFixed(2)}%"
                             percent="${humanoid.hunger}"
                             onClick=${() => {}}
                         />
@@ -141,7 +141,7 @@ const App = ({ state, pushView, popView }) => {
                             text="Recreation"
                             icon="person-running"
                             detail="Satisfied"
-                            secondaryText="80%"
+                            secondaryText="80.00%"
                             percent="80"
                             onClick=${() => {}}
                         />
@@ -149,7 +149,7 @@ const App = ({ state, pushView, popView }) => {
                             text="Comfort"
                             icon="couch"
                             detail="Comfortable"
-                            secondaryText="80%"
+                            secondaryText="80.00%"
                             percent="80"
                             onClick=${() => {}}
                         />
