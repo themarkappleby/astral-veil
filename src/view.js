@@ -1,4 +1,4 @@
-const App = ({ state, pushView, popView }) => {
+const App = ({ state, pushView, popView, pushModalView, popModalView }) => {
     const views = {
         menu: () => {
             return {
@@ -16,7 +16,7 @@ const App = ({ state, pushView, popView }) => {
                 title: 'World',
                 icon: 'plus',
                 onIconClick: () => {
-                    state.setModalView({id: 'constructMenu'})
+                    pushModalView({id: 'constructMenu'})
                 },
                 children: html`
                     <${List}>
@@ -53,8 +53,24 @@ const App = ({ state, pushView, popView }) => {
                 children: html`
                     <${List}>
                         ${state.availableConstruction.map(c => html`
-                            <${ListItem} icon="${getEntityIcon(c.type)}" text="${c.name}" onClick=${() => {}} />
+                            <${ListItem} icon="${getEntityIcon(c.type)}" text="${c.name}" onClick=${() => pushModalView({id: 'constructItem', constructId: c.id})} />
                         `)}
+                    </${List}>
+                `,
+            }
+        },
+        constructItem: ({ constructId }) => {
+            const construction = state.availableConstruction.find(c => c.id === constructId);
+            return {
+                title: construction.name,
+                children: html`
+                    <${List}>
+                        ${Object.entries(construction).map(([key, value]) => {
+                            return html`
+                                <${ListItem} text="${toTitleCase(key)}" secondaryText="${toTitleCase(value)}" />
+                            `;
+                        })}
+                        <${ListItem} text="Build" isButton onClick=${() => {}} />
                     </${List}>
                 `,
             }
@@ -180,8 +196,6 @@ const App = ({ state, pushView, popView }) => {
         }
     }
 
-    const bakedModalView = views?.[state?.modalView?.id]?.()
-
     return html`
         <div class="container">
             <div class="app" style="transform: translateX(${state.viewStack.findIndex(v => v.id === state.activeView.id) * -100}%)">
@@ -214,18 +228,29 @@ const App = ({ state, pushView, popView }) => {
                     `}" secondaryText="Summer, day ${state.day}" />
                 </${List}>
             </div>
-            ${bakedModalView ? html`
-                <div class="modal">
-                    <div class="modal-overlay" onClick=${() => state.setModalView(null)} />
-                    <div class="modal-content">
-                        <header class="modal-header">
-                            <button class="modal-cancel" onClick=${() => state.setModalView(null)}>Cancel</button>
-                            <h3 class="modal-title">${bakedModalView.title}</h3>
-                        </header>
-                        ${bakedModalView.children}
+            <div class="modal ${state.modalVisible ? 'modal--active' : 'modal--inactive'}">
+                <div class="modal-overlay" onClick=${() => {
+                    state.setModalVisible(false);
+                    setTimeout(() => {
+                        state.setActiveModalView(null);
+                        state.setModalViewStack([]);
+                    }, 200);
+                }} />
+                <div class="modal-container">
+                    <div class="modal-inner" style="transform: translateX(${Math.min(0, state.modalViewStack.findIndex(v => v.id === state.activeModalView?.id) * -100)}%)">
+                        ${state.modalViewStack.map((viewData, index) => {
+                            const view = views[viewData.id](viewData);
+                            const lastViewData = state.modalViewStack[index - 1];
+                            const lastView = lastViewData ? views[lastViewData.id](lastViewData) : null;
+                            return html`
+                                <${View} title=${view.title} icon=${view.icon} onIconClick=${view.onIconClick} backLabel=${lastView?.title} onBackClick=${() => popModalView()}>
+                                    ${view.children}
+                                </${View}>
+                            `;
+                        })}
                     </div>
                 </div>
-            ` : ''}
+            </div>
         </div>
     `;
 };

@@ -16,7 +16,9 @@ const withController = (WrappedComponent) => {
     const [tickCount, setTickCount] = useState(0);
     const [viewStack, setViewStack] = useState([{id: 'menu'}, {id: 'world'}]);
     const [activeView, setActiveView] = useState({id: 'world'});
-    const [modalView, setModalView] = useState(null)
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalViewStack, setModalViewStack] = useState([]);
+    const [activeModalView, setActiveModalView] = useState(null);
     const [hour, setHour] = useState(7);
     const [minute, setMinute] = useState(0);
     const [amPm, setAmPm] = useState('AM');
@@ -246,11 +248,26 @@ const withController = (WrappedComponent) => {
             setViewStack(viewStack.slice(0, -1));
         }, 200);
     }
+
+    const pushModalView = (viewData) => {
+        setModalVisible(true);
+        setModalViewStack([...modalViewStack, viewData]);
+        setActiveModalView(viewData);
+    }
+
+    const popModalView = () => {
+        setActiveModalView(modalViewStack[modalViewStack.length - 2]);
+        setTimeout(() => {
+            setModalViewStack(modalViewStack.slice(0, -1));
+        }, 200);
+    }
     
     return html`<${WrappedComponent} ...${{
         ...props,
         pushView,
         popView,
+        pushModalView,
+        popModalView,
         state: {
             hour, setHour,
             minute, setMinute,
@@ -258,7 +275,9 @@ const withController = (WrappedComponent) => {
             day, setDay,
             viewStack, setViewStack,
             activeView, setActiveView,
-            modalView, setModalView,
+            modalVisible, setModalVisible,
+            modalViewStack, setModalViewStack,
+            activeModalView, setActiveModalView,
             entities: ent, setEntities,
             isPaused, setIsPaused,
             gameSpeed, setGameSpeed,
