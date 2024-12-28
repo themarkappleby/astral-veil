@@ -2,14 +2,6 @@ const { h, render } = preact;
 const { useState, useCallback, useEffect, useRef } = preactHooks;
 const html = htm.bind(h);
 
-/*
-TODOs:
-- Rename modal to sheet
-- Animate sheet intro/outro
-- Setup sheet stack and ability to push and pop sheets similar to the view stack
-- Add details view to construction menu (similar to entity view)
-*/
-
 const withController = (WrappedComponent) => {
   return (props) => {
     const [gameSpeed, setGameSpeed] = useState(1);
