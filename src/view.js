@@ -134,10 +134,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                             state.setEntities([...state.entities, {
                                 ...construction,
                                 dist: 0,
-                                action: {
-                                    type: 'build',
-                                    progress: 0,
-                                },
+                                progress: 0,
                                 building: true,
                                 id: newId(),
                             }])

@@ -64,7 +64,9 @@ const withController = (WrappedComponent) => {
                             if (entity.hunger <= 33 && !entity?.action) {
                                 const closestFood = locateClosestEntity({
                                     fromDist: entity.dist,
-                                    type: 'food',
+                                    properties: {
+                                        type: 'food',
+                                    },
                                     entities,
                                 });
                                 if (closestFood) {
@@ -104,11 +106,14 @@ const withController = (WrappedComponent) => {
                                 entity.action.initilized = true;
                                 const target = entities.find(e => e.id === entity.action.targetId);
                                 if (entity.action.type === 'walk') {
+                                    // ==============================
                                     // Handle walking
+                                    // ==============================
                                     const MINUTES_TO_WALK_ONE_UNIT = 5;
                                     entity.action = {
                                         ...entity.action,
                                         attr: 'dist',
+                                        attrTarget: entity,
                                         from: entity.dist,
                                         to: target.dist,
                                         rate: (target.dist - entity.dist) / (MINUTES_TO_WALK_ONE_UNIT * Math.abs(target.dist - entity.dist)),
@@ -116,7 +121,9 @@ const withController = (WrappedComponent) => {
                                         target,
                                     }
                                 } else if (entity.action.type === 'eat') {
+                                    // ==============================
                                     // Handle eating
+                                    // ==============================
                                     const MINUTES_TO_EAT = 15;
                                     const caloriesPerMin = target?.calories / MINUTES_TO_EAT;
                                     const hungerPerMin = (caloriesPerMin / entity.dailyCalories) * 100;
@@ -127,6 +134,7 @@ const withController = (WrappedComponent) => {
                                     entity.action = {
                                         ...entity.action,
                                         attr: 'hunger',
+                                        attrTarget: entity,
                                         from: entity.hunger,
                                         to: 100,
                                         rate: hungerPerMin,
@@ -134,13 +142,31 @@ const withController = (WrappedComponent) => {
                                         target,
                                     }
                                 } else if (entity.action.type === 'sleep') {
+                                    // ==============================
+                                    // Handle sleeping
+                                    // ==============================
                                     entity.action = {
                                         ...entity.action,
                                         attr: 'rest',
+                                        attrTarget: entity,
                                         from: entity.rest,
                                         to: 100,
                                         rate: 0.2,
                                         progress: 0,
+                                    }
+                                } else if (entity.action.type === 'build') {
+                                    // ==============================
+                                    // Handle building
+                                    // ==============================
+                                    const progress = target.progress;
+                                    entity.action = {
+                                        ...entity.action,
+                                        attr: 'progress',
+                                        attrTarget: target,
+                                        from: progress,
+                                        to: 100,
+                                        rate: 0.2,
+                                        progress,
                                     }
                                 }
                             }
@@ -158,6 +184,11 @@ const withController = (WrappedComponent) => {
                                             type: 'eat',
                                             targetId: entity.action.target.id,
                                         };
+                                    } else if (entity.action.target.type === 'construction') {
+                                        entity.action = {
+                                            type: 'build',
+                                            targetId: entity.action.target.id,
+                                        };
                                     } else {
                                         entity.action = null;
                                     }
@@ -165,9 +196,29 @@ const withController = (WrappedComponent) => {
                                     entity.action = null;
                                 }
                             }
-                        } else {
+                        } else if (entity.type === 'humanoid') {
                             // look for soemthing to do if not already doing something
-
+                            const closestConstruction = locateClosestEntity({
+                                fromDist: entity.dist,
+                                properties: {
+                                    type: 'construction',
+                                    building: true,
+                                },
+                                entities,
+                            });
+                            if (closestConstruction) {
+                                if (closestConstruction.dist === entity.dist) {
+                                    entity.action = {
+                                        type: 'build',
+                                        targetId: closestConstruction.id,
+                                    }
+                                } else {
+                                    entity.action = {
+                                        type: 'walk',
+                                        targetId: closestConstruction.id,
+                                    }
+                                }
+                            }
                         }
                     });
                     return entities;

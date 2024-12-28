@@ -91,9 +91,11 @@ const toTitleCase = (str) => {
 
 const locateClosestEntity = ({
     fromDist,
-    type,
+    properties,
     entities,
 }) => {
     const sortedEntities = entities.map(e => ({ ...e, diff: Math.abs(e.dist - fromDist) })).sort((a, b) => a.diff - b.diff);
-    return sortedEntities.find(e => e.type === type && e.diff <= fromDist);
+    return sortedEntities.find(e => {
+        return Object.entries(properties).every(([key, value]) => e[key] === value) && e.diff <= fromDist;
+    });
 }
