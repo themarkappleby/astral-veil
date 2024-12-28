@@ -8,8 +8,9 @@ const getEntityIcon = (entityType) => {
     }
 }
 
-const getDistText = (dist) => {
-    return dist === 0 ? 'At base' : `Dist ${Math.max(1, Math.floor(dist))}`;
+const getDistText = (dist, withPrefix = true) => {
+    if (dist === -1) return 'Trashed';
+    return dist === 0 ? 'At base' : `${withPrefix ? 'Dist ' : ''}${Math.max(1, Math.floor(dist))}`;
 }
 
 const getActionText = (action, state) => {
@@ -19,7 +20,7 @@ const getActionText = (action, state) => {
         eat: 'Eating',
         sleep: 'Sleeping',
     }
-    const actionTarget = action.target;
+    const actionTarget = state.entities.find(e => e.id === action.targetId);
     return `${verbMap[action?.type]} ${actionTarget?.name?.toLowerCase() || ''} ${action?.progress ? `${Math.round(action?.progress)}%` : ''}`;
 }
 

@@ -21,6 +21,7 @@ const App = ({ state, pushView, popView }) => {
                 children: html`
                     <${List}>
                         ${state.entities.sort((a, b) => a.dist - b.dist).map(e => {
+                            if (e.dist === -1) return;
                             const text = e.count ? (e.count === 1 ? `1 ${e.name.toLowerCase()}` : `${e.count} ${e.pluralName.toLowerCase()}`) : e.name;
                             const actionText = e.type === 'humanoid' ? getActionText(e.action, state) : '';
                             const distText = getDistText(e?.dist);
@@ -59,16 +60,17 @@ const App = ({ state, pushView, popView }) => {
             }
         },
         entity: ({ entityId }) => {
-            // TODO: fix bug when viewing entity while it is removed
             const entity = state.entities.find(e => e.id === entityId);
             return {
                 title: entity?.name || 'Entity',
                 children: html`
                     <${List}>
                         ${entity?.description && html`<${ListItem} text="${entity.description}" />`}
+                        <${ListItem} text="Dist" secondaryText="${getDistText(entity?.dist, false)}" />
                         ${Object.entries(entity).map(([key, value]) => {
                             const ignore = [
                                 'name',
+                                'dist',
                                 'pluralName',
                                 'description',
                                 'id',
@@ -101,9 +103,9 @@ const App = ({ state, pushView, popView }) => {
                         <${ListItem}
                             text="Overall"
                             icon="face-smile"
-                            detail="${getStatusDesc('overall', humanoid.overall)}"
-                            secondaryText="${humanoid.overall.toFixed(2)}%"
-                            percent="${humanoid.overall}"
+                            detail="${getStatusDesc('overall', humanoid?.overall)}"
+                            secondaryText="${humanoid?.overall?.toFixed(2)}%"
+                            percent="${humanoid?.overall}"
                         />
                         <${ListItem}
                             text="Health"

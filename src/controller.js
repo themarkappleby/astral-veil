@@ -27,10 +27,10 @@ const withController = (WrappedComponent) => {
             id: 2,
             dist: 2,
             name: 'Jason',
-            overall: 80,
+            overall: null,
             hunger: 34,
             mood: 63,
-            rest: 11,
+            rest: 100,
             health: 100,
         },
         {
@@ -105,7 +105,7 @@ const withController = (WrappedComponent) => {
                         if (entity?.action) {
                             if (!entity.action.initilized) {
                                 entity.action.initilized = true;
-                                const target = Object.assign({}, entities.find(e => e.id === entity.action.targetId));
+                                const target = entities.find(e => e.id === entity.action.targetId);
                                 if (entity.action.type === 'walk') {
                                     // Handle walking
                                     const MINUTES_TO_WALK_ONE_UNIT = 5;
@@ -123,10 +123,9 @@ const withController = (WrappedComponent) => {
                                     const MINUTES_TO_EAT = 15;
                                     const caloriesPerMin = target?.calories / MINUTES_TO_EAT;
                                     const hungerPerMin = (caloriesPerMin / entity.dailyCalories) * 100;
-                                    const t = entities.find(e => e.id === entity.action.targetId);
-                                    t.count = Math.max(0, t?.count - 1);
-                                    if (t.count === 0) {
-                                        entities = entities.filter(e => e.id !== t?.id);
+                                    target.count = Math.max(0, target?.count - 1);
+                                    if (target.count === 0) {
+                                        target.dist = -1;
                                     }
                                     entity.action = {
                                         ...entity.action,
