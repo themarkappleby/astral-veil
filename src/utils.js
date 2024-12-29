@@ -1,6 +1,7 @@
 const getEntityIcon = (entityType) => {
     switch (entityType) {
         case 'location': return 'location-dot';
+        case 'crop': return 'seedling';
         case 'structure': return 'building';
         case 'construction': return 'hammer';
         case 'food': return 'utensils';
@@ -44,9 +45,10 @@ const getActionText = (action, state) => {
         eat: 'Eating',
         sleep: 'Sleeping',
         build: 'Building',
+        grow: 'Growing',
     }
     const actionTarget = state.entities.find(e => e.id === action.targetId);
-    return `${verbMap[action?.type]} ${actionTarget?.name?.toLowerCase() || ''} ${action?.progress !== undefined ? `${Math.round(action?.progress)}%` : ''}`;
+    return `${verbMap[action?.type] || 'VERB'} ${actionTarget?.name?.toLowerCase() || ''} ${action?.progress !== undefined ? `${Math.round(action?.progress)}%` : ''}`;
 }
 
 const STATUSES = {

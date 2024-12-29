@@ -31,6 +31,8 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                                 actionText = getActionText(e.action, state);
                             } else if (e.type === 'construction') {
                                 actionText = Math.round(e.progress) + '% complete';
+                            } else if (e.type === 'crop') {
+                                actionText = getActionText(e.action, state).replace('Idle', 'Ready to harvest');
                             }
                             const distText = getDistText(e?.dist);
                             return html`

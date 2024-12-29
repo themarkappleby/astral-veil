@@ -168,6 +168,16 @@ const withController = (WrappedComponent) => {
                                         rate: 0.4,
                                         progress,
                                     }
+                                } else if (entity.action.type === 'grow') {
+                                    entity.action = {
+                                        ...entity.action,
+                                        attr: 'progress',
+                                        attrTarget: entity,
+                                        from: 0,
+                                        to: 100,
+                                        rate: 0.4,
+                                        progress: 0,
+                                    }
                                 }
                             }
                             const current = entity.action.attrTarget[entity.action.attr];
@@ -189,15 +199,17 @@ const withController = (WrappedComponent) => {
                                             type: 'build',
                                             targetId: entity.action.target.id,
                                         };
-                                    } else {
+                                    }
+                                    else {
                                         entity.action = null;
                                     }
                                 } else if (entity.action.type === 'build') {
                                     // update state of construction entity such that its type changes from 'constructure' to 'building'
                                     const target = entities.find(e => e.id === entity.action.targetId);
-                                    target.type = 'structure';
-                                    delete target.progress;
+                                    target.type = 'crop';
+                                    target.progress = 0;
                                     entity.action = null;
+                                    target.action = { type: 'grow' };
                                 } else {
                                     entity.action = null;
                                 }
