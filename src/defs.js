@@ -55,7 +55,7 @@ defs.human = () => {
         rest: getRandom(70, 100),
         health: getRandom(70, 100),
         size: 2000,
-        dailyCalories: 2200,
+        dailyCaloriesNeeded: 2200,
     }
 }
 
