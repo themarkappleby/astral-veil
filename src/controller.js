@@ -2,75 +2,6 @@ const { h, render } = preact;
 const { useState, useCallback, useEffect, useRef } = preactHooks;
 const html = htm.bind(h);
 
-const handleHunger = ({ self, entities, gameSpeed}) => {
-    const HUNGER_THRESHOLD = 33;
-    const isEating = self?.action?.type === 'eat';
-    const isBusy = self?.action;
-    if (!isEating) {
-        self.hunger = Math.max(0, self.hunger - (0.15 * gameSpeed));
-        if (self.hunger <= HUNGER_THRESHOLD && !isBusy) {
-            eat();
-        }
-    }
-    function eat () {
-        const closestFood = locateClosestEntity({
-            fromDist: self.dist,
-            properties: {
-                type: 'food',
-            },
-            entities,
-        });
-        if (closestFood && closestFood.dist === self.dist) {
-            const MINUTES_TO_EAT = 15;
-            const caloriesPerMin = closestFood?.calories / MINUTES_TO_EAT;
-            const hungerPerMin = (caloriesPerMin / self.dailyCaloriesNeeded) * 100;
-            closestFood.count = Math.max(0, closestFood?.count - 1);
-            if (closestFood.count === 0) {
-                closestFood.dist = -1;
-            }
-            
-            // Mock new action API
-            self.action = {
-                name: 'eat',
-                target: closestFood,
-                update: self,
-                updateProp: 'hunger',
-                from: self.hunger,
-                to: Math.min(100, self.hunger + (closestFood.calories / self.dailyCaloriesNeeded) * 100),
-                rate: hungerPerMin,
-                onDone: () => {
-                    self.action = null;
-                }
-            }
-
-            self.action = {
-                type: 'eat', // change to name
-                targetId: closestFood.id, // TODO replace with target
-                attrTarget: self,
-                attr: 'hunger',
-                from: self.hunger,
-                to: 100,
-                rate: hungerPerMin,
-                progress: 0,
-                target: closestFood, // TODO is this needed?
-            };
-        } else if (closestFood && closestFood.dist !== self.dist) {
-            self.action = {
-                type: 'walk',
-                targetId: closestFood.id,
-            };
-        }
-    }
-    // ==============================
-    // Handle done eating
-    // ==============================
-    // TODO
-}
-
-const entityHandlers = {
-    hunger: handleHunger,
-}
-
 const withController = (WrappedComponent) => {
   return (props) => {
     const [gameSpeed, setGameSpeed] = useState(1);
@@ -99,11 +30,16 @@ const withController = (WrappedComponent) => {
         },
         {
             ...defs.human(),
-            dist: 0,
+            dist: 3,
+        },
+        {
+            ...defs.simpleMeal(),
+            dist: 4,
+            count: 1,
         },
         {
             ...defs.surroundings(),
-            dist: 1,
+            dist: 5,
         }
     ]);
 
@@ -125,16 +61,33 @@ const withController = (WrappedComponent) => {
                 setEntities(prevEntities => {
                     let entities = Object.assign([], prevEntities);
                     entities.forEach(entity => {
-                        Object.keys(entityHandlers).forEach(handler => {
-                            if (entity[handler] !== undefined) {
-                                entityHandlers[handler]({
-                                    self: entity,
+                        entity?.ai?.forEach(aiName => {
+                            if (ai[aiName] && aiName !== 'actions') {
+                                ai[aiName]({
+                                    entity,
                                     entities,
                                     gameSpeed,
                                 });
                             }
-                        });
+                        })
 
+                        if (entity.action) {
+                            const actionEntity = entities.find(e => e.id === entity.action.entityId);
+                            const actionProp = entity.action.entityProp;
+                            if (entity.action.to < entity.action.from) {
+                                actionEntity[actionProp] = Math.max(entity.action.to, actionEntity[actionProp] - entity.action.rate);
+                            } else {
+                                actionEntity[actionProp] = Math.min(entity.action.to, actionEntity[actionProp] + entity.action.rate);
+                            }
+                            entity.action.progress = Math.abs(Math.min(100, ((actionEntity[actionProp] - entity.action.from) / (entity.action.to - entity.action.from)) * 100));
+                            if (entity.action.progress >= 100) {
+                                entity?.action?.onDone();
+                            }
+                        }
+
+
+
+                        /*
                         // Reduce rest
                         if (entity.rest !== undefined && entity?.action?.type !== 'sleep') {
                             entity.rest = Math.max(0, entity.rest - (0.1 * gameSpeed));
@@ -289,6 +242,7 @@ const withController = (WrappedComponent) => {
                                 }
                             }
                         }
+                        */
                     });
                     return entities;
                 });

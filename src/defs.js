@@ -1,5 +1,3 @@
-const defs = {};
-
 defs.bartlettPear = () => ({
     id: newId(),
     name: 'Bartlett pear',
@@ -45,6 +43,7 @@ defs.human = () => {
         id: newId(),
         name: getRandomName(gender),
         surname: getRandomSurname(),
+        ai: ['rest', 'hunger'],
         age: getRandom(18, 65),
         gender,
         type: 'humanoid',
