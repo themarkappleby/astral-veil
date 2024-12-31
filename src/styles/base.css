@@ -129,12 +129,13 @@ button {
     font-size: 17px;
     min-height: 53px;
     color: black;
+    /* TODO: only remove this for touch devices
     &:is(button) {
-        &:hover {
+        &:hover, &:focus {
             outline: 1px solid black;
             box-shadow: 0 3px 10px rgba(0,0,0,0.3);
         }
-    }
+    } */
     &.listItem--button {
         justify-content: center;
         background: #C8C8C8;
