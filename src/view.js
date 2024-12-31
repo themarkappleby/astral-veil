@@ -1,3 +1,5 @@
+// TODO consolidate entity and humanoid views into a single comprehensive entity view
+
 const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView }) => {
     const views = {
         menu: () => {
@@ -33,6 +35,8 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                                 actionText = Math.round(e.progress) + '% complete';
                             } else if (e.type === 'crop') {
                                 actionText = getActionText(e.action, state).replace('Idle', 'Ready to harvest');
+                            } else if (e.type === 'location') {
+                                actionText = Math.round(e.progress || 0) + '% explored';
                             }
                             const distText = getDistText(e?.dist);
                             return html`
@@ -90,8 +94,8 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                             <${ListItem} text="Build" secondaryText="${html`<${Toggle} value=${entity.building} onChange=${() => {
                                 state.setEntities(state.entities.map(e => e.id === entity.id ? {...e, building: !e.building} : e));
                             }} />`}" />
-                            <${ListItem} text="Cancel" isButton onClick=${() => {
-                                if (confirm('Are you sure you want to cancel this construction?')) {
+                            <${ListItem} text="Destroy" isButton onClick=${() => {
+                                if (confirm('Are you sure you want to destroy this construction?')) {
                                     state.setEntities(state.entities.map(e => e.id === entity.id ? {...e, dist: -1} : e));
                                     popView();
                                 }
@@ -153,7 +157,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
             return {
                 title: `${humanoid.name} ${humanoid.surname}` || 'Humanoid',
                 children: html`
-                    <${List} title="Currently">
+                    <${List}>
                         ${humanoid?.action ? html`
                             <${ListItem} icon="face-smile" text="Currently" detail="${actionText}" percent="${humanoid.action?.progress || 0}" secondaryText="${distText}" />
                         ` : html`
@@ -232,8 +236,8 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                         <${ListItem} text="Nudist" onClick=${() => {}} />
                     </${List}>
                     <${List} title="Relations">
-                        <${ListItem} icon="face-smile" text="Fritz" secondaryText="Friend" percent="78" onClick=${() => {}} />
-                        <${ListItem} icon="face-frown" text="Murphy" secondaryText="Detests" percent="12" onClick=${() => {}} />
+                        <${ListItem} icon="face-smile" text="Fritz" detail="Friend" secondaryText="78.05%" percent="78" onClick=${() => {}} />
+                        <${ListItem} icon="face-frown" text="Murphy" detail="Detests" secondaryText="12.17%" percent="12" onClick=${() => {}} />
                     </${List}>
                 `,
             }

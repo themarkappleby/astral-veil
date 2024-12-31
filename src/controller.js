@@ -66,6 +66,9 @@ const withController = (WrappedComponent) => {
                         if (entity.action) {
                             const actionEntity = entities.find(e => e.id === entity.action.entityId);
                             const actionProp = entity.action.entityProp;
+                            if (actionEntity[actionProp] === undefined) {
+                                actionEntity[actionProp] = 0;
+                            }
                             if (entity.action.to < entity.action.from) {
                                 actionEntity[actionProp] = Math.max(entity.action.to, actionEntity[actionProp] - entity.action.rate);
                             } else if (entity.action.to > entity.action.from) {

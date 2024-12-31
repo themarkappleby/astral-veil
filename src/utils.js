@@ -46,6 +46,7 @@ const getActionText = (action, state) => {
         sleep: 'Sleeping',
         build: 'Building',
         grow: 'Growing',
+        explore: 'Exploring',
     }
     const actionTarget = state.entities.find(e => e.id === action.targetId);
     return `${verbMap[action?.name] || 'VERB'} ${actionTarget?.name?.toLowerCase() || ''} ${action?.progress !== undefined ? `${Math.round(action?.progress)}%` : ''}`;
@@ -100,7 +101,7 @@ const locateClosestEntity = ({
     let minDiff = Infinity;
     for (const e of entities) {
         const diff = Math.abs(e.dist - fromDist);
-        if (diff <= fromDist && diff < minDiff) {
+        if (diff < minDiff) {
             const matches = Object.entries(properties).every(([key, value]) => e[key] === value);
             if (matches) {
                 minDiff = diff;

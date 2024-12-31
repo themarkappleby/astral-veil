@@ -26,6 +26,7 @@ defs.simpleMeal = () => ({
     description: 'A simple meal consisting primarily of one main ingredient.',
     size: 16,
     calories: 1450,
+    spawnRate: 0.5,
 })
 
 defs.birchWood = () => ({
@@ -35,6 +36,7 @@ defs.birchWood = () => ({
     type: 'wood',
     description: 'A piece of birch wood.',
     size: 8,
+    spawnRate: 0.5,
 })
 
 defs.human = () => {
@@ -43,7 +45,7 @@ defs.human = () => {
         id: newId(),
         name: getRandomName(gender),
         surname: getRandomSurname(),
-        ai: ['rest', 'hunger', 'build'],
+        ai: ['rest', 'hunger', 'build', 'explore'],
         age: getRandom(18, 65),
         gender,
         type: 'humanoid',
