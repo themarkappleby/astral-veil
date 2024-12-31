@@ -61,18 +61,26 @@ defs.human = () => {
     }
 }
 
-defs.cucumberPatch = () => ({
+defs.cucumberPatchConstruction = () => ({
     id: newId(),
     name: 'Cucumber patch',
     pluralName: 'Cucumber patches',
     type: 'construction',
-    description: 'A patch of cucumbers.',
+    description: 'A plot of land dedicated to growing cucumbers.',
     size: 100,
-    onBuild: {
-        type: 'crop',
-        progress: 0,
-        ai: ['grow'],
-    }
+    onBuild: defs.cucumberPatch,
+})
+
+defs.cucumberPatch = () => ({
+    id: newId(),
+    name: 'Cucumber patch',
+    pluralName: 'Cucumber patches',
+    type: 'crop',
+    description: 'A patch of growing cucumbers.',
+    size: 100,
+    progress: getRandom(0, 100),
+    ai: ['grow'],
+    spawnRate: 0.2,
 })
 
 defs.riceField = () => ({

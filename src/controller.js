@@ -16,10 +16,10 @@ const withController = (WrappedComponent) => {
     const [amPm, setAmPm] = useState('AM');
     const [day, setDay] = useState(1);
     const [isPaused, setIsPaused] = useState(false);
-    const [showEmpty, setShowEmpty] = useState(true);
+    const [showDistanceMarkers, setShowDistanceMarkers] = useState(true);
     const isPausedRef = useRef(isPaused);
     const [availableConstruction, setAvailableConstruction] = useState([
-        {...defs.cucumberPatch()},
+        {...defs.cucumberPatchConstruction()},
     ]);
     const [ent, setEntities] = useState([
         {
@@ -33,7 +33,7 @@ const withController = (WrappedComponent) => {
         },
         {
             ...defs.surroundings(),
-            dist: 5,
+            dist: 1,
         }
     ]);
 
@@ -200,7 +200,7 @@ const withController = (WrappedComponent) => {
             isPaused, setIsPaused,
             gameSpeed, setGameSpeed,
             availableConstruction, setAvailableConstruction,
-            showEmpty, setShowEmpty,
+            showDistanceMarkers, setShowDistanceMarkers,
         }
     }} />`;
   };

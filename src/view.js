@@ -21,6 +21,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                 },
                 children: html`
                     <${List}>
+                        ${state.showDistanceMarkers && html`<${ListItem} isEmpty secondaryText="At base" />`}
                         ${state.entities.sort((a, b) => a.dist - b.dist).map(e => {
                             if (e.dist === -1) return;
                             let text = e.count ? (e.count === 1 ? `1 ${e.name.toLowerCase()}` : `${e.count} ${e.pluralName.toLowerCase()}`) : e.name;
@@ -39,24 +40,21 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                             }
                             const distText = getDistText(e?.dist);
                             const distInt = parseInt(getDistText(e?.dist, false)) || 0;
-                            // if gap between this e.dist and lastDist is more than 1, add an ListItem with the text "Empty" for the difference
-                            const diff = distInt - lastDist;
+                            const diff = distInt + 1 - lastDist;
                             const emptyItems = [];
-                            if (diff > 1) {
-                                for (let i = 1; i < diff; i++) {
-                                    emptyItems.push(html`
-                                        <${ListItem} isEmpty text="Empty" secondaryText="${getDistText(i + lastDist)}" />
-                                    `);
-                                }
+                            for (let i = 1; i < diff; i++) {
+                                emptyItems.push(html`
+                                    <${ListItem} isEmpty secondaryText="${getDistText(i + lastDist)}" />
+                                `);
                             }
                             lastDist = distInt;
                             return html`
-                                ${state.showEmpty ? emptyItems : ''}
+                                ${state.showDistanceMarkers ? emptyItems : ''}
                                 <${ListItem}
                                     icon="${getEntityIcon(e.type)}"
                                     text="${text}"
                                     detail="${actionText}"
-                                    secondaryText="${distText}"
+                                    secondaryText="${state.showDistanceMarkers ? '' : distText}"
                                     percent=${e?.action?.progress || e?.progress}
                                     onClick=${() => {
                                         if (e.type === 'humanoid') {
@@ -109,7 +107,6 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                             <${ListItem} text="Destroy" isButton onClick=${() => {
                                 if (confirm('Are you sure you want to destroy this construction?')) {
                                     state.setEntities(state.entities.map(e => e.id === entity.id ? {...e, dist: -1} : e));
-                                    popView();
                                 }
                             }} />
                         ` : ''}
@@ -252,8 +249,8 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                 title: 'Settings',
                 children: html`
                     <${List}>
-                        <${ListItem} text="Show empty entries" secondaryText="${html`<${Toggle} value=${state.showEmpty} onChange=${() => {
-                            state.setShowEmpty(!state.showEmpty);
+                        <${ListItem} text="Show distance markers" secondaryText="${html`<${Toggle} value=${state.showDistanceMarkers} onChange=${() => {
+                            state.setShowDistanceMarkers(!state.showDistanceMarkers);
                         }} />`}" />
                     </${List}>
                 `,

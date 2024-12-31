@@ -59,7 +59,7 @@ const Toggle = ({ value, onChange }) => {
 }
 
 const Icon = ({ name, color, className }) => {
-    return html`<div class="icon icon--${name} ${color && `color-bg-${color}`} ${className}"><i class="fa-solid fa-${name}"></i></div>`;
+    return html`<div class="icon icon--${name} ${color ? `color-bg-${color}` : ''} ${className}"><i class="fa-solid fa-${name}"></i></div>`;
 }
 
 const Stack = ({ children }) => {

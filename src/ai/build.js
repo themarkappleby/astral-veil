@@ -1,5 +1,12 @@
 ai.build = ({ entity, entities }) => {
     const isBusy = entity?.action;
+    if (entity?.action?.name === 'build') {
+        const target = entities.find(e => e.id === entity?.action?.targetId);
+        if (target.dist === -1) {
+            entity.action = null
+        }
+        return;
+    }
     if (!isBusy) {
         const closestBuildable = locateClosestEntity({
             fromDist: entity.dist,
@@ -10,11 +17,11 @@ ai.build = ({ entity, entities }) => {
         });
         if (closestBuildable) {
             ai.actions.walk({ target: closestBuildable, entity, onDone: () => {
-                ai.actions.build({ entity, target: closestBuildable, onDone: () => {
+                ai.actions.build({ entity, target: closestBuildable, onDone: e => {
                     entity.action = null;
-                    Object.keys(closestBuildable.onBuild).forEach(key => {
-                        closestBuildable[key] = closestBuildable.onBuild[key];
-                    });
+                    const builtEntity = {...closestBuildable.onBuild(), progress: 0, dist: closestBuildable.dist};
+                    e.push(builtEntity);
+                    closestBuildable.dist = -1;
                 } })
             } });
         }
