@@ -1,3 +1,9 @@
+/* declare timeHeight var */
+:root {
+    --timeHeight: 103px;
+}
+
+
 *, *:before, *:after {
     box-sizing: border-box;
     touch-action: manipulation;
@@ -32,7 +38,7 @@ button {
     display: flex;
     transition: transform 0.2s ease-in-out;
     height: 100%;
-    max-height: calc(100vh - 160px);
+    max-height: calc(100vh - var(--timeHeight));
 }
 
 .view {
@@ -233,10 +239,13 @@ button {
     gap: 8px;
 }
 
-.goal {
+.time {
     padding: 12px 12px 36px 12px;
     border-top: 2px solid black;
     box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    position: relative;
+    background: white;
+    z-index: 6;
 }
 
 .modal {
@@ -257,7 +266,7 @@ button {
         }
     }
     .view {
-        height: 60vh;
+        height: calc(60vh - var(--timeHeight));
     }
 }
 
@@ -274,7 +283,7 @@ button {
 
 .modal-container {
     margin-top: 40vh;
-    height: 60vh;
+    height: calc(60vh - var(--timeHeight));
     background: white;
     transition: transform 0.2s ease-in-out;
     position: relative;

@@ -249,9 +249,8 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                     `;
                 })}
             </div>
-            <div class="goal">
+            <div class="time">
                 <${List}>
-                    <${ListItem} icon="flag-checkered" text="Current goal" detail="Plant a cucumber patch" />
                     <${ListItem}  text="${html`
                         <${Stack}>
                             <button onClick=${() => state.setIsPaused(!state.isPaused)}>
