@@ -55,9 +55,9 @@ const getRandomSurname = () => {
     return surnames[Math.floor(Math.random() * surnames.length)];
 }
 
-const getDistText = (dist, withPrefix = true) => {
+const getDistText = (dist, withSuffix = true) => {
     if (dist === -1) return 'Trashed';
-    return dist === 0 ? 'At base' : `${withPrefix ? 'Dist ' : ''}${Math.max(1, Math.floor(dist))}`;
+    return dist === 0 ? 'At base' : `${Math.max(1, Math.floor(dist))}${withSuffix ? ' km' : ''}`;
 }
 
 const getActionText = (action, state) => {
