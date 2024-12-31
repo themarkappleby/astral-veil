@@ -19,8 +19,6 @@ const withController = (WrappedComponent) => {
     const isPausedRef = useRef(isPaused);
     const [availableConstruction, setAvailableConstruction] = useState([
         {...defs.cucumberPatch()},
-        {...defs.riceField()},
-        {...defs.cornField()},
     ]);
     const [ent, setEntities] = useState([
         {
@@ -34,7 +32,7 @@ const withController = (WrappedComponent) => {
         },
         {
             ...defs.surroundings(),
-            dist: 1,
+            dist: 5,
         }
     ]);
 
@@ -56,187 +54,36 @@ const withController = (WrappedComponent) => {
                 setEntities(prevEntities => {
                     let entities = Object.assign([], prevEntities);
                     entities.forEach(entity => {
-                        // Reduce hunger
-                        if (entity.hunger !== undefined) {
-                            if (entity?.action?.type !== 'eat') {
-                                entity.hunger = Math.max(0, entity.hunger - (0.15 * gameSpeed));
-                            }
-                            if (entity.hunger <= 33 && !entity?.action) {
-                                const closestFood = locateClosestEntity({
-                                    fromDist: entity.dist,
-                                    properties: {
-                                        type: 'food',
-                                    },
+                        entity?.ai?.forEach(aiName => {
+                            if (ai[aiName] && aiName !== 'actions') {
+                                ai[aiName]({
+                                    entity,
                                     entities,
+                                    gameSpeed,
                                 });
-                                if (closestFood) {
-                                    if (closestFood.dist === entity.dist) {
-                                        entity.action = {
-                                            type: 'eat',
-                                            targetId: closestFood.id,
-                                        };
-                                    } else {
-                                        entity.action = {
-                                            type: 'walk',
-                                            targetId: closestFood.id,
-                                        };
-                                    }
-                                }
                             }
-                        }
-                        // Reduce rest
-                        if (entity.rest !== undefined && entity?.action?.type !== 'sleep') {
-                            entity.rest = Math.max(0, entity.rest - (0.1 * gameSpeed));
-                        }
-                        if (entity.rest <= 10) {
-                            entity.action = {
-                                type: 'sleep',
+                        })
+                        if (entity.action) {
+                            const actionEntity = entities.find(e => e.id === entity.action.entityId);
+                            const actionProp = entity.action.entityProp;
+                            if (entity.action.to < entity.action.from) {
+                                actionEntity[actionProp] = Math.max(entity.action.to, actionEntity[actionProp] - entity.action.rate);
+                            } else if (entity.action.to > entity.action.from) {
+                                actionEntity[actionProp] = Math.min(entity.action.to, actionEntity[actionProp] + entity.action.rate);
                             }
-                        }
-                        // Reduce health if starving
-                        if (entity.health !== undefined && entity.hunger === 0) {
-                            entity.health = Math.max(0, entity.health - (0.017 * gameSpeed));
-                        }
-                        if (entity.overall !== undefined) {
-                            entity.overall = Math.round((entity.health + entity.hunger + entity.mood + entity.rest) / 4);
-                        }
-
-                        if (entity?.action) {
-                            if (!entity.action.initilized) {
-                                entity.action.initilized = true;
-                                const target = entities.find(e => e.id === entity.action.targetId);
-                                if (entity.action.type === 'walk') {
-                                    // ==============================
-                                    // Handle walking
-                                    // ==============================
-                                    const MINUTES_TO_WALK_ONE_UNIT = 5;
-                                    entity.action = {
-                                        ...entity.action,
-                                        attr: 'dist',
-                                        attrTarget: entity,
-                                        from: entity.dist,
-                                        to: target.dist,
-                                        rate: (target.dist - entity.dist) / (MINUTES_TO_WALK_ONE_UNIT * Math.abs(target.dist - entity.dist)),
-                                        progress: 0,
-                                        target,
-                                    }
-                                } else if (entity.action.type === 'eat') {
-                                    // ==============================
-                                    // Handle eating
-                                    // ==============================
-                                    const MINUTES_TO_EAT = 15;
-                                    const caloriesPerMin = target?.calories / MINUTES_TO_EAT;
-                                    const hungerPerMin = (caloriesPerMin / entity.dailyCalories) * 100;
-                                    target.count = Math.max(0, target?.count - 1);
-                                    if (target.count === 0) {
-                                        target.dist = -1;
-                                    }
-                                    entity.action = {
-                                        ...entity.action,
-                                        attr: 'hunger',
-                                        attrTarget: entity,
-                                        from: entity.hunger,
-                                        to: 100,
-                                        rate: hungerPerMin,
-                                        progress: 0,
-                                        target,
-                                    }
-                                } else if (entity.action.type === 'sleep') {
-                                    // ==============================
-                                    // Handle sleeping
-                                    // ==============================
-                                    entity.action = {
-                                        ...entity.action,
-                                        attr: 'rest',
-                                        attrTarget: entity,
-                                        from: entity.rest,
-                                        to: 100,
-                                        rate: 0.2,
-                                        progress: 0,
-                                    }
-                                } else if (entity.action.type === 'build') {
-                                    // ==============================
-                                    // Handle building
-                                    // ==============================
-                                    const progress = target.progress;
-                                    entity.action = {
-                                        ...entity.action,
-                                        attr: 'progress',
-                                        attrTarget: target,
-                                        from: progress,
-                                        to: 100,
-                                        rate: 0.4,
-                                        progress,
-                                    }
-                                } else if (entity.action.type === 'grow') {
-                                    entity.action = {
-                                        ...entity.action,
-                                        attr: 'progress',
-                                        attrTarget: entity,
-                                        from: 0,
-                                        to: 100,
-                                        rate: 0.4,
-                                        progress: 0,
-                                    }
-                                }
-                            }
-                            const current = entity.action.attrTarget[entity.action.attr];
-                            if (entity.action.to > entity.action.from) {
-                                entity.action.attrTarget[entity.action.attr] = Math.min(entity.action.to, Math.max(0, current + entity.action.rate));
+                            if (entity.action.from === entity.action.to) {
+                                entity.action.progress = 100;
                             } else {
-                                entity.action.attrTarget[entity.action.attr] = Math.max(entity.action.to, current + entity.action.rate);
+                                entity.action.progress = Math.abs(Math.min(100, ((actionEntity[actionProp] - entity.action.from) / (entity.action.to - entity.action.from)) * 100));
                             }
-                            entity.action.progress = Math.min(100, ((current - entity.action.from) / (entity.action.to - entity.action.from)) * 100);
                             if (entity.action.progress >= 100) {
-                                if (entity.action.type === 'walk') {
-                                    if (entity.action.target.type === 'food') {
-                                        entity.action = {
-                                            type: 'eat',
-                                            targetId: entity.action.target.id,
-                                        };
-                                    } else if (entity.action.target.type === 'construction') {
-                                        entity.action = {
-                                            type: 'build',
-                                            targetId: entity.action.target.id,
-                                        };
-                                    }
-                                    else {
-                                        entity.action = null;
-                                    }
-                                } else if (entity.action.type === 'build') {
-                                    // update state of construction entity such that its type changes from 'constructure' to 'building'
-                                    const target = entities.find(e => e.id === entity.action.targetId);
-                                    target.type = 'crop';
-                                    target.progress = 0;
-                                    entity.action = null;
-                                    target.action = { type: 'grow' };
-                                } else {
-                                    entity.action = null;
+                                if (entity?.action?.onDone) {
+                                    entity?.action?.onDone();
                                 }
                             }
-                        } else if (entity.type === 'humanoid') {
-                            // look for soemthing to do if not already doing something
-                            const closestConstruction = locateClosestEntity({
-                                fromDist: entity.dist,
-                                properties: {
-                                    type: 'construction',
-                                    building: true,
-                                },
-                                entities,
-                            });
-                            if (closestConstruction) {
-                                if (closestConstruction.dist === entity.dist) {
-                                    entity.action = {
-                                        type: 'build',
-                                        targetId: closestConstruction.id,
-                                    }
-                                } else {
-                                    entity.action = {
-                                        type: 'walk',
-                                        targetId: closestConstruction.id,
-                                    }
-                                }
-                            }
+                        }
+                        if (entity.overallProps) {
+                            entity.overall = entity.overallProps.reduce((acc, prop) => acc + entity[prop], 0) / entity.overallProps.length;
                         }
                     });
                     return entities;

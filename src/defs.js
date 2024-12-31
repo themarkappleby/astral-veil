@@ -1,5 +1,3 @@
-const defs = {};
-
 defs.bartlettPear = () => ({
     id: newId(),
     name: 'Bartlett pear',
@@ -45,17 +43,20 @@ defs.human = () => {
         id: newId(),
         name: getRandomName(gender),
         surname: getRandomSurname(),
+        ai: ['rest', 'hunger', 'build'],
         age: getRandom(18, 65),
         gender,
         type: 'humanoid',
         description: 'A bipedal humanoid being.',
-        overall: null,
-        hunger: getRandom(70, 100),
+        overallProps: ['health', 'mood', 'rest', 'hunger', 'recreation', 'comfort'],
+        health: getRandom(70, 100),
         mood: getRandom(70, 100),
         rest: getRandom(70, 100),
-        health: getRandom(70, 100),
+        hunger: getRandom(70, 100),
+        recreation: getRandom(70, 100),
+        comfort: getRandom(70, 100),
         size: 2000,
-        dailyCalories: 2200,
+        dailyCaloriesNeeded: 2200,
     }
 }
 
@@ -66,6 +67,11 @@ defs.cucumberPatch = () => ({
     type: 'construction',
     description: 'A patch of cucumbers.',
     size: 100,
+    onBuild: {
+        type: 'crop',
+        progress: 0,
+        ai: ['grow'],
+    }
 })
 
 defs.riceField = () => ({
