@@ -16,6 +16,7 @@ const withController = (WrappedComponent) => {
     const [amPm, setAmPm] = useState('AM');
     const [day, setDay] = useState(1);
     const [isPaused, setIsPaused] = useState(false);
+    const [showEmpty, setShowEmpty] = useState(true);
     const isPausedRef = useRef(isPaused);
     const [availableConstruction, setAvailableConstruction] = useState([
         {...defs.cucumberPatch()},
@@ -199,6 +200,7 @@ const withController = (WrappedComponent) => {
             isPaused, setIsPaused,
             gameSpeed, setGameSpeed,
             availableConstruction, setAvailableConstruction,
+            showEmpty, setShowEmpty,
         }
     }} />`;
   };

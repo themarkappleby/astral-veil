@@ -6,7 +6,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                 children: html`
                     <${List}>
                         <${ListItem} icon="globe" text="World" onClick=${() => pushView({id: 'world'})} />
-                        <${ListItem} icon="gear" text="Settings" onClick=${() => {}} />
+                        <${ListItem} icon="gear" text="Settings" onClick=${() => pushView({id: 'settings'})} />
                     </${List}>
                 `,
             }
@@ -51,7 +51,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                             }
                             lastDist = distInt;
                             return html`
-                                ${emptyItems}
+                                ${state.showEmpty ? emptyItems : ''}
                                 <${ListItem}
                                     icon="${getEntityIcon(e.type)}"
                                     text="${text}"
@@ -246,7 +246,19 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                     </${List}>
                 `,
             }
-        }
+        },
+        settings : () => {
+            return {
+                title: 'Settings',
+                children: html`
+                    <${List}>
+                        <${ListItem} text="Show empty entries" secondaryText="${html`<${Toggle} value=${state.showEmpty} onChange=${() => {
+                            state.setShowEmpty(!state.showEmpty);
+                        }} />`}" />
+                    </${List}>
+                `,
+            }
+        },
     }
 
     return html`
