@@ -1,3 +1,25 @@
+const locateClosestEntity = ({
+    fromDist,
+    properties,
+    entities,
+}) => {
+    let closestEntity = null;
+    let minDiff = Infinity;
+    for (const e of entities) {
+        if (e.dist !== -1) {
+            const diff = Math.abs(e.dist - fromDist);
+            if (diff < minDiff) {
+                const matches = Object.entries(properties).every(([key, value]) => e[key] === value);
+                if (matches) {
+                    minDiff = diff;
+                    closestEntity = e;
+                }
+            }
+        }
+    }
+    return closestEntity;
+}
+
 const getEntityIcon = (entityType) => {
     switch (entityType) {
         case 'location': return 'location-dot';
@@ -90,24 +112,4 @@ const getStatusDesc = (type, value) => {
 const toTitleCase = (str) => {
     if (typeof str !== 'string') return str;
     return str[0].toUpperCase() + str.slice(1);
-}
-
-const locateClosestEntity = ({
-    fromDist,
-    properties,
-    entities,
-}) => {
-    let closestEntity = null;
-    let minDiff = Infinity;
-    for (const e of entities) {
-        const diff = Math.abs(e.dist - fromDist);
-        if (diff < minDiff) {
-            const matches = Object.entries(properties).every(([key, value]) => e[key] === value);
-            if (matches) {
-                minDiff = diff;
-                closestEntity = e;
-            }
-        }
-    }
-    return closestEntity;
 }

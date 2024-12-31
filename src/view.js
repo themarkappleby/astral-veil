@@ -34,7 +34,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                             } else if (e.type === 'crop') {
                                 actionText = getActionText(e.action, state).replace('Idle', 'Ready to harvest');
                             } else if (e.type === 'location') {
-                                actionText = Math.round(e.progress || 0) + '% explored';
+                                actionText = `${e.exploring ? 'Exploring: ' : ''}${Math.round(e.progress || 0)}% explored`;
                             }
                             const distText = getDistText(e?.dist);
                             return html`
@@ -46,9 +46,9 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                                     percent=${e?.action?.progress || e?.progress}
                                     onClick=${() => {
                                         if (e.type === 'humanoid') {
-                                            pushView({id: 'humanoid', entityId: e.id});
+                                            pushModalView({id: 'humanoid', entityId: e.id});
                                         } else {
-                                            pushView({id: 'entity', entityId: e.id});
+                                            pushModalView({id: 'entity', entityId: e.id});
                                         }
                                     }}
                                 />
@@ -155,13 +155,6 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
             return {
                 title: `${humanoid.name} ${humanoid.surname}` || 'Humanoid',
                 children: html`
-                    <${List}>
-                        ${humanoid?.action ? html`
-                            <${ListItem} icon="face-smile" text="Currently" detail="${actionText}" percent="${humanoid.action?.progress || 0}" secondaryText="${distText}" />
-                        ` : html`
-                            <${ListItem} icon="face-smile" text="Currently" detail="Idle" secondaryText="${distText}" />
-                        `}
-                    </${List}>
                     <${List} title="Condition">
                         <${ListItem}
                             text="Overall"

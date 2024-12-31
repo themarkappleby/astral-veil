@@ -7,9 +7,10 @@ ai.hunger = ({ entity, entities, gameSpeed}) => {
             entity.health = Math.max(0, entity.health - (0.017 * gameSpeed));
         }
         const isBusy = entity?.action;
+        const isSleeping = entity?.action?.name === 'sleep';
         const TRY_EAT = 33;
         const FORCE_EAT = 10;
-        if ((!isBusy && entity.hunger <= TRY_EAT) || entity.hunger <= FORCE_EAT) {
+        if ((!isBusy && entity.hunger <= TRY_EAT) || (!isSleeping && entity.hunger <= FORCE_EAT)) {
             const closestFood = locateClosestEntity({
                 fromDist: entity.dist,
                 properties: {

@@ -159,12 +159,16 @@ const withController = (WrappedComponent) => {
             setActiveModalView(null);
             setModalViewStack([]);
         }, 200);
+        const themeColor = document.querySelector("meta[name=theme-color]");
+        themeColor.setAttribute("content", "#FFFFFF");
     }
 
     const pushModalView = (viewData) => {
         setModalVisible(true);
         setModalViewStack([...modalViewStack, viewData]);
         setActiveModalView(viewData);
+        const themeColor = document.querySelector("meta[name=theme-color]");
+        themeColor.setAttribute("content", "#D2D2D2");
     }
 
     const popModalView = () => {
