@@ -26,7 +26,7 @@ defs.simpleMeal = () => ({
     description: 'A simple meal consisting primarily of one main ingredient.',
     size: 16,
     calories: 1450,
-    spawnRate: 0.5,
+    spawnRate: 0.2,
 })
 
 defs.birchWood = () => ({
@@ -36,7 +36,6 @@ defs.birchWood = () => ({
     type: 'wood',
     description: 'A piece of birch wood.',
     size: 8,
-    spawnRate: 0.5,
 })
 
 defs.human = () => {

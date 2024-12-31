@@ -10,10 +10,8 @@ ai.explore = ({ entity, entities }) => {
             entities,
         });
         if (closestLocation) {
-            // DOES WORK entities.push({...defs.simpleMeal(), dist: 3, count: 5});
             ai.actions.walk({ target: closestLocation, entity, onDone: () => {
-                // DOES NOT WORK entities.push({...defs.simpleMeal(), dist: 3, count: 5});
-                ai.actions.explore({ target: closestLocation, entity, entities });
+                ai.actions.explore({ target: closestLocation, entity });
             }});
         }
     } else if (entity.action.name === 'explore') {
@@ -24,7 +22,7 @@ ai.explore = ({ entity, entities }) => {
     }
 }
 
-ai.actions.explore = ({ target, entity, entities }) => {
+ai.actions.explore = ({ target, entity }) => {
     entity.action = {
         name: 'explore',
         targetId: target.id,
@@ -33,12 +31,11 @@ ai.actions.explore = ({ target, entity, entities }) => {
         from: target.progress || 0,
         to: 100,
         rate: 1,
-        onDone: () => {
+        onDone: (entities) => {
             const spawnValue = getRandom(0, 100) / 100;
             Object.values(defs).forEach(d => {
                 const def = d();
                 if (def.spawnRate && spawnValue <= def.spawnRate) {
-                    // TODO this isn't working, fix it
                     entities.push({...def, dist: target.dist});
                 }
             });

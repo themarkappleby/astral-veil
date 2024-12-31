@@ -81,7 +81,7 @@ const withController = (WrappedComponent) => {
                             }
                             if (entity.action.progress >= 100) {
                                 if (entity?.action?.onDone) {
-                                    entity?.action?.onDone();
+                                    entity?.action?.onDone(entities);
                                 }
                             }
                         }
