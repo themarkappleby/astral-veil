@@ -1,5 +1,3 @@
-// TODO consolidate entity and humanoid views into a single comprehensive entity view
-
 const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView }) => {
     const views = {
         menu: () => {
