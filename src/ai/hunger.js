@@ -2,9 +2,14 @@ ai.hunger = ({ entity, entities, gameSpeed}) => {
     const isEating = entity?.action?.name === 'eat';
     if (!isEating) {
         entity.hunger = Math.max(0, entity.hunger - (0.15 * gameSpeed));
+        // Reduce health if starving
+        if (entity.health !== undefined && entity.hunger <= 0) {
+            entity.health = Math.max(0, entity.health - (0.017 * gameSpeed));
+        }
         const isBusy = entity?.action;
-        const HUNGER_THRESHOLD = 33;
-        if (!isBusy && entity.hunger <= HUNGER_THRESHOLD) {
+        const TRY_EAT = 33;
+        const FORCE_EAT = 10;
+        if ((!isBusy && entity.hunger <= TRY_EAT) || entity.hunger <= FORCE_EAT) {
             const closestFood = locateClosestEntity({
                 fromDist: entity.dist,
                 properties: {
@@ -13,11 +18,7 @@ ai.hunger = ({ entity, entities, gameSpeed}) => {
                 entities,
             });
             if (closestFood) {
-                if (closestFood.dist === entity.dist) {
-                    ai.actions.eat({ target: closestFood, entity });
-                } else {
-                    ai.actions.walk({ target: closestFood, entity, onDone: () => ai.actions.eat({ target: closestFood, entity }) });
-                }
+                ai.actions.walk({ target: closestFood, entity, onDone: () => ai.actions.eat({ target: closestFood, entity }) });
             }
         }
     }

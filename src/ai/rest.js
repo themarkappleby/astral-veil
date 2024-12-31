@@ -2,10 +2,10 @@ ai.rest = ({ entity, gameSpeed }) => {
     const isSleeping = entity?.action?.name === 'sleep';
     if (!isSleeping) {
         entity.rest = Math.max(0, entity.rest - (0.1 * gameSpeed));
-        const REST_TRY_THRESHOLD = 10;
-        const REST_FORCE_THRESHOLD = 5;
+        const TRY_SLEEP = 10;
+        const FORCE_SLEEP = 5;
         const isBusy = entity?.action;
-        if ((!isBusy && entity.rest <= REST_TRY_THRESHOLD) || entity.rest <= REST_FORCE_THRESHOLD) {
+        if ((!isBusy && entity.rest <= TRY_SLEEP) || entity.rest <= FORCE_SLEEP) {
             ai.actions.sleep({ entity });
         }
     }
