@@ -57,7 +57,7 @@ const getRandomSurname = () => {
 
 const getDistText = (dist, withSuffix = true) => {
     if (dist === -1) return 'Trashed';
-    return dist === 0 ? 'At base' : `${Math.max(1, Math.floor(dist))}${withSuffix ? ' km' : ''}`;
+    return dist < 1 ? 'At base' : `${Math.round(dist)}${withSuffix ? ' km' : ''}`;
 }
 
 const getActionText = (action, state) => {

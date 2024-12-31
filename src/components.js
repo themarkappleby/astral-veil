@@ -24,13 +24,13 @@ const List = ({ title, children }) => {
     `
 }
 
-const ListItem = ({ icon, text, detail, secondaryText, isButton, onClick, percent  }) => {
+const ListItem = ({ icon, text, detail, secondaryText, isButton, isEmpty, onClick, percent  }) => {
     let container = onClick ? 'button' : 'div';
     let percentStatus = 'high';
     if (percent < 66) percentStatus = 'medium';
     if (percent < 33) percentStatus = 'low'; 
     return html`
-        <${container} class="listItem ${isButton ? 'listItem--button' : ''}" onClick=${onClick}>
+        <${container} class="listItem ${isButton ? 'listItem--button' : ''} ${isEmpty ? 'listItem--empty' : ''}" onClick=${onClick}>
             <div class="listItem-left">
                 ${icon ? html`<${Icon} className="listItem-icon" name=${icon} />` : ''}
                 ${(text || detail) && html`<div class="listItem-textContainer">

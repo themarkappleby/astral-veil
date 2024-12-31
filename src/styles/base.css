@@ -103,7 +103,7 @@ button {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    padding: 12px 12px 36px 12px;
+    padding: 12px 12px 50vh 12px;
 }
 
 .list {
@@ -138,6 +138,9 @@ button {
     &.listItem--button {
         justify-content: center;
         background: #C8C8C8;
+    }
+    &.listItem--empty {
+        opacity: 0.3;
     }
 }
 

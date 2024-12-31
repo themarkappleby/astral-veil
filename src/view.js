@@ -12,6 +12,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
             }
         },
         world: () => {
+            let lastDist = 0;
             return {
                 title: 'World',
                 icon: 'plus',
@@ -37,7 +38,20 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                                 actionText = `${e.exploring ? 'Exploring: ' : ''}${Math.round(e.progress || 0)}% explored`;
                             }
                             const distText = getDistText(e?.dist);
+                            const distInt = parseInt(getDistText(e?.dist, false)) || 0;
+                            // if gap between this e.dist and lastDist is more than 1, add an ListItem with the text "Empty" for the difference
+                            const diff = distInt - lastDist;
+                            const emptyItems = [];
+                            if (diff > 1) {
+                                for (let i = 1; i < diff; i++) {
+                                    emptyItems.push(html`
+                                        <${ListItem} isEmpty text="Empty" secondaryText="${getDistText(i + lastDist)}" />
+                                    `);
+                                }
+                            }
+                            lastDist = distInt;
                             return html`
+                                ${emptyItems}
                                 <${ListItem}
                                     icon="${getEntityIcon(e.type)}"
                                     text="${text}"
