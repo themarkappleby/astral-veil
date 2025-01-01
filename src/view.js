@@ -34,11 +34,11 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                             if (e.type === 'humanoid') {
                                 actionText = getActionText(e.action, state);
                             } else if (e.type === 'construction') {
-                                actionText = Math.round(e.progress) + '% complete';
+                                actionText = (e?.progress?.toFixed(2) || 0) + '% complete';
                             } else if (e.type === 'crop') {
                                 actionText = getActionText(e.action, state).replace('Idle', 'Ready to harvest');
                             } else if (e.type === 'location') {
-                                actionText = `${e.exploring ? 'Exploring: ' : ''}${Math.round(e.progress || 0)}% explored`;
+                                actionText = `${e.exploring ? 'Exploring: ' : ''}${e?.progress?.toFixed(2) || 0}% explored`;
                             }
                             const distText = getDistText(e?.dist);
                             const distInt = parseInt(getDistText(e?.dist, false)) || 0;
@@ -57,7 +57,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                                     text="${text}"
                                     detail="${actionText}"
                                     secondaryText="${state.showDistanceMarkers ? '' : distText}"
-                                    percent=${e?.action?.progress || e?.progress}
+                                    percent=${e?.action?.progress?.toFixed(2) || e?.progress?.toFixed(2) || 0}
                                     onClick=${() => {
                                         if (e.type === 'humanoid') {
                                             pushView({id: 'humanoid', entityId: e.id});

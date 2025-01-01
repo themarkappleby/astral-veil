@@ -57,7 +57,7 @@ const getActionText = (action, state) => {
         explore: 'Exploring',
     }
     const actionTarget = state.entities.find(e => e.id === action.targetId);
-    return `${verbMap[action?.name] || 'VERB'} ${actionTarget?.name?.toLowerCase() || ''} ${action?.progress !== undefined ? `${Math.round(action?.progress)}%` : ''}`;
+    return `${verbMap[action?.name] || 'VERB'} ${actionTarget?.name?.toLowerCase() || ''} ${action?.progress !== undefined ? `${action?.progress?.toFixed(2)}%` : ''}`;
 }
 
 const STATUSES = {
