@@ -1,41 +1,12 @@
-defs.bartlettPear = () => ({
-    id: newId(),
-    name: 'Bartlett pear',
-    pluralName: 'Bartlett pears',
-    type: 'food',
-    description: 'A sweet, juicy pear with a firm texture.',
-    size: 8,
-    calories: 100,
-})
-
-defs.honeycrispApple = () => ({
-    id: newId(),
-    name: 'Honeycrisp apple',
-    pluralName: 'Honeycrisp apples',
-    type: 'food',
-    description: 'A sweet, juicy apple with a firm texture.',
-    size: 8,
-    calories: 90,
-})
-
 defs.simpleMeal = () => ({
     id: newId(),
     name: 'Simple meal',
     pluralName: 'Simple meals',
     type: 'food',
+    icon: 'utensils',
     description: 'A simple meal consisting primarily of one main ingredient.',
-    size: 16,
     calories: 1450,
     spawnRate: 0.2,
-})
-
-defs.birchWood = () => ({
-    id: newId(),
-    name: 'Birch wood',
-    pluralName: 'Birch wood',
-    type: 'wood',
-    description: 'A piece of birch wood.',
-    size: 8,
 })
 
 defs.human = () => {
@@ -48,6 +19,7 @@ defs.human = () => {
         age: getRandom(18, 65),
         gender,
         type: 'humanoid',
+        icon: 'face-smile',
         description: 'A bipedal humanoid being.',
         overallProps: ['health', 'mood', 'rest', 'hunger', 'recreation', 'comfort'],
         health: getRandom(70, 100),
@@ -56,18 +28,32 @@ defs.human = () => {
         hunger: getRandom(70, 100),
         recreation: getRandom(70, 100),
         comfort: getRandom(70, 100),
-        size: 2000,
         dailyCaloriesNeeded: 2200,
     }
 }
+
+defs.cucumberSeedPack = () => ({
+    id: newId(),
+    name: 'Cucumber seed pack',
+    pluralName: 'Cucumber seed packs',
+    type: 'item',
+    icon: 'box',
+    description: 'A pack of cucumber seeds.',
+})
 
 defs.cucumberPatchConstruction = () => ({
     id: newId(),
     name: 'Cucumber patch',
     pluralName: 'Cucumber patches',
     type: 'construction',
+    icon: 'hammer',
     description: 'A plot of land dedicated to growing cucumbers.',
-    size: 100,
+    materials: [
+        {
+            def: defs.cucumberSeedPack,
+            count: 1,
+        }
+    ],
     onBuild: defs.cucumberPatch,
 })
 
@@ -76,35 +62,18 @@ defs.cucumberPatch = () => ({
     name: 'Cucumber patch',
     pluralName: 'Cucumber patches',
     type: 'crop',
+    icon: 'seedling',
     description: 'A patch of growing cucumbers.',
-    size: 100,
     progress: getRandom(0, 100),
     ai: ['grow'],
     spawnRate: 0.2,
-})
-
-defs.riceField = () => ({
-    id: newId(),
-    name: 'Rice field',
-    pluralName: 'Rice fields',
-    type: 'construction',
-    description: 'A field of rice.',
-    size: 100,
-})
-
-defs.cornField = () => ({
-    id: newId(),
-    name: 'Corn field',
-    pluralName: 'Corn fields',
-    type: 'construction',
-    description: 'A field of corn.',
-    size: 100,
 })
 
 defs.surroundings = () => ({
     id: newId(),
     name: 'Surroundings',
     type: 'location',
+    icon: 'location-dot',
     description: 'The edge of the known area around your base. Who knows what might lie beyond?',
     exploring: false,
 })

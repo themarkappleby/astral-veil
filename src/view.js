@@ -22,6 +22,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                 children: html`
                     <${List}>
                         ${state.showDistanceMarkers && html`<${ListItem} isEmpty secondaryText="At base" />`}
+                        <${ListItem} icon="database" text="Stockpile" onClick=${() => {}} />
                         ${state.entities.sort((a, b) => a.dist - b.dist).map(e => {
                             if (e.dist === -1) return;
                             let text = e.count ? (e.count === 1 ? `1 ${e.name.toLowerCase()}` : `${e.count} ${e.pluralName.toLowerCase()}`) : e.name;
@@ -51,7 +52,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                             return html`
                                 ${state.showDistanceMarkers ? emptyItems : ''}
                                 <${ListItem}
-                                    icon="${getEntityIcon(e.type)}"
+                                    icon="${e.icon || 'question'}"
                                     text="${text}"
                                     detail="${actionText}"
                                     secondaryText="${state.showDistanceMarkers ? '' : distText}"
@@ -120,7 +121,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                 children: html`
                     <${List}>
                         ${state.availableConstruction.map(c => html`
-                            <${ListItem} icon="${getEntityIcon(c.type)}" text="${c.name}" onClick=${() => pushModalView({id: 'constructItem', constructId: c.id})} />
+                            <${ListItem} icon="${c.icon || 'question'}" text="${c.name}" onClick=${() => pushModalView({id: 'constructItem', constructId: c.id})} />
                         `)}
                     </${List}>
                 `,
@@ -281,7 +282,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                             </button>
                             <div>${state.hour}:${state.minute < 10 ? '0' : ''}${state.minute} ${state.amPm}</div>
                             <button onClick=${() => {
-                                state.setGameSpeed(state.gameSpeed === 1 ? 0.01 : 1);
+                                state.setGameSpeed(state.gameSpeed === state.defaultGameSpeed ? state.fastGameSpeed : state.defaultGameSpeed);
                             }}>
                                 <i class="fa-solid fa-${state.gameSpeed === 1 ? 'forward' : 'forward-fast'}"></i>
                             </button>

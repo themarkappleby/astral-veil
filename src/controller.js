@@ -4,7 +4,10 @@ const html = htm.bind(h);
 
 const withController = (WrappedComponent) => {
   return (props) => {
-    const [gameSpeed, setGameSpeed] = useState(1);
+    const [isPaused, setIsPaused] = useState(true);
+    const [defaultGameSpeed, setDefaultGameSpeed] = useState(0.5);
+    const [fastGameSpeed, setFastGameSpeed] = useState(0.1);
+    const [gameSpeed, setGameSpeed] = useState(defaultGameSpeed);
     const [tickCount, setTickCount] = useState(0);
     const [viewStack, setViewStack] = useState([{id: 'menu'}, {id: 'world'}]);
     const [activeView, setActiveView] = useState({id: 'world'});
@@ -15,7 +18,6 @@ const withController = (WrappedComponent) => {
     const [minute, setMinute] = useState(0);
     const [amPm, setAmPm] = useState('AM');
     const [day, setDay] = useState(1);
-    const [isPaused, setIsPaused] = useState(false);
     const [showDistanceMarkers, setShowDistanceMarkers] = useState(true);
     const isPausedRef = useRef(isPaused);
     const [availableConstruction, setAvailableConstruction] = useState([
@@ -23,9 +25,20 @@ const withController = (WrappedComponent) => {
     ]);
     const [ent, setEntities] = useState([
         {
+            ...defs.cucumberSeedPack(),
+            dist: 0,
+        },
+        {
             ...defs.simpleMeal(),
             dist: 0,
-            count: 5,
+        },
+        {
+            ...defs.simpleMeal(),
+            dist: 0,
+        },
+        {
+            ...defs.simpleMeal(),
+            dist: 0,
         },
         {
             ...defs.human(),
@@ -201,6 +214,8 @@ const withController = (WrappedComponent) => {
             gameSpeed, setGameSpeed,
             availableConstruction, setAvailableConstruction,
             showDistanceMarkers, setShowDistanceMarkers,
+            defaultGameSpeed, setDefaultGameSpeed,
+            fastGameSpeed, setFastGameSpeed,
         }
     }} />`;
   };

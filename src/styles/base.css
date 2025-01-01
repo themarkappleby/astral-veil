@@ -1,6 +1,7 @@
 /* declare timeHeight var */
 :root {
     --timeHeight: 103px;
+    --modalHeight: 75vh;
 }
 
 
@@ -103,7 +104,7 @@ button {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    padding: 12px 12px 50vh 12px;
+    padding: 12px 12px var(--modalHeight) 12px;
 }
 
 .list {
@@ -196,8 +197,6 @@ button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    background: black;
 }
 
 .toggle-container {
@@ -276,7 +275,7 @@ button {
         }
     }
     .view {
-        height: calc(60vh - var(--timeHeight));
+        height: calc(var(--modalHeight) - var(--timeHeight));
     }
     .view-content {
         padding: 12px;
@@ -295,8 +294,8 @@ button {
 }
 
 .modal-container {
-    margin-top: 40vh;
-    height: calc(60vh - var(--timeHeight));
+    margin-top: calc(100vh - var(--modalHeight));
+    height: calc(var(--modalHeight) - var(--timeHeight));
     background: white;
     transition: transform 0.2s ease-in-out;
     position: relative;
