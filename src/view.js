@@ -1,4 +1,5 @@
 const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView }) => {
+    const STOCKPILE_TYPES = ['item', 'food'];
     const views = {
         menu: () => {
             return {
@@ -22,8 +23,8 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                 children: html`
                     <${List}>
                         ${state.showDistanceMarkers && html`<${ListItem} isEmpty secondaryText="At base" />`}
-                        <${ListItem} icon="database" text="Stockpile" onClick=${() => {}} />
-                        ${state.entities.sort((a, b) => a.dist - b.dist).map(e => {
+                        <${ListItem} icon="database" text="Stockpile" onClick=${() => pushView({id: 'stockpile'})} />
+                        ${state.entities.filter(entity => !STOCKPILE_TYPES.includes(entity.type)).sort((a, b) => a.dist - b.dist).map(e => {
                             if (e.delete) return;
                             let text = e.count ? (e.count === 1 ? `1 ${e.name.toLowerCase()}` : `${e.count} ${e.pluralName.toLowerCase()}`) : e.name;
                             if (e.surname) {
@@ -66,6 +67,18 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                                     }}
                                 />
                             `
+                        })}
+                    </${List}>
+                `,
+            }
+        },
+        stockpile: () => {
+            return {
+                title: 'Stockpile',
+                children: html`
+                    <${List}>
+                        ${state.entities.filter((entity) => entity.dist === 0 && STOCKPILE_TYPES.includes(entity.type)).map(entity => {
+                            return html`<${ListItem} icon="${entity.icon}" text="${entity.name}" onClick=${() => pushView({id: 'entity', entityId: entity.id})} />`;
                         })}
                     </${List}>
                 `,
