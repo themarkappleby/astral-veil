@@ -104,7 +104,7 @@ button {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    padding: 12px 12px var(--modalHeight) 12px;
+    padding: 12px 12px 36px 12px;
 }
 
 .list {
@@ -276,9 +276,6 @@ button {
     }
     .view {
         height: calc(var(--modalHeight) - var(--timeHeight));
-    }
-    .view-content {
-        padding: 12px;
     }
 }
 

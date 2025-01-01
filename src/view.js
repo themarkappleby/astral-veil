@@ -59,9 +59,9 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                                     percent=${e?.action?.progress || e?.progress}
                                     onClick=${() => {
                                         if (e.type === 'humanoid') {
-                                            pushModalView({id: 'humanoid', entityId: e.id});
+                                            pushView({id: 'humanoid', entityId: e.id});
                                         } else {
-                                            pushModalView({id: 'entity', entityId: e.id});
+                                            pushView({id: 'entity', entityId: e.id});
                                         }
                                     }}
                                 />
@@ -108,6 +108,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                             <${ListItem} text="Destroy" isButton onClick=${() => {
                                 if (confirm('Are you sure you want to destroy this construction?')) {
                                     state.setEntities(state.entities.map(e => e.id === entity.id ? {...e, dist: -1} : e));
+                                    popView();
                                 }
                             }} />
                         ` : ''}

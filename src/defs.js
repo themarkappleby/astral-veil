@@ -48,6 +48,7 @@ defs.cucumberPatchConstruction = () => ({
     type: 'construction',
     icon: 'hammer',
     description: 'A plot of land dedicated to growing cucumbers.',
+    rate: 0.8,
     materials: [
         {
             def: defs.cucumberSeedPack,

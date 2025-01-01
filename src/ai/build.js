@@ -2,7 +2,7 @@ ai.build = ({ entity, entities }) => {
     const isBusy = entity?.action;
     if (entity?.action?.name === 'build') {
         const target = entities.find(e => e.id === entity?.action?.targetId);
-        if (target.dist === -1) {
+        if (target.dist === -1 || target.building === false) {
             entity.action = null
         }
         return;
@@ -15,7 +15,7 @@ ai.build = ({ entity, entities }) => {
             },
             entities,
         });
-        if (closestBuildable) {
+        if (closestBuildable && closestBuildable?.building) {
             ai.actions.walk({ target: closestBuildable, entity, onDone: () => {
                 ai.actions.build({ entity, target: closestBuildable, onDone: e => {
                     entity.action = null;
@@ -29,6 +29,7 @@ ai.build = ({ entity, entities }) => {
 }
 
 ai.actions.build = ({ entity, target, onDone }) => {
+    const FALLBACK_RATE = 0.2;
     entity.action = {
         name: 'build',
         targetId: target.id,
@@ -36,7 +37,7 @@ ai.actions.build = ({ entity, target, onDone }) => {
         entityProp: 'progress',
         from: target.progress,
         to: 100,
-        rate: 0.2,
+        rate: target.rate || FALLBACK_RATE,
         onDone
     }
 }
