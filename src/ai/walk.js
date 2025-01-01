@@ -1,5 +1,5 @@
 ai.actions.walk = ({ entity, target, onDone }) => {
-    if (target.dist === -1) {
+    if (target.delete) {
         return;
     }
     const MINUTES_TO_WALK_ONE_UNIT = 5;

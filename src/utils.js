@@ -6,7 +6,7 @@ const locateClosestEntity = ({
     let closestEntity = null;
     let minDiff = Infinity;
     for (const e of entities) {
-        if (e.dist !== -1) {
+        if (!e.delete) {
             const diff = Math.abs(e.dist - fromDist);
             if (diff < minDiff) {
                 const matches = Object.entries(properties).every(([key, value]) => e[key] === value);
@@ -43,7 +43,6 @@ const getRandomSurname = () => {
 }
 
 const getDistText = (dist, withSuffix = true) => {
-    if (dist === -1) return 'Trashed';
     return dist < 1 ? 'At base' : `${Math.round(dist)}${withSuffix ? ' km' : ''}`;
 }
 

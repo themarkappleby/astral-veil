@@ -2,7 +2,7 @@ ai.build = ({ entity, entities }) => {
     const isBusy = entity?.action;
     if (entity?.action?.name === 'build') {
         const target = entities.find(e => e.id === entity?.action?.targetId);
-        if (target.dist === -1 || target.building === false) {
+        if (target.delete || target.building === false) {
             entity.action = null
         }
         return;
@@ -21,7 +21,7 @@ ai.build = ({ entity, entities }) => {
                     entity.action = null;
                     const builtEntity = {...closestBuildable.onBuild(), progress: 0, dist: closestBuildable.dist};
                     e.push(builtEntity);
-                    closestBuildable.dist = -1;
+                    closestBuildable.delete = true;
                 } })
             } });
         }

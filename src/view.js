@@ -24,7 +24,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                         ${state.showDistanceMarkers && html`<${ListItem} isEmpty secondaryText="At base" />`}
                         <${ListItem} icon="database" text="Stockpile" onClick=${() => {}} />
                         ${state.entities.sort((a, b) => a.dist - b.dist).map(e => {
-                            if (e.dist === -1) return;
+                            if (e.delete) return;
                             let text = e.count ? (e.count === 1 ? `1 ${e.name.toLowerCase()}` : `${e.count} ${e.pluralName.toLowerCase()}`) : e.name;
                             if (e.surname) {
                                 text = `${e.name} ${e.surname}`;
@@ -107,7 +107,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                             }} />`}" />
                             <${ListItem} text="Destroy" isButton onClick=${() => {
                                 if (confirm('Are you sure you want to destroy this construction?')) {
-                                    state.setEntities(state.entities.map(e => e.id === entity.id ? {...e, dist: -1} : e));
+                                    state.setEntities(state.entities.map(e => e.id === entity.id ? {...e, delete: true} : e));
                                     popView();
                                 }
                             }} />
@@ -283,6 +283,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                             </button>
                             <div>${state.hour}:${state.minute < 10 ? '0' : ''}${state.minute} ${state.amPm}</div>
                             <button onClick=${() => {
+                                state.setIsPaused(false);
                                 state.setGameSpeed(state.gameSpeed === state.defaultGameSpeed ? state.fastGameSpeed : state.defaultGameSpeed);
                             }}>
                                 <i class="fa-solid fa-${state.gameSpeed === 1 ? 'forward' : 'forward-fast'}"></i>

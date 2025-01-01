@@ -41,8 +41,5 @@ ai.actions.eat = ({ target, entity}) => {
             entity.action = null;
         }
     }
-    target.count = Math.max(0, target?.count - 1);
-    if (target.count === 0) {
-        target.dist = -1;
-    }
+    target.delete = true;
 }
