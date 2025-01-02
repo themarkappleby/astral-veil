@@ -263,14 +263,15 @@ button {
         position: relative;
     }
     .time-day {
-        font-size: 10px;
+        font-size: 11px;
     }
     .log {
         flex: 1;
-        font-size: 10px;
+        display: flex;
+        align-items: flex-start;
+        font-size: 11px;
         height: 53px;
         overflow: hidden;
-        display: block;
         padding: 5px;
         white-space: nowrap;
         position: relative;
@@ -284,6 +285,9 @@ button {
             height: 20px;
             background: linear-gradient(0deg, white, transparent);
             z-index: 1;
+        }
+        .listItem-right {
+            display: none;
         }
     }
 }

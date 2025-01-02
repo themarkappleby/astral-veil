@@ -28,15 +28,16 @@ const withController = (WrappedComponent) => {
         {
             ...defs.human(),
             dist: 0,
-            hunger: 34,
+            hunger: 33.1,
         },
     ]
 
     const [logEntries, setLogEntries] = useState(initialColonists.map(colonist => {
         return {
-            text: `${colonist.name} ${colonist.surname} joined`,
+            entityId: colonist.id,
+            verb: 'joined',
+            time: formatTime(hour, minute, amPm),
             day,
-            time: formatTime(hour, minute, amPm)
         }
     }));
 
@@ -182,14 +183,14 @@ const withController = (WrappedComponent) => {
         }, 200);
     }
 
-    const log = (text) => {
+    const log = (logEntry) => {
         setDay(prevDay => {
             setHour(prevHour => {
                 setMinute(prevMinute => {
                     setAmPm(prevAmPm => {
                         setLogEntries(prevLogEntries => {
                             return [
-                                {text, time: formatTime(prevHour, prevMinute, prevAmPm), day: prevDay},
+                                {...logEntry, time: formatTime(prevHour, prevMinute, prevAmPm), day: prevDay},
                                 ...prevLogEntries,
                             ]
                         })

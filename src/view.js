@@ -267,7 +267,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                 `,
             }
         },
-        settings : () => {
+        settings: () => {
             return {
                 title: 'Settings',
                 children: html`
@@ -279,6 +279,20 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                 `,
             }
         },
+        log: () => {
+            return {
+                title: 'Activity log',
+                children: html`
+                    <${List}>
+                        ${state?.logEntries?.map(logEntry => {
+                            const entity = state.entities.find(e => e.id === logEntry.entityId);
+                            const target = logEntry.targetId ? state.entities.find(e => e.id === logEntry.targetId) : null;
+                            return html`<${ListItem} text="${entity.name}${entity.surname ? ` ${entity.surname}` : ''} ${logEntry.verb}${target ? ` ${target.name}` : ''}." detail="Day ${logEntry.day}, ${logEntry.time}" />`
+                        })}
+                    </${List}>
+                `
+            }
+        }
     }
 
     return html`
@@ -311,9 +325,11 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                                 </${Stack}>
                             </${Stack}>
                         `}" />
-                        <${ListItem} className="log" text="${html`
+                        <${ListItem} onClick=${() => pushModalView({id: 'log'})} className="log" text="${html`
                             ${state?.logEntries?.map(logEntry => {
-                                return html`<div>${logEntry.text} - ${logEntry.time}</div>`
+                                const entity = state.entities.find(e => e.id === logEntry.entityId);
+                                const target = logEntry.targetId ? state.entities.find(e => e.id === logEntry.targetId) : null;
+                                return html`<div>${entity.name} ${logEntry.verb}${target ? ` ${target.name}` : ''} - ${logEntry.time}</div>`
                             })}
                         `}" />
                     </${Stack}>

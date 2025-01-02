@@ -36,7 +36,11 @@ ai.actions.explore = ({ target, entity }) => {
                 const def = d();
                 if (def.spawnRate && spawnValue <= def.spawnRate) {
                     update.entities.push({...def, dist: target.dist});
-                    update.log(`${entity.name} found ${def.name}`);
+                    update.log({
+                        entityId: entity.id,
+                        verb: 'found',
+                        targetId: def.id,
+                    })
                 }
             });
             entity.action = null;

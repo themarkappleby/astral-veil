@@ -40,7 +40,11 @@ ai.actions.eat = ({ target, entity}) => {
         rate: hungerPerMin,
         onDone: ({log}) => {
             entity.action = null;
-            log(`${entity.name} ate ${target.name}`);
+            log({
+                entityId: entity.id,
+                verb: 'ate',
+                targetId: target.id,
+            })
         }
     }
     target.delete = true;

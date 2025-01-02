@@ -22,7 +22,11 @@ ai.build = ({ entity, entities, log }) => {
                     const newBuild = defs[closestBuildable?.actions?.build?.onComplete]()
                     const builtEntity = {...newBuild, progress: 0, dist: closestBuildable.dist};
                     update.entities.push(builtEntity);
-                    update.pushLog(`${entity.name} built ${builtEntity.name}`)
+                    update.log({
+                        entityId: entity.id,
+                        verb: 'built',
+                        targetId: closestBuildable.id,
+                    });
                     closestBuildable.delete = true;
                 } })
             } });
