@@ -5,7 +5,7 @@ const html = htm.bind(h);
 const withController = (WrappedComponent) => {
   return (props) => {
     const [isPaused, setIsPaused] = useState(false);
-    const [defaultGameSpeed, setDefaultGameSpeed] = useState(0.5);
+    const [defaultGameSpeed, setDefaultGameSpeed] = useState(1);
     const [fastGameSpeed, setFastGameSpeed] = useState(0.1);
     const [gameSpeed, setGameSpeed] = useState(defaultGameSpeed);
     const [tickCount, setTickCount] = useState(0);
@@ -23,6 +23,23 @@ const withController = (WrappedComponent) => {
     const [availableConstruction, setAvailableConstruction] = useState([
         {...defs.cucumberPatchConstruction()},
     ]);
+
+    const initialColonists = [
+        {
+            ...defs.human(),
+            dist: 0,
+            hunger: 34,
+        },
+    ]
+
+    const [logEntries, setLogEntries] = useState(initialColonists.map(colonist => {
+        return {
+            text: `${colonist.name} ${colonist.surname} joined`,
+            day,
+            time: formatTime(hour, minute, amPm)
+        }
+    }));
+
     const [ent, setEntities] = useState([
         {
             ...defs.cucumberSeedPack(),
@@ -41,13 +58,10 @@ const withController = (WrappedComponent) => {
             dist: 0,
         },
         {
-            ...defs.human(),
-            dist: 0,
-        },
-        {
             ...defs.surroundings(),
             dist: 1,
-        }
+        },
+        initialColonists[0]
     ]);
 
     useEffect(() => {
@@ -74,6 +88,7 @@ const withController = (WrappedComponent) => {
                                     entity,
                                     entities,
                                     gameSpeed,
+                                    log,
                                 });
                             }
                         })
@@ -95,7 +110,7 @@ const withController = (WrappedComponent) => {
                             }
                             if (entity.action.progress >= 100) {
                                 if (entity?.action?.onDone) {
-                                    entity?.action?.onDone({entity, entities});
+                                    entity?.action?.onDone({entity, entities, log});
                                 }
                             }
                         }
@@ -167,6 +182,27 @@ const withController = (WrappedComponent) => {
         }, 200);
     }
 
+    const log = (text) => {
+        setDay(prevDay => {
+            setHour(prevHour => {
+                setMinute(prevMinute => {
+                    setAmPm(prevAmPm => {
+                        setLogEntries(prevLogEntries => {
+                            return [
+                                {text, time: formatTime(prevHour, prevMinute, prevAmPm), day: prevDay},
+                                ...prevLogEntries,
+                            ]
+                        })
+                        return prevAmPm;
+                    })
+                    return prevMinute;
+                })
+                return prevHour;
+            })
+            return prevDay;
+        })
+    }
+
     const closeModal = () => {
         setModalVisible(false);
         setTimeout(() => {
@@ -216,6 +252,7 @@ const withController = (WrappedComponent) => {
             showDistanceMarkers, setShowDistanceMarkers,
             defaultGameSpeed, setDefaultGameSpeed,
             fastGameSpeed, setFastGameSpeed,
+            logEntries, setLogEntries,
         }
     }} />`;
   };

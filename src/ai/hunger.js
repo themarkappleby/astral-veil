@@ -38,8 +38,9 @@ ai.actions.eat = ({ target, entity}) => {
         from: entity.hunger,
         to: Math.min(100, entity.hunger + (calories / entity.dailyCaloriesNeeded) * 100),
         rate: hungerPerMin,
-        onDone: () => {
+        onDone: ({log}) => {
             entity.action = null;
+            log(`${entity.name} ate ${target.name}`);
         }
     }
     target.delete = true;

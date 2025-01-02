@@ -305,19 +305,16 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                                 </button>
                                 <${Stack} column gap="0">
                                     <div>
-                                        ${state.hour}:${state.minute < 10 ? '0' : ''}${state.minute} ${state.amPm}
+                                        ${formatTime(state.hour, state.minute, state.amPm)}
                                     </div>
                                     <div class="time-day">Day ${state.day}</div>
                                 </${Stack}>
                             </${Stack}>
                         `}" />
                         <${ListItem} className="log" text="${html`
-                            <div>Julie Jolley built cucumber patch - 10:29 AM</div>
-                            <div>Julie Jolley found simple meal - 10:01 AM</div>
-                            <div>Julie Jolley found cucumber patch - 9:38 AM</div>
-                            <div>Julie Jolley ate simple meal - 9:20 AM</div>
-                            <div>Julie Jolley found simple meal - 8:42 AM</div>
-                            <div>Julie Jolley found simple meal - 7:33 AM</div>
+                            ${state?.logEntries?.map(logEntry => {
+                                return html`<div>${logEntry.text} - ${logEntry.time}</div>`
+                            })}
                         `}" />
                     </${Stack}>
                 </${List}>

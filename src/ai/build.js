@@ -1,4 +1,4 @@
-ai.build = ({ entity, entities }) => {
+ai.build = ({ entity, entities, log }) => {
     const isBusy = entity?.action;
     if (entity?.action?.name === 'build') {
         const target = entities.find(e => e.id === entity?.action?.targetId);
@@ -22,6 +22,7 @@ ai.build = ({ entity, entities }) => {
                     const newBuild = defs[closestBuildable?.actions?.build?.onComplete]()
                     const builtEntity = {...newBuild, progress: 0, dist: closestBuildable.dist};
                     update.entities.push(builtEntity);
+                    update.pushLog(`${entity.name} built ${builtEntity.name}`)
                     closestBuildable.delete = true;
                 } })
             } });

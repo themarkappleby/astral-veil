@@ -22,6 +22,9 @@ const locateClosestEntity = ({
     return closestEntity;
 }
 
+const formatTime = (hour, minute, amPm) => {
+ return `${hour}:${minute < 10 ? '0' : ''}${minute} ${amPm}`;
+}
 
 const get = (object, path) => {
     return path.split('.').reduce((o, i) => o?.[i], object)
