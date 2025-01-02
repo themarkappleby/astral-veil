@@ -2,11 +2,19 @@ defs.simpleMeal = () => ({
     id: newId(),
     name: 'Simple meal',
     pluralName: 'Simple meals',
-    type: 'food',
     icon: 'utensils',
     description: 'A simple meal consisting primarily of one main ingredient.',
-    calories: 1450,
     spawnRate: 0.2,
+    actions: {
+        eat: {
+            calories: 1450,
+            enabled: true,
+        },
+        haul: {
+            size: 100,
+            enabled: true,
+        },
+    }
 })
 
 defs.human = () => {
@@ -36,45 +44,62 @@ defs.cucumberSeedPack = () => ({
     id: newId(),
     name: 'Cucumber seed pack',
     pluralName: 'Cucumber seed packs',
-    type: 'item',
     icon: 'box',
     description: 'A pack of cucumber seeds.',
+    actions: {
+        haul: {
+            enabled: true,
+            size: 1,
+        }
+    }
 })
 
 defs.cucumberPatchConstruction = () => ({
     id: newId(),
     name: 'Cucumber patch',
     pluralName: 'Cucumber patches',
-    type: 'construction',
     icon: 'hammer',
     description: 'A plot of land dedicated to growing cucumbers.',
-    rate: 0.8,
-    materials: [
-        {
-            def: defs.cucumberSeedPack,
-            count: 1,
+    actions: {
+        build: {
+            enabled: true,
+            rate: 0.8,
+            materials: [
+                {
+                    name: 'cucumberSeedPack',
+                    count: 1,
+                }
+            ],
+            onComplete: 'cucumberPatch',
         }
-    ],
-    onBuild: defs.cucumberPatch,
+    }
 })
 
 defs.cucumberPatch = () => ({
     id: newId(),
     name: 'Cucumber patch',
     pluralName: 'Cucumber patches',
-    type: 'crop',
     icon: 'seedling',
     description: 'A patch of growing cucumbers.',
     progress: getRandom(0, 100),
     ai: ['grow'],
     spawnRate: 0.2,
+    actions: {
+        harvest: {
+            enabled: true,
+            yield: ['cucumber']
+        }
+    }
 })
 
 defs.surroundings = () => ({
     id: newId(),
     name: 'Surroundings',
-    type: 'location',
     icon: 'location-dot',
     description: 'The edge of the known area around your base. Who knows what might lie beyond?',
-    exploring: false,
+    actions: {
+        explore: {
+            enabled: true,
+        }
+    }
 })

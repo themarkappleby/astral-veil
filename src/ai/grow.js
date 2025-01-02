@@ -1,7 +1,6 @@
 ai.grow = ({ entity, target }) => {
     const isBusy = entity?.action;
     if (!isBusy) {
-        console.log(entity.progress);
         entity.action = {
             name: 'grow',
             targetId: entity.id,

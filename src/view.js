@@ -1,5 +1,4 @@
 const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView }) => {
-    const STOCKPILE_TYPES = ['item', 'food'];
     const views = {
         menu: () => {
             return {
@@ -24,7 +23,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                     <${List}>
                         ${state.showDistanceMarkers && html`<${ListItem} isEmpty secondaryText="At base" />`}
                         <${ListItem} icon="database" text="Stockpile" onClick=${() => pushView({id: 'stockpile'})} />
-                        ${state.entities.filter(entity => !STOCKPILE_TYPES.includes(entity.type)).sort((a, b) => a.dist - b.dist).map(e => {
+                        ${state.entities.filter(entity => !entity?.actions?.haul).sort((a, b) => a.dist - b.dist).map(e => {
                             if (e.delete) return;
                             let text = e.count ? (e.count === 1 ? `1 ${e.name.toLowerCase()}` : `${e.count} ${e.pluralName.toLowerCase()}`) : e.name;
                             if (e.surname) {
@@ -33,12 +32,12 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                             let actionText = null
                             if (e.type === 'humanoid') {
                                 actionText = getActionText(e.action, state);
-                            } else if (e.type === 'construction') {
+                            } else if (e?.actions?.build) {
                                 actionText = (e?.progress?.toFixed(2) || 0) + '% complete';
-                            } else if (e.type === 'crop') {
+                            } else if (e?.actions?.harvest) {
                                 actionText = getActionText(e.action, state).replace('Idle', 'Ready to harvest');
-                            } else if (e.type === 'location') {
-                                actionText = `${e.exploring ? 'Exploring: ' : ''}${e?.progress?.toFixed(2) || 0}% explored`;
+                            } else if (e?.actions?.explore) {
+                                actionText = `${e?.actions.explore?.enabled ? 'Exploring: ' : ''}${e?.progress?.toFixed(2) || 0}% explored`;
                             }
                             const distText = getDistText(e?.dist);
                             const distInt = parseInt(getDistText(e?.dist, false)) || 0;
@@ -77,7 +76,7 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                 title: 'Stockpile',
                 children: html`
                     <${List}>
-                        ${state.entities.filter((entity) => entity.dist === 0 && STOCKPILE_TYPES.includes(entity.type)).map(entity => {
+                        ${state.entities.filter((entity) => entity.dist === 0 && !entity.delete && entity?.actions?.haul).map(entity => {
                             return html`<${ListItem} icon="${entity.icon}" text="${entity.name}" onClick=${() => pushView({id: 'entity', entityId: entity.id})} />`;
                         })}
                     </${List}>
@@ -109,12 +108,21 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                                 <${ListItem} text="${toTitleCase(key)}" secondaryText="${toTitleCase(value)}" />
                             `;
                         })}
-                        ${entity.type === 'location' ? html`
-                            <${ListItem} text="Explore" secondaryText="${html`<${Toggle} value=${entity.exploring} onChange=${() => {
-                                state.setEntities(state.entities.map(e => e.id === entity.id ? {...e, exploring: !e.exploring} : e));
+                        ${entity?.actions?.explore ? html`
+                            <${ListItem} text="Explore" secondaryText="${html`<${Toggle} value=${entity?.actions?.explore?.enabled} onChange=${() => {
+                                state.setEntities(state.entities.map(e => e.id === entity.id ? {
+                                    ...e, 
+                                    actions: {
+                                        ...e.actions,
+                                        explore: {
+                                            ...e.actions.explore,
+                                            enabled: !entity?.actions?.explore?.enabled,
+                                        }
+                                    }
+                                } : e));
                             }} />`}" />
                         ` : ''}
-                        ${entity.type === 'construction' ? html`
+                        ${entity?.actions?.build ? html`
                             <${ListItem} text="Build" secondaryText="${html`<${Toggle} value=${entity.building} onChange=${() => {
                                 state.setEntities(state.entities.map(e => e.id === entity.id ? {...e, building: !e.building} : e));
                             }} />`}" />

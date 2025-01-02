@@ -14,7 +14,7 @@ ai.hunger = ({ entity, entities, gameSpeed}) => {
             const closestFood = locateClosestEntity({
                 fromDist: entity.dist,
                 properties: {
-                    type: 'food',
+                    'actions.eat.enabled': true,
                 },
                 entities,
             });
@@ -27,7 +27,8 @@ ai.hunger = ({ entity, entities, gameSpeed}) => {
 
 ai.actions.eat = ({ target, entity}) => {
     const MINUTES_TO_EAT = 15;
-    const caloriesPerMin = target?.calories / MINUTES_TO_EAT;
+    const calories = target?.actions?.eat?.calories
+    const caloriesPerMin = calories / MINUTES_TO_EAT;
     const hungerPerMin = (caloriesPerMin / entity.dailyCaloriesNeeded) * 100;
     entity.action = {
         name: 'eat',
@@ -35,7 +36,7 @@ ai.actions.eat = ({ target, entity}) => {
         entityId: entity.id,
         entityProp: 'hunger',
         from: entity.hunger,
-        to: Math.min(100, entity.hunger + (target.calories / entity.dailyCaloriesNeeded) * 100),
+        to: Math.min(100, entity.hunger + (calories / entity.dailyCaloriesNeeded) * 100),
         rate: hungerPerMin,
         onDone: () => {
             entity.action = null;

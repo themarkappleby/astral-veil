@@ -4,19 +4,18 @@ ai.explore = ({ entity, entities }) => {
         const closestLocation = locateClosestEntity({
             fromDist: entity.dist,
             properties: {
-                type: 'location',
-                exploring: true,
+                'actions.explore.enabled': true,
             },
             entities,
         });
         if (closestLocation) {
-            ai.actions.walk({ target: closestLocation, entity, onDone: () => {
-                ai.actions.explore({ target: closestLocation, entity });
+            ai.actions.walk({ target: closestLocation, entity, onDone: update => {
+                ai.actions.explore({ target: closestLocation, entity: update.entity });
             }});
         }
     } else if (entity.action.name === 'explore') {
         const target = entities.find(e => e.id === entity.action.targetId);
-        if (!target.exploring) {
+        if (target?.actions?.explore?.enabled === false) {
             entity.action = null;
         }
     }
@@ -31,12 +30,12 @@ ai.actions.explore = ({ target, entity }) => {
         from: target.progress || 0,
         to: 100,
         rate: 1,
-        onDone: (entities) => {
+        onDone: update => {
             const spawnValue = getRandom(0, 100) / 100;
             Object.values(defs).forEach(d => {
                 const def = d();
                 if (def.spawnRate && spawnValue <= def.spawnRate) {
-                    entities.push({...def, dist: target.dist});
+                    update.entities.push({...def, dist: target.dist});
                 }
             });
             entity.action = null;

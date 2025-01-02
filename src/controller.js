@@ -4,7 +4,7 @@ const html = htm.bind(h);
 
 const withController = (WrappedComponent) => {
   return (props) => {
-    const [isPaused, setIsPaused] = useState(true);
+    const [isPaused, setIsPaused] = useState(false);
     const [defaultGameSpeed, setDefaultGameSpeed] = useState(0.5);
     const [fastGameSpeed, setFastGameSpeed] = useState(0.1);
     const [gameSpeed, setGameSpeed] = useState(defaultGameSpeed);
@@ -95,7 +95,7 @@ const withController = (WrappedComponent) => {
                             }
                             if (entity.action.progress >= 100) {
                                 if (entity?.action?.onDone) {
-                                    entity?.action?.onDone(entities);
+                                    entity?.action?.onDone({entity, entities});
                                 }
                             }
                         }

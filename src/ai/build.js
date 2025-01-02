@@ -11,16 +11,17 @@ ai.build = ({ entity, entities }) => {
         const closestBuildable = locateClosestEntity({
             fromDist: entity.dist,
             properties: {
-                type: 'construction',
+                'actions.build.enabled': true,
             },
             entities,
         });
         if (closestBuildable && closestBuildable?.building) {
             ai.actions.walk({ target: closestBuildable, entity, onDone: () => {
-                ai.actions.build({ entity, target: closestBuildable, onDone: e => {
+                ai.actions.build({ entity, target: closestBuildable, onDone: update => {
                     entity.action = null;
-                    const builtEntity = {...closestBuildable.onBuild(), progress: 0, dist: closestBuildable.dist};
-                    e.push(builtEntity);
+                    const newBuild = defs[closestBuildable?.actions?.build?.onComplete]()
+                    const builtEntity = {...newBuild, progress: 0, dist: closestBuildable.dist};
+                    update.entities.push(builtEntity);
                     closestBuildable.delete = true;
                 } })
             } });
@@ -37,7 +38,7 @@ ai.actions.build = ({ entity, target, onDone }) => {
         entityProp: 'progress',
         from: target.progress,
         to: 100,
-        rate: target.rate || FALLBACK_RATE,
+        rate: target?.actions?.build?.rate || FALLBACK_RATE,
         onDone
     }
 }

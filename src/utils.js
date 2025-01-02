@@ -5,19 +5,26 @@ const locateClosestEntity = ({
 }) => {
     let closestEntity = null;
     let minDiff = Infinity;
-    for (const e of entities) {
-        if (!e.delete) {
-            const diff = Math.abs(e.dist - fromDist);
+    for (const entity of entities) {
+        if (!entity.delete) {
+            const diff = Math.abs(entity.dist - fromDist);
             if (diff < minDiff) {
-                const matches = Object.entries(properties).every(([key, value]) => e[key] === value);
+                const matches = Object.entries(properties).every(([key, value]) => {
+                    return get(entity, key) === value
+                });
                 if (matches) {
                     minDiff = diff;
-                    closestEntity = e;
+                    closestEntity = entity;
                 }
             }
         }
     }
     return closestEntity;
+}
+
+
+const get = (object, path) => {
+    return path.split('.').reduce((o, i) => o?.[i], object)
 }
 
 const newId = () => {
