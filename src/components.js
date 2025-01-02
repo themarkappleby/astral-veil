@@ -1,6 +1,6 @@
-const View = ({ title, children, backLabel, onBackClick, icon, onIconClick }) => {
+const View = ({ title, children, backLabel, onBackClick, icon, onIconClick, className }) => {
     return html`
-        <div class="view">
+        <div class="view${className ? ` ${className}`: ''}">
             <header class="view-header">
                 ${backLabel ? html`<button class="view-back" onClick=${onBackClick}>${backLabel === 'Close' ? '' : html`<i class="fa-solid fa-chevron-left"></i> `}${backLabel}</button>` : html`<div />`}
                 <h2 class="view-title">${title}</h2>
@@ -13,9 +13,9 @@ const View = ({ title, children, backLabel, onBackClick, icon, onIconClick }) =>
     `;
 };
 
-const List = ({ title, children }) => {
+const List = ({ title, children, className }) => {
     return html`
-        <div class="list">
+        <div class="list${className ? ` ${className}`: ''}">
             ${title && html`<h3 class="list-title">${title}</h3>`}
             <div class="list-items">
                 ${children}
@@ -24,13 +24,13 @@ const List = ({ title, children }) => {
     `
 }
 
-const ListItem = ({ icon, text, detail, secondaryText, isButton, isEmpty, onClick, percent  }) => {
+const ListItem = ({ icon, text, detail, secondaryText, isButton, isEmpty, onClick, percent, className  }) => {
     let container = onClick ? 'button' : 'div';
     let percentStatus = 'high';
     if (percent < 66) percentStatus = 'medium';
     if (percent < 33) percentStatus = 'low'; 
     return html`
-        <${container} class="listItem ${isButton ? 'listItem--button' : ''} ${isEmpty ? 'listItem--empty' : ''}" onClick=${onClick}>
+        <${container} class="listItem ${isButton ? 'listItem--button' : ''} ${isEmpty ? 'listItem--empty' : ''}${className ? ` ${className}`: ''}" onClick=${onClick}>
             <div class="listItem-left">
                 ${icon ? html`<${Icon} className="listItem-icon" name=${icon} />` : ''}
                 ${(text || detail) && html`<div class="listItem-textContainer">
@@ -49,9 +49,9 @@ const ListItem = ({ icon, text, detail, secondaryText, isButton, isEmpty, onClic
     `
 }
 
-const Toggle = ({ value, onChange }) => {
+const Toggle = ({ value, onChange, className }) => {
     return html`
-        <div class="toggle-container">
+        <div class="toggle-container${className ? ` ${className}`: ''}">
             <input type="checkbox" class="toggle" checked=${value} onChange=${onChange} />
             <button class="toggle-slider"></button>
         </div>
@@ -59,9 +59,13 @@ const Toggle = ({ value, onChange }) => {
 }
 
 const Icon = ({ name, color, className }) => {
-    return html`<div class="icon icon--${name} ${color ? `color-bg-${color}` : ''} ${className}"><i class="fa-solid fa-${name}"></i></div>`;
+    return html`<div class="icon icon--${name} ${color ? `color-bg-${color}` : ''} ${className ? ` ${className}`: ''}"><i class="fa-solid fa-${name}"></i></div>`;
 }
 
-const Stack = ({ children }) => {
-    return html`<div class="stack">${children}</div>`;
+const Stack = ({ children, className, column, gap }) => {
+    const styles = {}
+    if (gap) {
+        styles.gap = `${gap}px`;
+    }
+    return html`<div style=${styles} class="stack${className ? ` ${className}`: ''}${column ? ' stack--column': ''}">${children}</div>`;
 }

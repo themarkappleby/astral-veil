@@ -295,24 +295,33 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                     `;
                 })}
             </div>
-            <div class="time">
+            <footer class="footer">
                 <${List}>
-                    <${ListItem}  text="${html`
-                        <${Stack}>
-                            <button onClick=${() => state.setIsPaused(!state.isPaused)}>
-                                <i class="fa-solid fa-${state.isPaused ? 'play' : 'pause'}"></i>
-                            </button>
-                            <div>${state.hour}:${state.minute < 10 ? '0' : ''}${state.minute} ${state.amPm}</div>
-                            <button onClick=${() => {
-                                state.setIsPaused(false);
-                                state.setGameSpeed(state.gameSpeed === state.defaultGameSpeed ? state.fastGameSpeed : state.defaultGameSpeed);
-                            }}>
-                                <i class="fa-solid fa-${state.gameSpeed === 1 ? 'forward' : 'forward-fast'}"></i>
-                            </button>
-                        </${Stack}>
-                    `}" secondaryText="Summer, day ${state.day}" />
+                    <${Stack}>
+                        <${ListItem} className="time" text="${html`
+                            <${Stack}>
+                                <button onClick=${() => state.setIsPaused(!state.isPaused)}>
+                                    <i class="fa-solid fa-${state.isPaused ? 'play' : 'pause'}"></i>
+                                </button>
+                                <${Stack} column gap="0">
+                                    <div>
+                                        ${state.hour}:${state.minute < 10 ? '0' : ''}${state.minute} ${state.amPm}
+                                    </div>
+                                    <div class="time-day">Day ${state.day}</div>
+                                </${Stack}>
+                            </${Stack}>
+                        `}" />
+                        <${ListItem} className="log" text="${html`
+                            <div>Julie Jolley built cucumber patch - 10:29 AM</div>
+                            <div>Julie Jolley found simple meal - 10:01 AM</div>
+                            <div>Julie Jolley found cucumber patch - 9:38 AM</div>
+                            <div>Julie Jolley ate simple meal - 9:20 AM</div>
+                            <div>Julie Jolley found simple meal - 8:42 AM</div>
+                            <div>Julie Jolley found simple meal - 7:33 AM</div>
+                        `}" />
+                    </${Stack}>
                 </${List}>
-            </div>
+            </footer>
             <div class="modal ${state.modalVisible ? 'modal--active' : 'modal--inactive'}">
                 <div class="modal-overlay" onClick=${closeModal} />
                 <div class="modal-container">
