@@ -5,10 +5,15 @@ const html = htm.bind(h);
 const initialState = {
     game: {
         time: {
-            hour: 10,
-            minute: 0
+            hour: 7,
+            minute: 0,
+            amPm: 'AM',
         },
         entities: [],
+        speed: {
+            current: 500,
+            paused: false,
+        },
     },
     view: {
         stack: [],
@@ -23,12 +28,40 @@ const initialState = {
 
 const reducer = (state, action) => {
     switch (action.type) {
-        case 'SET_TIME': {
+        case 'TOGGLE_PAUSE': {
             return {
                 ...state,
                 game: {
                     ...state.game,
-                    time: action.payload,
+                    speed: {
+                        ...state.game.speed,
+                        paused: !state.game.speed.paused,
+                    },
+                }
+            }
+        }
+        case 'INCREASE_TIME': {
+            let newHour = state.game.time.hour;
+            let newMinute = state.game.time.minute + 1;
+            let newAmPm = state.game.time.amPm;
+            if (newMinute > 60) {
+                newMinute = 1;
+                newHour += 1;
+                if (newHour === 12) {
+                    newAmPm = newAmPm === 'AM' ? 'PM' : 'AM';
+                } else if (newHour === 13) {
+                    newHour = 1;
+                }
+            }
+            return {
+                ...state,
+                game: {
+                    ...state.game,
+                    time: {
+                        hour: newHour,
+                        minute: newMinute,
+                        amPm: newAmPm,
+                    },
                 }
             }
         }
@@ -39,7 +72,7 @@ const withController = (WrappedComponent) => {
   return (props) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const [isPaused, setIsPaused] = useState(false);
-    const [defaultGameSpeed, setDefaultGameSpeed] = useState(1);
+    const [defaultGameSpeed, setDefaultGameSpeed] = useState(0.5);
     const [fastGameSpeed, setFastGameSpeed] = useState(0.1);
     const [gameSpeed, setGameSpeed] = useState(defaultGameSpeed);
     const [tickCount, setTickCount] = useState(0);
@@ -101,6 +134,15 @@ const withController = (WrappedComponent) => {
     useEffect(() => {
         isPausedRef.current = isPaused;
     }, [isPaused]);
+
+    // TODO refactor code to leverage this structure (i.e. reducer with setInterval rather than requestAnimationFrame and a bunch of setStates)
+    useEffect(() => {
+        const tick = () => {
+            dispatch({type: 'INCREASE_TIME'});
+        }
+        const interval = state?.game?.speed?.paused ? null : setInterval(tick, state.game.speed.current);
+        return () => clearInterval(interval);
+    }, [state.game.speed.current, state.game.speed.paused]);
 
     useEffect(() => {
         let lastTime = 0;
@@ -269,6 +311,8 @@ const withController = (WrappedComponent) => {
         closeModal,
         pushModalView,
         popModalView,
+        s: state,
+        dispatch,
         state: {
             hour, setHour,
             minute, setMinute,

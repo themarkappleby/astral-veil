@@ -1,4 +1,4 @@
-const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView }) => {
+const App = ({ s, dispatch, state, pushView, popView, closeModal, pushModalView, popModalView }) => {
     const views = {
         menu: () => {
             return {
@@ -314,11 +314,15 @@ const App = ({ state, pushView, popView, closeModal, pushModalView, popModalView
                     <${Stack}>
                         <${ListItem} className="time" text="${html`
                             <${Stack}>
-                                <button onClick=${() => state.setIsPaused(!state.isPaused)}>
+                                <button onClick=${() => {
+                                    state.setIsPaused(!state.isPaused);
+                                    dispatch({type: 'TOGGLE_PAUSE'});
+                                }}>
                                     <i class="fa-solid fa-${state.isPaused ? 'play' : 'pause'}"></i>
                                 </button>
                                 <${Stack} column gap="0">
                                     <div>
+                                        ${s?.game?.time?.minute || 0}<br />
                                         ${formatTime(state.hour, state.minute, state.amPm)}
                                     </div>
                                     <div class="time-day">Day ${state.day}</div>
