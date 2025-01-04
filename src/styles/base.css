@@ -259,7 +259,7 @@ button {
     background: white;
     z-index: 6;
     .time {
-        width: 125px;
+        width: 130px;
         position: relative;
     }
     .time-day {

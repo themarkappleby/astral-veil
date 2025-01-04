@@ -24,6 +24,12 @@ defs.human = () => {
         name: getRandomName(gender),
         surname: getRandomSurname(),
         ai: ['rest', 'hunger', 'build', 'explore'],
+        needs: {
+            food: 110, // switch to systems where 100 is the norm (replace calories system)
+            rest: 90,
+            social: 50,
+        },
+        can: ['sleep', 'eat', 'build', 'explore', 'walk'], // allowed actions
         age: getRandom(18, 65),
         gender,
         type: 'humanoid',

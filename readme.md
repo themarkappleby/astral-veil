@@ -9,3 +9,7 @@ A minimalistic game about survival.
 - [ ] Implement hauling and inventory
 - [ ] Consolidate identical entities at the same dist
 - [ ] Consolidate humanoid and entity views into a single view
+
+The job of the ai needs is to reduce counters (i.e. reduce food, rest, social, etc over time) and trigger actions
+The job of the ai jobs is to trigger actions 
+The job of the ai actions is to setup and intialize actions

@@ -1,9 +1,43 @@
 const { h, render } = preact;
-const { useState, useCallback, useEffect, useRef } = preactHooks;
+const { useState, useCallback, useEffect, useRef, useReducer } = preactHooks;
 const html = htm.bind(h);
+
+const initialState = {
+    game: {
+        time: {
+            hour: 10,
+            minute: 0
+        },
+        entities: [],
+    },
+    view: {
+        stack: [],
+        modalStack: [],
+        activeView: null,
+        activeModalView: null,
+    },
+    settings: {
+        showDistanceMarkers: true,
+    }
+}
+
+const reducer = (state, action) => {
+    switch (action.type) {
+        case 'SET_TIME': {
+            return {
+                ...state,
+                game: {
+                    ...state.game,
+                    time: action.payload,
+                }
+            }
+        }
+    }
+}
 
 const withController = (WrappedComponent) => {
   return (props) => {
+    const [state, dispatch] = useReducer(reducer, initialState);
     const [isPaused, setIsPaused] = useState(false);
     const [defaultGameSpeed, setDefaultGameSpeed] = useState(1);
     const [fastGameSpeed, setFastGameSpeed] = useState(0.1);
@@ -28,7 +62,6 @@ const withController = (WrappedComponent) => {
         {
             ...defs.human(),
             dist: 0,
-            hunger: 33.1,
         },
     ]
 
