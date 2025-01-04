@@ -1,4 +1,4 @@
-const App = ({ s, dispatch, state, pushView, popView, closeModal, pushModalView, popModalView }) => {
+const App = ({ foobar, dispatch, state, pushView, popView, closeModal, pushModalView, popModalView }) => {
     const views = {
         menu: () => {
             return {
@@ -322,10 +322,9 @@ const App = ({ s, dispatch, state, pushView, popView, closeModal, pushModalView,
                                 </button>
                                 <${Stack} column gap="0">
                                     <div>
-                                        ${s?.game?.time?.minute || 0}<br />
-                                        ${formatTime(state.hour, state.minute, state.amPm)}
+                                        ${formatTime(foobar.game.time.hour, foobar.game.time.minute, foobar.game.time.amPm)}
                                     </div>
-                                    <div class="time-day">Day ${state.day}</div>
+                                    <div class="time-day">Day ${foobar.game.day}</div>
                                 </${Stack}>
                             </${Stack}>
                         `}" />

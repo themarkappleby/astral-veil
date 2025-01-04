@@ -9,6 +9,7 @@ const initialState = {
             minute: 0,
             amPm: 'AM',
         },
+        day: 1,
         entities: [],
         speed: {
             current: 500,
@@ -44,11 +45,15 @@ const reducer = (state, action) => {
             let newHour = state.game.time.hour;
             let newMinute = state.game.time.minute + 1;
             let newAmPm = state.game.time.amPm;
+            let newDay = state.game.day;
             if (newMinute > 60) {
                 newMinute = 1;
                 newHour += 1;
                 if (newHour === 12) {
                     newAmPm = newAmPm === 'AM' ? 'PM' : 'AM';
+                    if (newAmPm === 'AM') {
+                        newDay += 1;
+                    }
                 } else if (newHour === 13) {
                     newHour = 1;
                 }
@@ -57,6 +62,7 @@ const reducer = (state, action) => {
                 ...state,
                 game: {
                     ...state.game,
+                    day: newDay,
                     time: {
                         hour: newHour,
                         minute: newMinute,
@@ -311,7 +317,7 @@ const withController = (WrappedComponent) => {
         closeModal,
         pushModalView,
         popModalView,
-        s: state,
+        foobar: state, // TOOD rename foobar to state once old state logic has been replaced
         dispatch,
         state: {
             hour, setHour,
