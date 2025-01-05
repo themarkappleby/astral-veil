@@ -1,6 +1,6 @@
 # Astral Veil
 
-A minimalistic game about survival.
+A minimalistic mobile-first space colony management game. Inspired by RimWorld and A Dark Room.
 
 ## TODOs
 
