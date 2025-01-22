@@ -21,7 +21,7 @@ const App = ({ foobar, dispatch, state, pushView, popView, closeModal, pushModal
                 },
                 children: html`
                     <${List}>
-                        ${state.showDistanceMarkers && html`<${ListItem} isEmpty secondaryText="At base" />`}
+                        ${foobar.settings.showDistanceMarkers && html`<${ListItem} isEmpty secondaryText="At base" />`}
                         <${ListItem} icon="database" text="Stockpile" onClick=${() => pushView({id: 'stockpile'})} />
                         ${state.entities.filter(entity => !entity?.actions?.haul).sort((a, b) => a.dist - b.dist).map(e => {
                             if (e.delete) return;
@@ -50,12 +50,12 @@ const App = ({ foobar, dispatch, state, pushView, popView, closeModal, pushModal
                             }
                             lastDist = distInt;
                             return html`
-                                ${state.showDistanceMarkers ? emptyItems : ''}
+                                ${foobar.settings.showDistanceMarkers ? emptyItems : ''}
                                 <${ListItem}
                                     icon="${e.icon || 'question'}"
                                     text="${text}"
                                     detail="${actionText}"
-                                    secondaryText="${state.showDistanceMarkers ? '' : distText}"
+                                    secondaryText="${foobar.settings.showDistanceMarkers ? '' : distText}"
                                     percent=${e?.action?.progress?.toFixed(2) || e?.progress?.toFixed(2) || 0}
                                     onClick=${() => {
                                         if (e.type === 'humanoid') {
@@ -272,8 +272,8 @@ const App = ({ foobar, dispatch, state, pushView, popView, closeModal, pushModal
                 title: 'Settings',
                 children: html`
                     <${List}>
-                        <${ListItem} text="Show distance markers" secondaryText="${html`<${Toggle} value=${state.showDistanceMarkers} onChange=${() => {
-                            state.setShowDistanceMarkers(!state.showDistanceMarkers);
+                        <${ListItem} text="Show distance markers" secondaryText="${html`<${Toggle} value=${foobar.settings.showDistanceMarkers} onChange=${() => {
+                            dispatch({type: 'TOGGLE_DISTANCE_MARKERS_SETTING'});
                         }} />`}" />
                     </${List}>
                 `,
@@ -318,7 +318,7 @@ const App = ({ foobar, dispatch, state, pushView, popView, closeModal, pushModal
                                     state.setIsPaused(!state.isPaused);
                                     dispatch({type: 'TOGGLE_PAUSE'});
                                 }}>
-                                    <i class="fa-solid fa-${state.isPaused ? 'play' : 'pause'}"></i>
+                                    <i class="fa-solid fa-${foobar.game.speed === 0 ? 'play' : 'pause'}"></i>
                                 </button>
                                 <${Stack} column gap="0">
                                     <div>

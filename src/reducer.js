@@ -1,5 +1,8 @@
+const DEFAULT_GAME_SPEED = 500;
+
 const initialState = {
     game: {
+        speed: DEFAULT_GAME_SPEED,
         time: {
             hour: 7,
             minute: 0,
@@ -7,10 +10,6 @@ const initialState = {
         },
         day: 1,
         entities: [],
-        speed: {
-            current: 500,
-            paused: false,
-        },
     },
     view: {
         stack: [],
@@ -20,7 +19,8 @@ const initialState = {
     },
     settings: {
         showDistanceMarkers: true,
-    }
+    },
+    log: [],
 }
 
 const reducer = (state, action) => {
@@ -30,10 +30,16 @@ const reducer = (state, action) => {
                 ...state,
                 game: {
                     ...state.game,
-                    speed: {
-                        ...state.game.speed,
-                        paused: !state.game.speed.paused,
-                    },
+                    speed: state.game.speed === DEFAULT_GAME_SPEED ? 0 : DEFAULT_GAME_SPEED,
+                }
+            }
+        }
+        case 'TOGGLE_DISTANCE_MARKERS_SETTING': {
+            return {
+                ...state,
+                settings: {
+                    ...state.settings,
+                    showDistanceMarkers: !state.settings.showDistanceMarkers,
                 }
             }
         }

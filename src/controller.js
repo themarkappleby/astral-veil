@@ -74,9 +74,9 @@ const withController = (WrappedComponent) => {
         const tick = () => {
             dispatch({type: 'INCREASE_TIME'});
         }
-        const interval = state?.game?.speed?.paused ? null : setInterval(tick, state.game.speed.current);
+        const interval = state?.game?.speed === 0 ? null : setInterval(tick, state.game.speed);
         return () => clearInterval(interval);
-    }, [state.game.speed.current, state.game.speed.paused]);
+    }, [state.game.speed]);
 
     useEffect(() => {
         let lastTime = 0;
